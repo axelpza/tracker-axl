@@ -54,63 +54,165 @@
         <div class="flex gap-2 overflow-x-auto pb-2" id="month-tabs"></div>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <!-- Columna Izquierda: Planificador de Ingresos y Nómina Panamá -->
+            <!-- Columna Izquierda: Planificador Quincenal Panamá (Modo Edición vs Modo Vista) -->
             <div class="space-y-6">
-                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 space-y-4">
-                    <h3 class="font-bold text-gray-800 border-b pb-2">Planificador de Ingresos (Panamá)</h3>
-                    
-                    <div>
-                        <label class="block text-xs font-semibold text-gray-500 mb-1">Salario Fijo Mensual ($)</label>
-                        <input type="number" id="in-salario" class="w-full p-2 border rounded-xl text-sm outline-none focus:border-indigo-600" value="2400">
+                
+                <!-- MODO VISTA (Summary Card No Editable) -->
+                <div id="budget-view-mode" class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 space-y-4 hidden">
+                    <div class="flex justify-between items-center border-b pb-3">
+                        <h3 class="font-bold text-gray-800 text-sm">Resumen de Planilla (<span id="view-mes-title">Mes</span>)</h3>
+                        <button id="btn-edit-budget" class="text-indigo-600 hover:text-indigo-800 p-1.5 rounded-xl bg-indigo-50 hover:bg-indigo-100 transition flex items-center gap-1 text-xs font-bold" title="Editar Planilla">
+                            ✏️ Editar
+                        </button>
                     </div>
 
-                    <div>
-                        <label class="block text-xs font-semibold text-gray-500 mb-1">Bonificación / Variable ($)</label>
-                        <input type="number" id="in-bonificacion" class="w-full p-2 border rounded-xl text-sm outline-none focus:border-indigo-600" value="600">
+                    <!-- Q1 View -->
+                    <div class="bg-slate-50 p-3 rounded-xl border text-xs space-y-1.5">
+                        <p class="font-bold text-indigo-600">1ra Quincena (1 - 15)</p>
+                        <div class="flex justify-between text-gray-600"><span>Salario Base:</span> <span id="v-q1-salario" class="font-semibold">$0.00</span></div>
+                        <div class="flex justify-between text-gray-600"><span>Seguro Social (9.75%):</span> <span id="v-q1-ss">$0.00</span></div>
+                        <div class="flex justify-between text-gray-600"><span>Seguro Educativo (1.25%):</span> <span id="v-q1-se">$0.00</span></div>
+                        <div class="flex justify-between text-gray-600"><span>ISR:</span> <span id="v-q1-isr">$0.00</span></div>
+                        <div class="flex justify-between text-gray-600"><span>Acreedores:</span> <span id="v-q1-acreedores">$0.00</span></div>
+                        <div class="flex justify-between font-bold text-slate-800 pt-1 border-t"><span>Neto Q1:</span> <span id="v-q1-neto" class="text-indigo-600">$0.00</span></div>
                     </div>
 
-                    <div class="flex items-center gap-2 bg-indigo-50 p-3 rounded-xl border border-indigo-100">
-                        <input type="checkbox" id="in-decimo" class="w-4 h-4 text-indigo-600 rounded">
-                        <label for="in-decimo" class="text-xs font-bold text-indigo-900 cursor-pointer">¿Incluye Pago de Décimo Tercer Mes?</label>
+                    <!-- Q2 View -->
+                    <div class="bg-slate-50 p-3 rounded-xl border text-xs space-y-1.5">
+                        <p class="font-bold text-indigo-600">2da Quincena (16 - 31)</p>
+                        <div class="flex justify-between text-gray-600"><span>Salario Base:</span> <span id="v-q2-salario" class="font-semibold">$0.00</span></div>
+                        <div class="flex justify-between text-gray-600"><span>Bonificación:</span> <span id="v-q2-bono" class="font-semibold">$0.00</span></div>
+                        <div id="v-container-decimo" class="flex justify-between text-indigo-700 font-semibold hidden"><span>Décimo Tercer Mes:</span> <span id="v-q2-decimo">$0.00</span></div>
+                        <div class="flex justify-between text-gray-600"><span>Seguro Social:</span> <span id="v-q2-ss">$0.00</span></div>
+                        <div class="flex justify-between text-gray-600"><span>Seguro Educativo (1.25%):</span> <span id="v-q2-se">$0.00</span></div>
+                        <div class="flex justify-between text-gray-600"><span>ISR:</span> <span id="v-q2-isr">$0.00</span></div>
+                        <div class="flex justify-between text-gray-600"><span>Acreedores:</span> <span id="v-q2-acreedores">$0.00</span></div>
+                        <div class="flex justify-between font-bold text-slate-800 pt-1 border-t"><span>Neto Q2:</span> <span id="v-q2-neto" class="text-indigo-600">$0.00</span></div>
                     </div>
 
-                    <div class="space-y-2 pt-2 border-t">
-                        <label class="block text-xs font-bold text-gray-700">Descuentos de Acreedores / Préstamos</label>
-                        <input type="text" id="name-acreedor1" placeholder="Nombre Acreedor 1" class="w-full p-1.5 border rounded-lg text-xs mb-1">
-                        <input type="number" id="in-acreedor1" placeholder="Monto Acreedor 1 ($)" class="w-full p-2 border rounded-xl text-sm mb-2">
-
-                        <input type="text" id="name-acreedor2" placeholder="Nombre Acreedor 2" class="w-full p-1.5 border rounded-lg text-xs mb-1">
-                        <input type="number" id="in-acreedor2" placeholder="Monto Acreedor 2 ($)" class="w-full p-2 border rounded-xl text-sm mb-2">
-
-                        <input type="text" id="name-acreedor3" placeholder="Nombre Acreedor 3" class="w-full p-1.5 border rounded-lg text-xs mb-1">
-                        <input type="number" id="in-acreedor3" placeholder="Monto Acreedor 3 ($)" class="w-full p-2 border rounded-xl text-sm">
+                    <!-- Total Net View -->
+                    <div class="bg-indigo-50 p-3 rounded-xl border border-indigo-100 flex justify-between items-center text-xs">
+                        <span class="font-bold text-indigo-950">Presupuesto Neto Mensual:</span>
+                        <span id="v-neto-total" class="font-bold text-indigo-700 text-sm">$0.00</span>
                     </div>
-
-                    <div class="bg-slate-50 p-3 rounded-xl text-xs space-y-1 text-slate-600 border">
-                        <p class="font-bold text-slate-800">Deducciones de Ley Estimadas:</p>
-                        <div class="flex justify-between"><span>Seguro Social (9.75%):</span> <span id="calc-ss">$0.00</span></div>
-                        <div class="flex justify-between"><span>Seguro Educativo (1.25%):</span> <span id="calc-se">$0.00</span></div>
-                        <div class="flex justify-between"><span>Impuesto s/ Renta (ISR):</span> <span id="calc-isr">$0.00</span></div>
-                        <div class="flex justify-between font-bold text-indigo-600 pt-1 border-t"><span>Presupuesto Neto Real:</span> <span id="calc-neto">$0.00</span></div>
-                    </div>
-
-                    <button id="save-budget" class="w-full bg-indigo-600 text-white py-2.5 rounded-xl font-bold text-sm hover:bg-indigo-700 transition">Calcular y Guardar Presupuesto</button>
                 </div>
 
-                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 text-center">
-                    <h3 class="font-bold text-gray-800 mb-4">Tacómetro Financiero</h3>
-                    <div class="relative w-48 h-48 mx-auto">
-                        <canvas id="gaugeChart"></canvas>
-                        <div class="absolute inset-0 flex flex-col items-center justify-center pt-6">
-                            <span class="text-2xl font-bold text-gray-800" id="spent-percentage">0%</span>
-                            <span class="text-xs text-gray-400 uppercase">Gastado</span>
+                <!-- MODO EDICIÓN (Inputs Editables) -->
+                <div id="budget-edit-mode" class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 space-y-6">
+                    <h3 class="font-bold text-gray-800 border-b pb-2">Planificador de Planilla (Panamá)</h3>
+                    
+                    <!-- BLOQUE 1RA QUINCENA -->
+                    <div class="space-y-3 bg-slate-50 p-4 rounded-xl border">
+                        <h4 class="font-bold text-indigo-600 text-sm">1ra Quincena (1 - 15)</h4>
+                        <div>
+                            <label class="block text-[11px] font-semibold text-gray-500 mb-1">Salario Base Q1 ($)</label>
+                            <input type="number" id="q1-salario" class="w-full p-2 border rounded-xl text-sm outline-none bg-white" value="1200">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-semibold text-gray-500 mb-1">Acreedores Q1 ($)</label>
+                            <input type="number" id="q1-acreedores" class="w-full p-2 border rounded-xl text-sm outline-none bg-white" value="120">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-semibold text-gray-500 mb-1">ISR Q1 (Editable / Manual)</label>
+                            <input type="number" id="q1-isr" class="w-full p-2 border rounded-xl text-sm outline-none bg-white" value="92.66">
                         </div>
                     </div>
+
+                    <!-- BLOQUE 2DA QUINCENA -->
+                    <div class="space-y-3 bg-slate-50 p-4 rounded-xl border">
+                        <h4 class="font-bold text-indigo-600 text-sm">2da Quincena (16 - 31)</h4>
+                        <div>
+                            <label class="block text-[11px] font-semibold text-gray-500 mb-1">Salario Base Q2 ($)</label>
+                            <input type="number" id="q2-salario" class="w-full p-2 border rounded-xl text-sm outline-none bg-white" value="1200">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-semibold text-gray-500 mb-1">Bonificación / Variable Q2 ($)</label>
+                            <input type="number" id="q2-bonificacion" class="w-full p-2 border rounded-xl text-sm outline-none bg-white" value="600">
+                        </div>
+                        <div class="flex items-center gap-2 py-1">
+                            <input type="checkbox" id="in-decimo" class="w-4 h-4 text-indigo-600 rounded">
+                            <label for="in-decimo" class="text-xs font-bold text-indigo-950 cursor-pointer">Incluye Décimo Tercer Mes</label>
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-semibold text-gray-500 mb-1">Acreedores Q2 ($)</label>
+                            <input type="number" id="q2-acreedores" class="w-full p-2 border rounded-xl text-sm outline-none bg-white" value="120">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-semibold text-gray-500 mb-1">ISR Q2 (Editable / Manual)</label>
+                            <input type="number" id="q2-isr" class="w-full p-2 border rounded-xl text-sm outline-none bg-white" value="185.32">
+                        </div>
+                    </div>
+
+                    <!-- RESUMEN NETO PREVIO -->
+                    <div class="bg-indigo-50 p-3 rounded-xl text-xs space-y-1 text-indigo-950 border border-indigo-100">
+                        <div class="flex justify-between"><span>Neto Q1 Estimado:</span> <span id="neto-q1" class="font-bold">$0.00</span></div>
+                        <div class="flex justify-between"><span>Neto Q2 Estimado:</span> <span id="neto-q2" class="font-bold">$0.00</span></div>
+                        <div class="flex justify-between font-bold text-sm text-indigo-700 pt-1 border-t border-indigo-200"><span>Presupuesto Neto Mensual:</span> <span id="calc-neto">$0.00</span></div>
+                    </div>
+
+                    <button id="save-budget" class="w-full bg-indigo-600 text-white py-2.5 rounded-xl font-bold text-sm hover:bg-indigo-700 transition">Calcular y Guardar Planilla</button>
                 </div>
+
+                <!-- Tacómetro Financiero Opcional o Informativo -->
             </div>
 
-            <!-- Columna Derecha: Registro por Quincena y Tabla de Gastos -->
+            <!-- Columna Derecha: Tacómetros y Tabla de Gastos -->
             <div class="lg:col-span-2 space-y-6">
+                
+                <!-- 3 TACÓMETROS FINANCIEROS -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                    <h3 class="font-bold text-gray-800 mb-4 text-center">Tacómetros Financieros</h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        
+                        <!-- Q1 -->
+                        <div class="text-center bg-slate-50 p-4 rounded-xl border border-slate-200">
+                            <h4 class="text-xs font-bold text-indigo-600 uppercase mb-2">1ra Quincena</h4>
+                            <div class="relative w-28 h-28 mx-auto">
+                                <canvas id="gaugeQ1"></canvas>
+                                <div class="absolute inset-0 flex flex-col items-center justify-center pt-4">
+                                    <span class="text-lg font-bold text-gray-800" id="q1-pct">0%</span>
+                                </div>
+                            </div>
+                            <div class="mt-3 text-xs text-gray-600 space-y-0.5">
+                                <div>Gastado: <strong id="q1-spent" class="text-slate-800">$0.00</strong></div>
+                                <div>Disp: <strong id="q1-avail" class="text-emerald-600">$0.00</strong></div>
+                            </div>
+                        </div>
+
+                        <!-- Q2 -->
+                        <div class="text-center bg-slate-50 p-4 rounded-xl border border-slate-200">
+                            <h4 class="text-xs font-bold text-indigo-600 uppercase mb-2">2da Quincena</h4>
+                            <div class="relative w-28 h-28 mx-auto">
+                                <canvas id="gaugeQ2"></canvas>
+                                <div class="absolute inset-0 flex flex-col items-center justify-center pt-4">
+                                    <span class="text-lg font-bold text-gray-800" id="q2-pct">0%</span>
+                                </div>
+                            </div>
+                            <div class="mt-3 text-xs text-gray-600 space-y-0.5">
+                                <div>Gastado: <strong id="q2-spent" class="text-slate-800">$0.00</strong></div>
+                                <div>Disp: <strong id="q2-avail" class="text-emerald-600">$0.00</strong></div>
+                            </div>
+                        </div>
+
+                        <!-- TOTAL MES -->
+                        <div class="text-center bg-indigo-50/50 p-4 rounded-xl border border-indigo-100">
+                            <h4 class="text-xs font-bold text-indigo-700 uppercase mb-2">Mes Total</h4>
+                            <div class="relative w-28 h-28 mx-auto">
+                                <canvas id="gaugeTotal"></canvas>
+                                <div class="absolute inset-0 flex flex-col items-center justify-center pt-4">
+                                    <span class="text-lg font-bold text-indigo-900" id="total-pct">0%</span>
+                                </div>
+                            </div>
+                            <div class="mt-3 text-xs text-gray-600 space-y-0.5">
+                                <div>Gastado: <strong id="total-spent" class="text-slate-800">$0.00</strong></div>
+                                <div>Disp: <strong id="total-avail" class="text-emerald-600">$0.00</strong></div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- Formulario de Agregar Gasto -->
                 <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
                     <h3 class="font-bold text-gray-800 mb-4">Agregar Gasto Mensual</h3>
                     <form id="expense-form" class="grid grid-cols-1 sm:grid-cols-5 gap-3">
@@ -128,6 +230,7 @@
                     </form>
                 </div>
 
+                <!-- Tabla de Registros -->
                 <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
                     <h3 class="font-bold text-gray-800 mb-4" id="table-title">Registros del Mes</h3>
                     <div class="overflow-x-auto">
@@ -159,8 +262,11 @@
         let currentMes = meses[new Date().getMonth()];
         const currentYear = new Date().getFullYear();
         const currentMonthIndex = new Date().getMonth(); 
-        let chartInstance = null;
+        
         let typeChartInstance = null;
+        let chartQ1 = null;
+        let chartQ2 = null;
+        let chartTotal = null;
 
         async function initDashboard() {
             await auth.authStateReady();
@@ -194,6 +300,7 @@
             
             document.getElementById('table-title').textContent = `Registros de ${currentMes}`;
             document.getElementById('lbl-current-mes').textContent = currentMes;
+            document.getElementById('view-mes-title').textContent = currentMes;
 
             meses.forEach(m => {
                 const btn = document.createElement('button');
@@ -208,107 +315,149 @@
             });
         }
 
-        // Función matemática de deducciones de ley en Panamá
-        function calcularPanamaPayroll(salario, bonificacion, incluyeDecimo) {
-            // Salario Bruto Mensual Ordinario
-            let brutoOrdinario = salario + bonificacion;
+        function calcularNetoQuincenal() {
+            const q1Salario = parseFloat(document.getElementById('q1-salario').value) || 0;
+            const q1Acreedores = parseFloat(document.getElementById('q1-acreedores').value) || 0;
+            const q1Isr = parseFloat(document.getElementById('q1-isr').value) || 0;
+
+            const q2Salario = parseFloat(document.getElementById('q2-salario').value) || 0;
+            const q2Bonificacion = parseFloat(document.getElementById('q2-bonificacion').value) || 0;
+            const q2Acreedores = parseFloat(document.getElementById('q2-acreedores').value) || 0;
+            const q2Isr = parseFloat(document.getElementById('q2-isr').value) || 0;
+            const incluyeDecimo = document.getElementById('in-decimo').checked;
+
+            // Q1 Deducciones
+            const q1Ss = q1Salario * 0.0975;
+            const q1Se = q1Salario * 0.0125;
+            const netoQ1 = q1Salario - (q1Ss + q1Se + q1Isr + q1Acreedores);
+
+            // Q2 Deducciones
+            let q2Bruto = q2Salario + q2Bonificacion;
             let decimoMonto = 0;
+            let ssDecimo = 0;
 
             if (incluyeDecimo) {
-                // El décimo es aprox 1/3 de los 4 meses anteriores (aquí estimado base del salario actual si no hay histórico)
-                decimoMonto = salario / 3; 
+                decimoMonto = q2Salario / 3;
+                ssDecimo = decimoMonto * 0.0725;
+                q2Bruto += decimoMonto;
             }
 
-            // Seguro Social (CSS): 9.75% sobre ordinario. Si hay décimo, la parte del décimo paga 7.25%
-            let ssOrdinario = brutoOrdinario * 0.0975;
-            let ssDecimo = decimoMonto * 0.0725;
-            let totalSS = ssOrdinario + ssDecimo;
+            const q2Ss = (q2Salario * 0.0975) + ssDecimo;
+            const q2Se = q2Salario * 0.0125; 
+            const netoQ2 = q2Bruto - (q2Ss + q2Se + q2Isr + q2Acreedores);
 
-            // Seguro Educativo: 1.25% sobre ordinario (El décimo está exento de seguro educativo en Panamá)
-            let totalSE = brutoOrdinario * 0.0125;
+            const netoTotalMensual = netoQ1 + netoQ2;
 
-            // Impuesto sobre la Renta (ISR) estimado anualizado en base al ordinario * 13
-            let anualBruto = brutoOrdinario * 13;
-            let anualISR = 0;
-            if (anualBruto > 11000 && anualBruto <= 50000) {
-                anualISR = (anualBruto - 11000) * 0.15;
-            } else if (anualBruto > 50000) {
-                anualISR = 5850 + (anualBruto - 50000) * 0.25;
-            }
-            let mensualISR = anualISR / 13;
+            document.getElementById('neto-q1').textContent = `$${netoQ1.toFixed(2)}`;
+            document.getElementById('neto-q2').textContent = `$${netoQ2.toFixed(2)}`;
+            document.getElementById('calc-neto').textContent = `$${netoTotalMensual.toFixed(2)}`;
 
             return {
-                bruto: brutoOrdinario + decimoMonto,
-                ss: totalSS,
-                se: totalSE,
-                isr: mensualISR,
-                decimo: decimoMonto
+                netoTotal: netoTotalMensual,
+                q1Data: { salario: q1Salario, acreedores: q1Acreedores, isr: q1Isr, ss: q1Ss, se: q1Se, neto: netoQ1 },
+                q2Data: { salario: q2Salario, bonificacion: q2Bonificacion, acreedores: q2Acreedores, isr: q2Isr, ss: q2Ss, se: q2Se, incluyeDecimo, decimoMonto, neto: netoQ2 }
             };
         }
 
-        // Evento para calcular y guardar presupuesto
+        document.querySelectorAll('#q1-salario, #q1-acreedores, #q1-isr, #q2-salario, #q2-bonificacion, #q2-acreedores, #q2-isr, #in-decimo').forEach(el => {
+            el.oninput = calcularNetoQuincenal;
+        });
+
+        // Cambiar entre Modo Vista y Modo Edición
+        function setBudgetMode(isEdit) {
+            document.getElementById('budget-edit-mode').classList.toggle('hidden', !isEdit);
+            document.getElementById('budget-view-mode').classList.toggle('hidden', isEdit);
+        }
+
+        document.getElementById('btn-edit-budget').onclick = () => setBudgetMode(true);
+
         document.getElementById('save-budget').onclick = async () => {
-            const salario = parseFloat(document.getElementById('in-salario').value) || 0;
-            const bonificacion = parseFloat(document.getElementById('in-bonificacion').value) || 0;
-            const incluyeDecimo = document.getElementById('in-decimo').checked;
-
-            const nameAc1 = document.getElementById('name-acreedor1').value;
-            const ac1 = parseFloat(document.getElementById('in-acreedor1').value) || 0;
-            const nameAc2 = document.getElementById('name-acreedor2').value;
-            const ac2 = parseFloat(document.getElementById('in-acreedor2').value) || 0;
-            const nameAc3 = document.getElementById('name-acreedor3').value;
-            const ac3 = parseFloat(document.getElementById('in-acreedor3').value) || 0;
-
-            const deducciones = calcularPanamaPayroll(salario, bonificacion, incluyeDecimo);
-            const totalAcreedores = ac1 + ac2 + ac3;
-            
-            // Presupuesto Neto Real disponible
-            const netoReal = deducciones.bruto - (deducciones.ss + deducciones.se + deducciones.isr + totalAcreedores);
+            const calculo = calcularNetoQuincenal();
 
             await setDoc(doc(db, "presupuestos", `${currentUid}_${currentMes}`), { 
-                monto: netoReal, 
-                salario,
-                bonificacion,
-                incluyeDecimo,
-                decimoMonto: deducciones.decimo,
-                acreedores: { [nameAc1 || 'Acreedor 1']: ac1, [nameAc2 || 'Acreedor 2']: ac2, [nameAc3 || 'Acreedor 3']: ac3 },
+                monto: calculo.netoTotal, 
+                q1: calculo.q1Data,
+                q2: calculo.q2Data,
                 mes: currentMes, 
                 year: currentYear,
                 userId: currentUid 
             });
 
-            alert(`Presupuesto de ${currentMes} calculado y guardado con éxito (Neto: $${netoReal.toFixed(2)}).`);
+            alert(`Planilla de ${currentMes} guardada con éxito.`);
             loadMonthData();
         };
 
         async function loadMonthData() {
             document.getElementById('table-title').textContent = `Registros de ${currentMes}`;
             document.getElementById('lbl-current-mes').textContent = currentMes;
+            document.getElementById('view-mes-title').textContent = currentMes;
 
             const bDoc = await getDoc(doc(db, "presupuestos", `${currentUid}_${currentMes}`));
-            let budget = 0;
+            let budgetQ1 = 0;
+            let budgetQ2 = 0;
+            let budgetTotal = 0;
+
             if (bDoc.exists()) {
                 const bData = bDoc.data();
-                budget = bData.monto || 0;
-                document.getElementById('in-salario').value = bData.salario || 2400;
-                document.getElementById('in-bonificacion').value = bData.bonificacion || 600;
-                document.getElementById('in-decimo').checked = bData.incluyeDecimo || false;
-
-                // Mostrar cálculos en vivo
-                const ded = calcularPanamaPayroll(bData.salario || 2400, bData.bonificacion || 600, bData.incluyeDecimo || false);
-                const acreedoresTotal = Object.values(bData.acreedores || {}).reduce((a, b) => a + b, 0);
+                budgetTotal = bData.monto || 0;
+                budgetQ1 = bData.q1 ? bData.q1.neto : (budgetTotal / 2);
+                budgetQ2 = bData.q2 ? bData.q2.neto : (budgetTotal / 2);
                 
-                document.getElementById('calc-ss').textContent = `$${ded.ss.toFixed(2)}`;
-                document.getElementById('calc-se').textContent = `$${ded.se.toFixed(2)}`;
-                document.getElementById('calc-isr').textContent = `$${ded.isr.toFixed(2)}`;
-                document.getElementById('calc-neto').textContent = `$${budget.toFixed(2)}`;
+                // Rellenar Edit Mode inputs
+                if (bData.q1) {
+                    document.getElementById('q1-salario').value = bData.q1.salario ?? 1200;
+                    document.getElementById('q1-acreedores').value = bData.q1.acreedores ?? 120;
+                    document.getElementById('q1-isr').value = bData.q1.isr ?? 92.66;
+                }
+                if (bData.q2) {
+                    document.getElementById('q2-salario').value = bData.q2.salario ?? 1200;
+                    document.getElementById('q2-bonificacion').value = bData.q2.bonificacion ?? 600;
+                    document.getElementById('q2-acreedores').value = bData.q2.acreedores ?? 120;
+                    document.getElementById('q2-isr').value = bData.q2.isr ?? 185.32;
+                    document.getElementById('in-decimo').checked = bData.q2.incluyeDecimo ?? false;
+                }
+
+                // Rellenar View Mode con detalles completos
+                if (bData.q1 && bData.q2) {
+                    document.getElementById('v-q1-salario').textContent = `$${bData.q1.salario.toFixed(2)}`;
+                    document.getElementById('v-q1-ss').textContent = `$${bData.q1.ss.toFixed(2)}`;
+                    document.getElementById('v-q1-se').textContent = `$${bData.q1.se.toFixed(2)}`;
+                    document.getElementById('v-q1-isr').textContent = `$${bData.q1.isr.toFixed(2)}`;
+                    document.getElementById('v-q1-acreedores').textContent = `$${bData.q1.acreedores.toFixed(2)}`;
+                    document.getElementById('v-q1-neto').textContent = `$${bData.q1.neto.toFixed(2)}`;
+
+                    document.getElementById('v-q2-salario').textContent = `$${bData.q2.salario.toFixed(2)}`;
+                    document.getElementById('v-q2-bono').textContent = `$${bData.q2.bonificacion.toFixed(2)}`;
+                    
+                    const decimoContainer = document.getElementById('v-container-decimo');
+                    if (bData.q2.incluyeDecimo) {
+                        decimoContainer.classList.remove('hidden');
+                        document.getElementById('v-q2-decimo').textContent = `$${bData.q2.decimoMonto.toFixed(2)}`;
+                    } else {
+                        decimoContainer.classList.add('hidden');
+                    }
+
+                    document.getElementById('v-q2-ss').textContent = `$${bData.q2.ss.toFixed(2)}`;
+                    document.getElementById('v-q2-se').textContent = `$${bData.q2.se.toFixed(2)}`;
+                    document.getElementById('v-q2-isr').textContent = `$${bData.q2.isr.toFixed(2)}`;
+                    document.getElementById('v-q2-acreedores').textContent = `$${bData.q2.acreedores.toFixed(2)}`;
+                    document.getElementById('v-q2-neto').textContent = `$${bData.q2.neto.toFixed(2)}`;
+
+                    document.getElementById('v-neto-total').textContent = `$${budgetTotal.toFixed(2)}`;
+                }
+
+                // Mostrar directamente el Modo Vista si ya existe presupuesto guardado
+                setBudgetMode(false);
             } else {
-                // Valores por defecto
-                document.getElementById('calc-ss').textContent = `$0.00`;
-                document.getElementById('calc-se').textContent = `$0.00`;
-                document.getElementById('calc-isr').textContent = `$0.00`;
-                document.getElementById('calc-neto').textContent = `$0.00`;
+                const calc = calcularNetoQuincenal();
+                budgetTotal = calc.netoTotal;
+                budgetQ1 = calc.q1Data.neto;
+                budgetQ2 = calc.q2Data.neto;
+                // Si no existe, mostrar modo edición
+                setBudgetMode(true);
             }
+
+            calcularNetoQuincenal();
 
             const q = query(
                 collection(db, "gastos"), 
@@ -321,12 +470,20 @@
                 const list = document.getElementById('expense-list');
                 list.innerHTML = '';
                 let totalSpent = 0;
+                let spentQ1 = 0;
+                let spentQ2 = 0;
                 let fixedSpent = 0;
                 let extraSpent = 0;
                 
                 snapshot.forEach(d => {
                     const data = d.data();
                     totalSpent += data.monto;
+                    if (data.quincena === '2da Quincena') {
+                        spentQ2 += data.monto;
+                    } else {
+                        spentQ1 += data.monto; 
+                    }
+
                     if (data.tipo === 'fijo') fixedSpent += data.monto;
                     else extraSpent += data.monto;
 
@@ -346,7 +503,10 @@
                 document.getElementById('m-fijo').textContent = `$${fixedSpent.toFixed(2)}`;
                 document.getElementById('m-extra').textContent = `$${extraSpent.toFixed(2)}`;
 
-                renderGauge(totalSpent, budget);
+                renderGauge('gaugeQ1', 'q1-pct', 'q1-spent', 'q1-avail', spentQ1, budgetQ1, chartQ1, (inst) => chartQ1 = inst, ['#3b82f6', '#e2e8f0']);
+                renderGauge('gaugeQ2', 'q2-pct', 'q2-spent', 'q2-avail', spentQ2, budgetQ2, chartQ2, (inst) => chartQ2 = inst, ['#a855f7', '#e2e8f0']);
+                renderGauge('gaugeTotal', 'total-pct', 'total-spent', 'total-avail', totalSpent, budgetTotal, chartTotal, (inst) => chartTotal = inst, ['#4f46e5', '#e2e8f0']);
+
                 renderTypeChart(fixedSpent, extraSpent);
             });
         }
@@ -356,7 +516,7 @@
         document.getElementById('expense-form').onsubmit = async (e) => {
             e.preventDefault();
             await addDoc(collection(db, "gastos"), {
-                descripcion: document.getElementById('e-desc').value,
+                descripcion: document.getElementById('e-desc').value, // <-- Corregido aquí
                 monto: parseFloat(document.getElementById('e-monto').value),
                 quincena: document.getElementById('e-quincena').value,
                 tipo: document.getElementById('e-tipo').value,
@@ -369,18 +529,23 @@
             loadMonthData();
         };
 
-        function renderGauge(spent, budget) {
+        function renderGauge(canvasId, pctId, spentId, availId, spent, budget, chartInstanceVar, setInstanceCallback, colors) {
             const available = Math.max(0, budget - spent);
             const percentage = budget > 0 ? Math.round((spent / budget) * 100) : 0;
-            document.getElementById('spent-percentage').textContent = percentage + '%';
+            
+            document.getElementById(pctId).textContent = percentage + '%';
+            document.getElementById(spentId).textContent = `$${spent.toFixed(2)}`;
+            document.getElementById(availId).textContent = `$${available.toFixed(2)}`;
 
-            const ctx = document.getElementById('gaugeChart').getContext('2d');
-            if (chartInstance) chartInstance.destroy();
-            chartInstance = new Chart(ctx, {
+            const ctx = document.getElementById(canvasId).getContext('2d');
+            if (chartInstanceVar) chartInstanceVar.destroy();
+            
+            const newInstance = new Chart(ctx, {
                 type: 'doughnut',
-                data: { datasets: [{ data: [spent, available], backgroundColor: ['#4f46e5', '#e2e8f0'], borderWidth: 0 }] },
+                data: { datasets: [{ data: [spent, available], backgroundColor: colors, borderWidth: 0 }] },
                 options: { rotation: -90, circumference: 180, cutout: '80%', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
             });
+            setInstanceCallback(newInstance);
         }
 
         function renderTypeChart(fijo, extra) {
