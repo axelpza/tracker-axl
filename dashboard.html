@@ -24,7 +24,7 @@
 
     <main class="max-w-6xl mx-auto p-6 space-y-6">
         
-        <!-- Dashboard YTD y Mes Actual Superior -->
+        <!-- Dashboard YTD y Mes Seleccionado Superior -->
         <div class="bg-gradient-to-r from-indigo-600 to-violet-600 text-white p-6 rounded-2xl shadow-md grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
             <div>
                 <p class="text-indigo-200 text-xs font-semibold uppercase tracking-wider">Resumen Anual (YTD Enero al Mes Actual)</p>
@@ -122,7 +122,7 @@
         const meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
         let currentMes = meses[new Date().getMonth()];
         const currentYear = new Date().getFullYear();
-        const currentMonthIndex = new Date().getMonth(); // Mes real actual (ej. 7 para Agosto)
+        const currentMonthIndex = new Date().getMonth(); 
         let chartInstance = null;
         let typeChartInstance = null;
 
@@ -226,7 +226,6 @@
                         </tr>`;
                 });
 
-                // Actualizar textos de resumen del mes actual/seleccionado
                 document.getElementById('current-month-total').textContent = `$${totalSpent.toFixed(2)}`;
                 document.getElementById('m-fijo').textContent = `$${fixedSpent.toFixed(2)}`;
                 document.getElementById('m-extra').textContent = `$${extraSpent.toFixed(2)}`;
@@ -271,7 +270,6 @@
             const ctx = document.getElementById('typeChart').getContext('2d');
             if (typeChartInstance) typeChartInstance.destroy();
             
-            // Si no hay gastos, mostrar un gris por defecto
             const dataValues = (fijo === 0 && extra === 0) ? [1] : [fijo, extra];
             const bgColors = (fijo === 0 && extra === 0) ? ['#ffffff40'] : ['#38bdf8', '#fb7185'];
 
@@ -283,7 +281,6 @@
         }
 
         async function loadYTDData() {
-            // Filtrar YTD estrictamente por el año actual (2026)
             const q = query(
                 collection(db, "gastos"), 
                 where("userId", "==", currentUid),
@@ -295,12 +292,10 @@
                 let ytdFijo = 0;
                 let ytdExtra = 0;
                 
-                // Meses válidos desde Enero (0) hasta el mes actual real (currentMonthIndex)
                 const validMonths = meses.slice(0, currentMonthIndex + 1);
 
                 snap.forEach(d => {
                     const data = d.data();
-                    // Solo sumar si el mes del registro está dentro del rango del año transcurrido
                     if (validMonths.includes(data.mes)) {
                         totalYTD += data.monto;
                         if (data.tipo === 'fijo') ytdFijo += data.monto;
