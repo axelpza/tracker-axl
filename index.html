@@ -2,18 +2,19 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Acceso - Tracker Finanzas</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-slate-100 flex items-center justify-center h-screen">
-    <div class="bg-white p-8 rounded-2xl shadow-lg w-full max-w-md">
+<body class="bg-slate-100 flex items-center justify-center min-h-screen p-4">
+    <div class="bg-white p-6 sm:p-8 rounded-2xl shadow-lg w-full max-w-md">
         <h2 id="form-title" class="text-2xl font-bold mb-6 text-indigo-600">Iniciar Sesión</h2>
         
         <form id="login-form" class="space-y-4">
             <!-- Campos de Registro -->
             <div id="register-fields" class="space-y-4 hidden">
-                <input type="text" id="reg-name" placeholder="Nombre completo" class="w-full p-3 border rounded-xl outline-none">
-                <input type="text" id="reg-user" placeholder="Nombre de usuario" class="w-full p-3 border rounded-xl outline-none">
+                <input type="text" id="reg-name" placeholder="Nombre completo" class="w-full p-3 border rounded-xl outline-none text-sm">
+                <input type="text" id="reg-user" placeholder="Nombre de usuario" class="w-full p-3 border rounded-xl outline-none text-sm">
                 <div>
                     <label class="block text-sm text-gray-600 mb-1">Elige tu Avatar:</label>
                     <div class="flex gap-3 justify-around">
@@ -27,18 +28,18 @@
 
             <div>
                 <label class="block text-sm font-semibold text-gray-600 mb-1">Correo electrónico</label>
-                <input type="email" id="email" placeholder="correo@ejemplo.com" class="w-full p-3 border rounded-xl outline-none" required>
+                <input type="email" id="email" placeholder="correo@ejemplo.com" class="w-full p-3 border rounded-xl outline-none text-sm" required>
             </div>
             <div>
                 <label class="block text-sm font-semibold text-gray-600 mb-1">Contraseña</label>
-                <input type="password" id="password" placeholder="••••••••" class="w-full p-3 border rounded-xl outline-none" required>
+                <input type="password" id="password" placeholder="••••••••" class="w-full p-3 border rounded-xl outline-none text-sm" required>
             </div>
             
             <button type="submit" id="submit-btn" class="w-full bg-indigo-600 text-white p-3 rounded-xl font-bold hover:bg-indigo-700 transition">Ingresar</button>
             
-            <div class="flex justify-between text-sm mt-3">
-                <button type="button" id="toggle-mode" class="text-indigo-600 hover:underline font-medium">¿No tienes cuenta? Regístrate</button>
-                <button type="button" id="forgot-pass" class="text-gray-400 hover:underline">¿Olvidaste tu contraseña?</button>
+            <div class="flex flex-col sm:flex-row justify-between text-sm gap-2 mt-3">
+                <button type="button" id="toggle-mode" class="text-indigo-600 hover:underline font-medium text-left">¿No tienes cuenta? Regístrate</button>
+                <button type="button" id="forgot-pass" class="text-gray-400 hover:underline text-left">¿Olvidaste tu contraseña?</button>
             </div>
         </form>
         <p id="msg" class="text-red-500 text-sm mt-4 text-center font-medium"></p>
@@ -51,6 +52,14 @@
 
         let isRegister = false;
         const msg = document.getElementById('msg');
+
+        async function checkSession() {
+            await auth.authStateReady();
+            if (auth.currentUser) {
+                window.location.href = "dashboard.html";
+            }
+        }
+        checkSession();
 
         document.getElementById('toggle-mode').onclick = () => {
             isRegister = !isRegister;
