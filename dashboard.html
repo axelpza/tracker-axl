@@ -24,14 +24,29 @@
 
     <main class="max-w-6xl mx-auto p-6 space-y-6">
         
-        <!-- Dashboard YTD (Year to Date) Superior -->
-        <div class="bg-gradient-to-r from-indigo-600 to-violet-600 text-white p-6 rounded-2xl shadow-md flex justify-between items-center">
+        <!-- Dashboard YTD y Mes Actual Superior -->
+        <div class="bg-gradient-to-r from-indigo-600 to-violet-600 text-white p-6 rounded-2xl shadow-md grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
             <div>
-                <p class="text-indigo-200 text-sm font-medium">Resumen Anual (YTD 2026)</p>
-                <h2 class="text-2xl font-bold" id="ytd-total-spent">$0.00 Gastados este año</h2>
+                <p class="text-indigo-200 text-xs font-semibold uppercase tracking-wider">Resumen Anual (YTD Enero al Mes Actual)</p>
+                <h2 class="text-2xl font-bold mt-1" id="ytd-total-spent">$0.00 Gastados</h2>
+                <div class="flex gap-4 mt-2 text-xs text-indigo-100">
+                    <span>Fijos YTD: <strong id="ytd-fijo">$0.00</strong></span>
+                    <span>Extraordinarios YTD: <strong id="ytd-extra">$0.00</strong></span>
+                </div>
             </div>
-            <div class="text-right">
-                <span class="bg-white/20 text-xs px-3 py-1 rounded-full uppercase tracking-wider font-semibold" id="ytd-status">Estabilidad Optimizada</span>
+            
+            <div class="bg-white/10 p-4 rounded-xl flex justify-between items-center backdrop-blur-sm">
+                <div>
+                    <p class="text-indigo-200 text-xs font-semibold uppercase tracking-wider">Total <span id="lbl-current-mes">Mes</span></p>
+                    <h3 class="text-xl font-bold mt-1" id="current-month-total">$0.00</h3>
+                    <div class="flex gap-3 mt-1 text-xs text-indigo-100">
+                        <span>Fijo: <strong id="m-fijo">$0.00</strong></span>
+                        <span>Extra: <strong id="m-extra">$0.00</strong></span>
+                    </div>
+                </div>
+                <div class="w-20 h-20 relative">
+                    <canvas id="typeChart"></canvas>
+                </div>
             </div>
         </div>
 
@@ -107,7 +122,9 @@
         const meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
         let currentMes = meses[new Date().getMonth()];
         const currentYear = new Date().getFullYear();
+        const currentMonthIndex = new Date().getMonth(); // Mes real actual (ej. 7 para Agosto)
         let chartInstance = null;
+        let typeChartInstance = null;
 
         async function initDashboard() {
             await auth.authStateReady();
@@ -142,9 +159,9 @@
             const container = document.getElementById('month-tabs');
             container.innerHTML = '';
             
-            // Actualizar textos dinámicos según el mes seleccionado
             document.getElementById('budget-label').textContent = `Presupuesto de ${currentMes} ($)`;
             document.getElementById('table-title').textContent = `Registros de ${currentMes}`;
+            document.getElementById('lbl-current-mes').textContent = currentMes;
 
             meses.forEach(m => {
                 const btn = document.createElement('button');
@@ -172,9 +189,9 @@
         };
 
         async function loadMonthData() {
-            // Actualizar textos dinámicos
             document.getElementById('budget-label').textContent = `Presupuesto de ${currentMes} ($)`;
             document.getElementById('table-title').textContent = `Registros de ${currentMes}`;
+            document.getElementById('lbl-current-mes').textContent = currentMes;
 
             const bDoc = await getDoc(doc(db, "presupuestos", `${currentUid}_${currentMes}`));
             const budget = bDoc.exists() ? bDoc.data().monto : 0;
@@ -191,10 +208,15 @@
                 const list = document.getElementById('expense-list');
                 list.innerHTML = '';
                 let totalSpent = 0;
+                let fixedSpent = 0;
+                let extraSpent = 0;
                 
                 snapshot.forEach(d => {
                     const data = d.data();
                     totalSpent += data.monto;
+                    if (data.tipo === 'fijo') fixedSpent += data.monto;
+                    else extraSpent += data.monto;
+
                     list.innerHTML += `
                         <tr class="text-sm">
                             <td class="py-3 font-medium text-gray-800">${data.descripcion}</td>
@@ -203,7 +225,14 @@
                             <td class="py-3 text-right"><button onclick="window.deleteExpense('${d.id}')" class="text-red-500 hover:underline">Eliminar</button></td>
                         </tr>`;
                 });
+
+                // Actualizar textos de resumen del mes actual/seleccionado
+                document.getElementById('current-month-total').textContent = `$${totalSpent.toFixed(2)}`;
+                document.getElementById('m-fijo').textContent = `$${fixedSpent.toFixed(2)}`;
+                document.getElementById('m-extra').textContent = `$${extraSpent.toFixed(2)}`;
+
                 renderGauge(totalSpent, budget);
+                renderTypeChart(fixedSpent, extraSpent);
             });
         }
 
@@ -238,6 +267,21 @@
             });
         }
 
+        function renderTypeChart(fijo, extra) {
+            const ctx = document.getElementById('typeChart').getContext('2d');
+            if (typeChartInstance) typeChartInstance.destroy();
+            
+            // Si no hay gastos, mostrar un gris por defecto
+            const dataValues = (fijo === 0 && extra === 0) ? [1] : [fijo, extra];
+            const bgColors = (fijo === 0 && extra === 0) ? ['#ffffff40'] : ['#38bdf8', '#fb7185'];
+
+            typeChartInstance = new Chart(ctx, {
+                type: 'doughnut',
+                data: { datasets: [{ data: dataValues, backgroundColor: bgColors, borderWidth: 0 }] },
+                options: { cutout: '70%', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+            });
+        }
+
         async function loadYTDData() {
             // Filtrar YTD estrictamente por el año actual (2026)
             const q = query(
@@ -248,8 +292,25 @@
             
             onSnapshot(q, (snap) => {
                 let totalYTD = 0;
-                snap.forEach(d => totalYTD += d.data().monto);
-                document.getElementById('ytd-total-spent').textContent = `$${totalYTD.toFixed(2)} Gastados en el año`;
+                let ytdFijo = 0;
+                let ytdExtra = 0;
+                
+                // Meses válidos desde Enero (0) hasta el mes actual real (currentMonthIndex)
+                const validMonths = meses.slice(0, currentMonthIndex + 1);
+
+                snap.forEach(d => {
+                    const data = d.data();
+                    // Solo sumar si el mes del registro está dentro del rango del año transcurrido
+                    if (validMonths.includes(data.mes)) {
+                        totalYTD += data.monto;
+                        if (data.tipo === 'fijo') ytdFijo += data.monto;
+                        else ytdExtra += data.monto;
+                    }
+                });
+
+                document.getElementById('ytd-total-spent').textContent = `$${totalYTD.toFixed(2)} Gastados`;
+                document.getElementById('ytd-fijo').textContent = `$${ytdFijo.toFixed(2)}`;
+                document.getElementById('ytd-extra').textContent = `$${ytdExtra.toFixed(2)}`;
             });
         }
     </script>
