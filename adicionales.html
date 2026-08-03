@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Gastos Adicionales - Tracker Finanzas</title>
+    <title>Gastos Adicionales y Viabilidad - Tracker Finanzas</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-slate-100 min-h-screen">
@@ -22,38 +22,30 @@
     </nav>
 
     <main class="max-w-6xl mx-auto p-6 space-y-6">
+        
+        <!-- Formulario de Ingreso -->
         <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
-            <h2 class="text-xl font-bold text-gray-800 mb-2">Mapa de Deseos y Compras Opcionales</h2>
-            <p class="text-sm text-gray-500 mb-6">Agrega artículos o proyectos deseados. El algoritmo evaluará si tu presupuesto actual permite asumirlos.</p>
+            <h2 class="text-xl font-bold text-gray-800 mb-2">Mapa de Deseos y Viabilidad Anual</h2>
+            <p class="text-sm text-gray-500 mb-6">Ingresa un artículo o servicio deseado. El sistema evaluará automáticamente en qué meses del año tienes margen financiero para asumirlo.</p>
             
             <form id="item-form" class="grid grid-cols-1 sm:grid-cols-5 gap-3">
-                <input type="text" id="i-articulo" placeholder="Artículo / Servicio" class="p-2.5 border rounded-xl outline-none" required>
-                <input type="number" id="i-monto" placeholder="Monto ($)" class="p-2.5 border rounded-xl outline-none" required>
-                <input type="url" id="i-url" placeholder="URL Opcional" class="p-2.5 border rounded-xl outline-none">
-                <select id="i-prioridad" class="p-2.5 border rounded-xl outline-none">
+                <input type="text" id="i-articulo" placeholder="Artículo / Servicio" class="p-2.5 border rounded-xl outline-none focus:border-indigo-600" required>
+                <input type="number" id="i-monto" placeholder="Monto ($)" class="p-2.5 border rounded-xl outline-none focus:border-indigo-600" required>
+                <input type="url" id="i-url" placeholder="URL Opcional" class="p-2.5 border rounded-xl outline-none focus:border-indigo-600">
+                <select id="i-prioridad" class="p-2.5 border rounded-xl outline-none focus:border-indigo-600">
                     <option value="Alta">Prioridad Alta</option>
                     <option value="Media" selected>Prioridad Media</option>
                     <option value="Baja">Prioridad Baja</option>
                 </select>
-                <button type="submit" id="btn-submit" class="bg-indigo-600 text-white font-bold rounded-xl hover:bg-indigo-700 transition">Evaluar y Guardar</button>
+                <button type="submit" class="bg-indigo-600 text-white font-bold rounded-xl hover:bg-indigo-700 transition">Evaluar y Guardar</button>
             </form>
         </div>
 
+        <!-- Listado de Deseos con Analizador de Meses -->
         <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
-            <h3 class="font-bold text-gray-800 mb-4">Listado y Viabilidad</h3>
-            <div class="overflow-x-auto">
-                <table class="w-full text-left">
-                    <thead>
-                        <tr class="text-gray-400 text-sm border-b">
-                            <th class="pb-3">Artículo / Servicio</th>
-                            <th class="pb-3">Monto</th>
-                            <th class="pb-3">Prioridad</th>
-                            <th class="pb-3">Estado / Sugerencia</th>
-                            <th class="pb-3 text-right">Acción</th>
-                        </tr>
-                    </thead>
-                    <tbody id="items-list" class="divide-y divide-slate-100"></tbody>
-                </table>
+            <h3 class="font-bold text-gray-800 mb-4">Tus Deseos y Análisis por Meses</h3>
+            <div id="wishlist-container" class="space-y-4">
+                <!-- Se inyecta dinámicamente con tarjetas interactivas -->
             </div>
         </div>
     </main>
@@ -61,10 +53,12 @@
     <script type="module">
         import { auth, db } from './firebase-config.js';
         import { signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-        import { doc, getDoc, collection, addDoc, query, where, onSnapshot, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+        import { doc, getDoc, setDoc, collection, addDoc, query, where, onSnapshot, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
         let currentUid = null;
-        const currentMes = new Date().toLocaleString('es-ES', { month: 'long' });
+        const meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+        const currentYear = new Date().getFullYear();
+        let cacheAnual = { presupuestos: {}, gastosPorMes: {} };
 
         async function initAdicionales() {
             try {
@@ -79,9 +73,9 @@
                     document.getElementById('nav-avatar').textContent = userSnap.data().avatar || "👨‍💻";
                 }
 
-                loadAdicionales();
+                await cargarDatosAnualesYListar();
             } catch (err) {
-                console.error("Error al inicializar adicionales:", err);
+                console.error("Error al inicializar:", err);
             }
         }
 
@@ -89,12 +83,10 @@
 
         document.getElementById('btn-logout').onclick = () => signOut(auth).then(() => window.location.href = "index.html");
 
+        // Guardar nuevo deseo
         document.getElementById('item-form').onsubmit = async (e) => {
             e.preventDefault();
-            if (!currentUid) {
-                alert("La sesión está cargando, por favor intenta en un segundo.");
-                return;
-            }
+            if (!currentUid) return;
 
             try {
                 await addDoc(collection(db, "gastos_adicionales"), {
@@ -102,54 +94,128 @@
                     monto: parseFloat(document.getElementById('i-monto').value),
                     url: document.getElementById('i-url').value,
                     prioridad: document.getElementById('i-prioridad').value,
-                    estado: "Pendiente",
                     userId: currentUid,
                     createdAt: new Date()
                 });
                 e.target.reset();
             } catch (err) {
-                console.error("Error al guardar gasto adicional:", err);
                 alert("Error al guardar: " + err.message);
             }
         };
 
-        async function loadAdicionales() {
-            try {
-                const bDoc = await getDoc(doc(db, "presupuestos", `${currentUid}_${currentMes}`));
-                const budget = bDoc.exists() ? bDoc.data().monto : 0;
-
-                const qAdicionales = query(collection(db, "gastos_adicionales"), where("userId", "==", currentUid));
-                
-                onSnapshot(qAdicionales, (snapshot) => {
-                    const list = document.getElementById('items-list');
-                    list.innerHTML = '';
-                    
-                    let gastadoMes = 0;
-                    const disponible = Math.max(0, budget - gastadoMes);
-
-                    snapshot.forEach(d => {
-                        const data = d.data();
-                        const esViable = data.monto <= (disponible > 0 ? disponible : 500); 
-                        const badgeColor = esViable ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700';
-                        const textoSugerencia = esViable ? 'Viable este mes' : 'Recomendado posponer';
-
-                        list.innerHTML += `
-                            <tr class="text-sm">
-                                <td class="py-3 font-medium text-gray-800">
-                                    ${data.articulo} 
-                                    ${data.url ? `<a href="${data.url}" target="_blank" class="text-indigo-600 text-xs ml-1 hover:underline">[Enlace]</a>` : ''}
-                                </td>
-                                <td class="py-3 font-bold text-slate-700">$${data.monto.toFixed(2)}</td>
-                                <td class="py-3 text-gray-500">${data.prioridad}</td>
-                                <td class="py-3"><span class="px-2.5 py-1 rounded-full text-xs font-bold ${badgeColor}">${textoSugerencia}</span></td>
-                                <td class="py-3 text-right"><button onclick="window.deleteItem('${d.id}')" class="text-red-500 hover:underline">Eliminar</button></td>
-                            </tr>`;
-                    });
-                });
-            } catch (err) {
-                console.error("Error cargando gastos adicionales:", err);
+        // Cargar presupuestos y gastos de todo el año para hacer el cálculo cruzado
+        async function cargarDatosAnualesYListar() {
+            // 1. Cargar presupuestos del año
+            for (let m of meses) {
+                const bDoc = await getDoc(doc(db, "presupuestos", `${currentUid}_${m}`));
+                cacheAnual.presupuestos[m] = bDoc.exists() ? bDoc.data().monto : 0;
             }
+
+            // 2. Escuchar gastos del usuario en tiempo real
+            const qGastos = query(collection(db, "gastos"), where("userId", "==", currentUid), where("year", "==", currentYear));
+            
+            onSnapshot(qGastos, (snapGastos) => {
+                // Resetear acumuladores de gastos por mes
+                cacheAnual.gastosPorMes = {};
+                meses.forEach(m => cacheAnual.gastosPorMes[m] = 0);
+
+                snapGastos.forEach(d => {
+                    const data = d.data();
+                    if (cacheAnual.gastosPorMes[data.mes] !== undefined) {
+                        cacheAnual.gastosPorMes[data.mes] += data.monto;
+                    }
+                });
+
+                // 3. Escuchar la lista de deseos
+                const qAdicionales = query(collection(db, "gastos_adicionales"), where("userId", "==", currentUid));
+                onSnapshot(qAdicionales, (snapDeseos) => {
+                    renderWishlist(snapDeseos);
+                });
+            });
         }
+
+        function renderWishlist(snapshot) {
+            const container = document.getElementById('wishlist-container');
+            container.innerHTML = '';
+
+            if (snapshot.empty) {
+                container.innerHTML = `<p class="text-sm text-gray-400 text-center py-6">No tienes artículos en tu mapa de deseos. ¡Agrega uno arriba!</p>`;
+                return;
+            }
+
+            snapshot.forEach(d => {
+                const item = d.data();
+                const itemId = d.id;
+
+                // Generar los botones de viabilidad para cada mes del año
+                let mesesHtml = '';
+                meses.forEach(mes => {
+                    const presupuesto = cacheAnual.presupuestos[mes] || 0;
+                    const gastado = cacheAnual.gastosPorMes[mes] || 0;
+                    const disponible = presupuesto - gastado;
+                    const esViable = disponible >= item.monto;
+
+                    // Estilo visual según viabilidad
+                    const bgColor = esViable ? 'bg-emerald-50 border-emerald-200 text-emerald-800 hover:bg-emerald-100' : 'bg-slate-50 border-slate-200 text-slate-400 opacity-60';
+                    const badgeText = esViable ? `$${disponible.toFixed(0)} libre` : 'Sin margen';
+
+                    mesesHtml += `
+                        <div class="border rounded-xl p-2.5 text-center flex flex-col justify-between ${bgColor}">
+                            <span class="text-xs font-bold uppercase">${mes.substring(0,3)}</span>
+                            <span class="text-[10px] my-1">${badgeText}</span>
+                            <button onclick="window.asignarAGasto('${item.articulo}', ${item.monto}, '${mes}')" 
+                                class="text-[11px] font-semibold py-1 px-1.5 rounded-lg transition ${esViable ? 'bg-emerald-600 text-white hover:bg-emerald-700' : 'bg-gray-200 text-gray-500 cursor-not-allowed'}"
+                                ${!esViable ? 'disabled' : ''}>
+                                Asignar
+                            </button>
+                        </div>`;
+                });
+
+                container.innerHTML += `
+                    <div class="border border-slate-200 rounded-2xl p-5 shadow-sm space-y-4 bg-white">
+                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+                            <div>
+                                <h4 class="font-bold text-gray-800 text-base">
+                                    ${item.articulo} 
+                                    ${item.url ? `<a href="${item.url}" target="_blank" class="text-indigo-600 text-xs ml-2 hover:underline">[Enlace]</a>` : ''}
+                                </h4>
+                                <p class="text-xs text-gray-500">Prioridad: <span class="font-semibold text-indigo-600">${item.prioridad}</span></p>
+                            </div>
+                            <div class="flex items-center gap-4">
+                                <span class="text-xl font-bold text-slate-700">$${item.monto.toFixed(2)}</span>
+                                <button onclick="window.deleteItem('${itemId}')" class="text-red-500 hover:text-red-700 text-sm font-semibold">Eliminar</button>
+                            </div>
+                        </div>
+
+                        <div>
+                            <p class="text-xs font-semibold text-gray-500 mb-2">Análisis de Viabilidad por Mes (Haz clic en 'Asignar' para enviarlo como Gasto Extra al mes elegido):</p>
+                            <div class="grid grid-cols-3 sm:grid-cols-6 lg:grid-cols-12 gap-2">
+                                ${mesesHtml}
+                            </div>
+                        </div>
+                    </div>`;
+            });
+        }
+
+        // Función global para mover el deseo al presupuesto del mes como gasto extra
+        window.asignarAGasto = async (articulo, monto, mesDestino) => {
+            if (!confirm(`¿Estás seguro de asignar "${articulo}" ($${monto}) como gasto extraordinario en el mes de ${mesDestino}?`)) return;
+
+            try {
+                await addDoc(collection(db, "gastos"), {
+                    descripcion: `[Deseo] ${articulo}`,
+                    monto: monto,
+                    tipo: 'extra',
+                    mes: mesDestino,
+                    year: currentYear,
+                    userId: currentUid,
+                    createdAt: new Date()
+                });
+                alert(`¡Éxito! El artículo se registró como gasto extraordinario en ${mesDestino}. Ya puedes verlo en tu Dashboard.`);
+            } catch (err) {
+                alert("Error al asignar el gasto: " + err.message);
+            }
+        };
 
         window.deleteItem = async (id) => { 
             try {
