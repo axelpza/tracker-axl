@@ -27,7 +27,7 @@
         <!-- Dashboard YTD (Year to Date) Superior -->
         <div class="bg-gradient-to-r from-indigo-600 to-violet-600 text-white p-6 rounded-2xl shadow-md flex justify-between items-center">
             <div>
-                <p class="text-indigo-200 text-sm font-medium">Resumen Anual (YTD)</p>
+                <p class="text-indigo-200 text-sm font-medium">Resumen Anual (YTD 2026)</p>
                 <h2 class="text-2xl font-bold" id="ytd-total-spent">$0.00 Gastados este año</h2>
             </div>
             <div class="text-right">
@@ -44,7 +44,7 @@
             <!-- Columna Izquierda: Presupuesto y Tacómetro -->
             <div class="space-y-6">
                 <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
-                    <label class="block text-sm font-semibold text-gray-500 mb-2">Presupuesto del Mes ($)</label>
+                    <label class="block text-sm font-semibold text-gray-500 mb-2" id="budget-label">Presupuesto del Mes ($)</label>
                     <div class="flex gap-2">
                         <input type="number" id="budget-input" class="w-full p-2.5 border rounded-xl outline-none focus:border-indigo-600" placeholder="0.00">
                         <button id="save-budget" class="bg-indigo-600 text-white px-4 rounded-xl font-bold hover:bg-indigo-700 transition">Guardar</button>
@@ -79,7 +79,7 @@
                 </div>
 
                 <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
-                    <h3 class="font-bold text-gray-800 mb-4">Registros del Mes</h3>
+                    <h3 class="font-bold text-gray-800 mb-4" id="table-title">Registros del Mes</h3>
                     <div class="overflow-x-auto">
                         <table class="w-full text-left">
                             <thead>
@@ -106,10 +106,10 @@
         let currentUid = null;
         const meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
         let currentMes = meses[new Date().getMonth()];
+        const currentYear = new Date().getFullYear();
         let chartInstance = null;
 
         async function initDashboard() {
-            // Esperar a que Firebase valide la sesión guardada de forma persistente
             await auth.authStateReady();
             const user = auth.currentUser;
             if (!user) {
@@ -118,7 +118,6 @@
             }
             currentUid = user.uid;
 
-            // Cargar datos de perfil del usuario
             try {
                 const userSnap = await getDoc(doc(db, "users", user.uid));
                 if (userSnap.exists()) {
@@ -142,28 +141,52 @@
         function initMonthTabs() {
             const container = document.getElementById('month-tabs');
             container.innerHTML = '';
+            
+            // Actualizar textos dinámicos según el mes seleccionado
+            document.getElementById('budget-label').textContent = `Presupuesto de ${currentMes} ($)`;
+            document.getElementById('table-title').textContent = `Registros de ${currentMes}`;
+
             meses.forEach(m => {
                 const btn = document.createElement('button');
                 btn.textContent = m;
                 btn.className = `px-4 py-2 rounded-xl font-semibold whitespace-nowrap transition ${m === currentMes ? 'bg-indigo-600 text-white shadow-md' : 'bg-white text-gray-600 border hover:bg-slate-50'}`;
-                btn.onclick = () => { currentMes = m; initMonthTabs(); loadMonthData(); };
+                btn.onclick = () => { 
+                    currentMes = m; 
+                    initMonthTabs(); 
+                    loadMonthData(); 
+                };
                 container.appendChild(btn);
             });
         }
 
         document.getElementById('save-budget').onclick = async () => {
             const monto = parseFloat(document.getElementById('budget-input').value) || 0;
-            await setDoc(doc(db, "presupuestos", `${currentUid}_${currentMes}`), { monto, mes: currentMes, userId: currentUid });
-            alert("Presupuesto actualizado con éxito.");
+            await setDoc(doc(db, "presupuestos", `${currentUid}_${currentMes}`), { 
+                monto, 
+                mes: currentMes, 
+                year: currentYear,
+                userId: currentUid 
+            });
+            alert(`Presupuesto de ${currentMes} actualizado con éxito.`);
             loadMonthData();
         };
 
         async function loadMonthData() {
+            // Actualizar textos dinámicos
+            document.getElementById('budget-label').textContent = `Presupuesto de ${currentMes} ($)`;
+            document.getElementById('table-title').textContent = `Registros de ${currentMes}`;
+
             const bDoc = await getDoc(doc(db, "presupuestos", `${currentUid}_${currentMes}`));
             const budget = bDoc.exists() ? bDoc.data().monto : 0;
-            document.getElementById('budget-input').value = budget;
+            document.getElementById('budget-input').value = budget > 0 ? budget : '';
 
-            const q = query(collection(db, "gastos"), where("userId", "==", currentUid), where("mes", "==", currentMes));
+            const q = query(
+                collection(db, "gastos"), 
+                where("userId", "==", currentUid), 
+                where("mes", "==", currentMes),
+                where("year", "==", currentYear)
+            );
+            
             onSnapshot(q, (snapshot) => {
                 const list = document.getElementById('expense-list');
                 list.innerHTML = '';
@@ -193,10 +216,12 @@
                 monto: parseFloat(document.getElementById('e-monto').value),
                 tipo: document.getElementById('e-tipo').value,
                 mes: currentMes,
+                year: currentYear,
                 userId: currentUid,
                 createdAt: new Date()
             });
             e.target.reset();
+            loadMonthData();
         };
 
         function renderGauge(spent, budget) {
@@ -214,7 +239,13 @@
         }
 
         async function loadYTDData() {
-            const q = query(collection(db, "gastos"), where("userId", "==", currentUid));
+            // Filtrar YTD estrictamente por el año actual (2026)
+            const q = query(
+                collection(db, "gastos"), 
+                where("userId", "==", currentUid),
+                where("year", "==", currentYear)
+            );
+            
             onSnapshot(q, (snap) => {
                 let totalYTD = 0;
                 snap.forEach(d => totalYTD += d.data().monto);
