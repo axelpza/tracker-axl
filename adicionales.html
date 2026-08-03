@@ -35,7 +35,7 @@
                     <option value="Media" selected>Prioridad Media</option>
                     <option value="Baja">Prioridad Baja</option>
                 </select>
-                <button type="submit" class="bg-indigo-600 text-white font-bold rounded-xl hover:bg-indigo-700 transition">Evaluar y Guardar</button>
+                <button type="submit" id="btn-submit" class="bg-indigo-600 text-white font-bold rounded-xl hover:bg-indigo-700 transition">Evaluar y Guardar</button>
             </form>
         </div>
 
@@ -67,23 +67,22 @@
         const currentMes = new Date().toLocaleString('es-ES', { month: 'long' });
 
         async function initAdicionales() {
-            // Asegurar que la sesión esté lista antes de cargar datos
-            await auth.authStateReady();
-            const user = auth.currentUser;
-            if (!user) { window.location.href = "index.html"; return; }
-            currentUid = user.uid;
-            
             try {
+                await auth.authStateReady();
+                const user = auth.currentUser;
+                if (!user) { window.location.href = "index.html"; return; }
+                currentUid = user.uid;
+                
                 const userSnap = await getDoc(doc(db, "users", user.uid));
                 if (userSnap.exists()) {
                     document.getElementById('nav-name').textContent = userSnap.data().name || "Usuario";
                     document.getElementById('nav-avatar').textContent = userSnap.data().avatar || "👨‍💻";
                 }
-            } catch (err) {
-                console.error("Error al cargar usuario:", err);
-            }
 
-            loadAdicionales();
+                loadAdicionales();
+            } catch (err) {
+                console.error("Error al inicializar adicionales:", err);
+            }
         }
 
         initAdicionales();
@@ -92,16 +91,26 @@
 
         document.getElementById('item-form').onsubmit = async (e) => {
             e.preventDefault();
-            await addDoc(collection(db, "gastos_adicionales"), {
-                articulo: document.getElementById('i-articulo').value,
-                monto: parseFloat(document.getElementById('i-monto').value),
-                url: document.getElementById('i-url').value,
-                prioridad: document.getElementById('i-prioridad').value,
-                estado: "Pendiente",
-                userId: currentUid,
-                createdAt: new Date()
-            });
-            e.target.reset();
+            if (!currentUid) {
+                alert("La sesión está cargando, por favor intenta en un segundo.");
+                return;
+            }
+
+            try {
+                await addDoc(collection(db, "gastos_adicionales"), {
+                    articulo: document.getElementById('i-articulo').value,
+                    monto: parseFloat(document.getElementById('i-monto').value),
+                    url: document.getElementById('i-url').value,
+                    prioridad: document.getElementById('i-prioridad').value,
+                    estado: "Pendiente",
+                    userId: currentUid,
+                    createdAt: new Date()
+                });
+                e.target.reset();
+            } catch (err) {
+                console.error("Error al guardar gasto adicional:", err);
+                alert("Error al guardar: " + err.message);
+            }
         };
 
         async function loadAdicionales() {
@@ -142,7 +151,13 @@
             }
         }
 
-        window.deleteItem = async (id) => { await deleteDoc(doc(db, "gastos_adicionales", id)); };
+        window.deleteItem = async (id) => { 
+            try {
+                await deleteDoc(doc(db, "gastos_adicionales", id)); 
+            } catch (err) {
+                console.error("Error al eliminar:", err);
+            }
+        };
     </script>
 </body>
 </html>
