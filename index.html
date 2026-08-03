@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Acceso - Tracker Finanzas</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-100 flex items-center justify-center h-screen">
+    <div class="bg-white p-8 rounded-2xl shadow-lg w-full max-w-md">
+        <h2 id="form-title" class="text-2xl font-bold mb-6 text-indigo-600">Iniciar Sesión</h2>
+        
+        <form id="login-form" class="space-y-4">
+            <!-- Campos de Registro -->
+            <div id="register-fields" class="space-y-4 hidden">
+                <input type="text" id="reg-name" placeholder="Nombre completo" class="w-full p-3 border rounded-xl outline-none">
+                <input type="text" id="reg-user" placeholder="Nombre de usuario" class="w-full p-3 border rounded-xl outline-none">
+                <div>
+                    <label class="block text-sm text-gray-600 mb-1">Elige tu Avatar:</label>
+                    <div class="flex gap-3 justify-around">
+                        <label class="cursor-pointer"><input type="radio" name="avatar" value="👨‍💻" checked> 👨‍💻</label>
+                        <label class="cursor-pointer"><input type="radio" name="avatar" value="👩‍💼"> 👩‍💼</label>
+                        <label class="cursor-pointer"><input type="radio" name="avatar" value="🚀"> 🚀</label>
+                        <label class="cursor-pointer"><input type="radio" name="avatar" value="💰"> 💰</label>
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-sm font-semibold text-gray-600 mb-1">Correo electrónico</label>
+                <input type="email" id="email" placeholder="correo@ejemplo.com" class="w-full p-3 border rounded-xl outline-none" required>
+            </div>
+            <div>
+                <label class="block text-sm font-semibold text-gray-600 mb-1">Contraseña</label>
+                <input type="password" id="password" placeholder="••••••••" class="w-full p-3 border rounded-xl outline-none" required>
+            </div>
+            
+            <button type="submit" id="submit-btn" class="w-full bg-indigo-600 text-white p-3 rounded-xl font-bold hover:bg-indigo-700 transition">Ingresar</button>
+            
+            <div class="flex justify-between text-sm mt-3">
+                <button type="button" id="toggle-mode" class="text-indigo-600 hover:underline font-medium">¿No tienes cuenta? Regístrate</button>
+                <button type="button" id="forgot-pass" class="text-gray-400 hover:underline">¿Olvidaste tu contraseña?</button>
+            </div>
+        </form>
+        <p id="msg" class="text-red-500 text-sm mt-4 text-center font-medium"></p>
+    </div>
+
+    <script type="module">
+        import { auth, db } from './firebase-config.js';
+        import { signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+        import { doc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+        let isRegister = false;
+        const msg = document.getElementById('msg');
+
+        document.getElementById('toggle-mode').onclick = () => {
+            isRegister = !isRegister;
+            msg.textContent = "";
+            document.getElementById('form-title').textContent = isRegister ? "Crear Cuenta" : "Iniciar Sesión";
+            document.getElementById('submit-btn').textContent = isRegister ? "Registrarse" : "Ingresar";
+            document.getElementById('toggle-mode').textContent = isRegister ? "¿Ya tienes cuenta? Inicia sesión" : "¿No tienes cuenta? Regístrate";
+            document.getElementById('register-fields').classList.toggle('hidden', !isRegister);
+        };
+
+        document.getElementById('login-form').onsubmit = async (e) => {
+            e.preventDefault();
+            msg.textContent = "";
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+
+            try {
+                if (isRegister) {
+                    const name = document.getElementById('reg-name').value;
+                    const user = document.getElementById('reg-user').value;
+                    const avatar = document.querySelector('input[name="avatar"]:checked').value;
+                    
+                    const cred = await createUserWithEmailAndPassword(auth, email, password);
+                    await setDoc(doc(db, "users", cred.user.uid), { name, user, email, avatar });
+                    window.location.href = "dashboard.html";
+                } else {
+                    await signInWithEmailAndPassword(auth, email, password);
+                    window.location.href = "dashboard.html";
+                }
+            } catch (err) {
+                console.error(err);
+                msg.textContent = "Error: " + err.message;
+            }
+        };
+
+        document.getElementById('forgot-pass').onclick = async () => {
+            const email = prompt("Ingresa tu correo electrónico para restablecer la contraseña:");
+            if (email) {
+                try {
+                    await sendPasswordResetEmail(auth, email);
+                    alert("Correo de recuperación enviado. Revisa tu bandeja.");
+                } catch (err) {
+                    alert("Error: " + err.message);
+                }
+            }
+        };
+    </script>
+</body>
+</html>
