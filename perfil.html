@@ -28,19 +28,19 @@
             <form id="profile-form" class="space-y-4">
                 <div>
                     <label class="block text-sm font-semibold text-gray-600 mb-1">Nombre Completo</label>
-                    <input type="text" id="p-name" class="w-full p-3 border rounded-xl outline-none" required>
+                    <input type="text" id="p-name" class="w-full p-3 border rounded-xl outline-none focus:border-indigo-600" required>
                 </div>
                 <div>
                     <label class="block text-sm font-semibold text-gray-600 mb-1">Nombre de Usuario</label>
-                    <input type="text" id="p-user" class="w-full p-3 border rounded-xl outline-none" required>
+                    <input type="text" id="p-user" class="w-full p-3 border rounded-xl outline-none focus:border-indigo-600" required>
                 </div>
                 <div>
                     <label class="block text-sm font-semibold text-gray-600 mb-1">Elige tu Avatar</label>
                     <div class="flex gap-4">
-                        <label class="cursor-pointer p-2 border rounded-xl"><input type="radio" name="avatar" value="👨‍💻"> 👨‍💻</label>
-                        <label class="cursor-pointer p-2 border rounded-xl"><input type="radio" name="avatar" value="👩‍💼"> 👩‍💼</label>
-                        <label class="cursor-pointer p-2 border rounded-xl"><input type="radio" name="avatar" value="🚀"> 🚀</label>
-                        <label class="cursor-pointer p-2 border rounded-xl"><input type="radio" name="avatar" value="💰"> 💰</label>
+                        <label class="cursor-pointer p-3 border rounded-xl hover:bg-slate-50"><input type="radio" name="avatar" value="👨‍💻" class="mr-1"> 👨‍💻</label>
+                        <label class="cursor-pointer p-3 border rounded-xl hover:bg-slate-50"><input type="radio" name="avatar" value="👩‍💼" class="mr-1"> 👩‍💼</label>
+                        <label class="cursor-pointer p-3 border rounded-xl hover:bg-slate-50"><input type="radio" name="avatar" value="🚀" class="mr-1"> 🚀</label>
+                        <label class="cursor-pointer p-3 border rounded-xl hover:bg-slate-50"><input type="radio" name="avatar" value="💰" class="mr-1"> 💰</label>
                     </div>
                 </div>
                 <button type="submit" class="w-full bg-indigo-600 text-white font-bold py-3 rounded-xl hover:bg-indigo-700 transition">Guardar Cambios</button>
@@ -57,27 +57,36 @@
 
     <script type="module">
         import { auth, db } from './firebase-config.js';
-        import { onAuthStateChanged, signOut, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-        import { doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+        import { signOut, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+        import { doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
         let currentUser = null;
 
-        onAuthStateChanged(auth, async (user) => {
+        async function initPerfil() {
+            // Asegurar que Firebase valide la sesión persistente de inmediato
+            await auth.authStateReady();
+            const user = auth.currentUser;
             if (!user) { window.location.href = "index.html"; return; }
             currentUser = user;
             
-            const userSnap = await getDoc(doc(db, "users", user.uid));
-            if (userSnap.exists()) {
-                const data = userSnap.data();
-                document.getElementById('nav-name').textContent = data.name || "Usuario";
-                document.getElementById('nav-avatar').textContent = data.avatar || "👨‍💻";
-                document.getElementById('p-name').value = data.name || "";
-                document.getElementById('p-user').value = data.user || "";
-                
-                const avatarRadio = document.querySelector(`input[name="avatar"][value="${data.avatar}"]`);
-                if (avatarRadio) avatarRadio.checked = true;
+            try {
+                const userSnap = await getDoc(doc(db, "users", user.uid));
+                if (userSnap.exists()) {
+                    const data = userSnap.data();
+                    document.getElementById('nav-name').textContent = data.name || "Usuario";
+                    document.getElementById('nav-avatar').textContent = data.avatar || "👨‍💻";
+                    document.getElementById('p-name').value = data.name || "";
+                    document.getElementById('p-user').value = data.user || "";
+                    
+                    const avatarRadio = document.querySelector(`input[name="avatar"][value="${data.avatar}"]`);
+                    if (avatarRadio) avatarRadio.checked = true;
+                }
+            } catch (err) {
+                console.error("Error cargando perfil:", err);
             }
-        });
+        }
+
+        initPerfil();
 
         document.getElementById('btn-logout').onclick = () => signOut(auth).then(() => window.location.href = "index.html");
 
@@ -87,9 +96,20 @@
             const userVal = document.getElementById('p-user').value;
             const avatar = document.querySelector('input[name="avatar"]:checked')?.value || "👨‍💻";
 
-            await updateDoc(doc(db, "users", currentUser.uid), { name, user: userVal, avatar });
-            alert("Perfil actualizado correctamente.");
-            location.reload();
+            try {
+                await setDoc(doc(db, "users", currentUser.uid), { 
+                    name, 
+                    user: userVal, 
+                    avatar,
+                    email: currentUser.email 
+                }, { merge: true });
+
+                alert("Perfil actualizado correctamente.");
+                location.reload();
+            } catch (err) {
+                console.error("Error al actualizar perfil:", err);
+                alert("Error al guardar: " + err.message);
+            }
         };
 
         document.getElementById('btn-reset-pass').onclick = async () => {

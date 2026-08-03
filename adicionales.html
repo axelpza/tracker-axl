@@ -60,23 +60,33 @@
 
     <script type="module">
         import { auth, db } from './firebase-config.js';
-        import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+        import { signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
         import { doc, getDoc, collection, addDoc, query, where, onSnapshot, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
         let currentUid = null;
         const currentMes = new Date().toLocaleString('es-ES', { month: 'long' });
 
-        onAuthStateChanged(auth, async (user) => {
+        async function initAdicionales() {
+            // Asegurar que la sesión esté lista antes de cargar datos
+            await auth.authStateReady();
+            const user = auth.currentUser;
             if (!user) { window.location.href = "index.html"; return; }
             currentUid = user.uid;
             
-            const userSnap = await getDoc(doc(db, "users", user.uid));
-            if (userSnap.exists()) {
-                document.getElementById('nav-name').textContent = userSnap.data().name || "Usuario";
-                document.getElementById('nav-avatar').textContent = userSnap.data().avatar || "👨‍💻";
+            try {
+                const userSnap = await getDoc(doc(db, "users", user.uid));
+                if (userSnap.exists()) {
+                    document.getElementById('nav-name').textContent = userSnap.data().name || "Usuario";
+                    document.getElementById('nav-avatar').textContent = userSnap.data().avatar || "👨‍💻";
+                }
+            } catch (err) {
+                console.error("Error al cargar usuario:", err);
             }
+
             loadAdicionales();
-        });
+        }
+
+        initAdicionales();
 
         document.getElementById('btn-logout').onclick = () => signOut(auth).then(() => window.location.href = "index.html");
 
@@ -92,48 +102,44 @@
                 createdAt: new Date()
             });
             e.target.reset();
-            loadAdicionales();
         };
 
         async function loadAdicionales() {
-            // Traer presupuesto y gastos del mes actual para el algoritmo de viabilidad
-            const bDoc = await getDoc(doc(db, "presupuestos", `${currentUid}_${currentMes}`));
-            const budget = bDoc.exists() ? bDoc.data().monto : 0;
+            try {
+                const bDoc = await getDoc(doc(db, "presupuestos", `${currentUid}_${currentMes}`));
+                const budget = bDoc.exists() ? bDoc.data().monto : 0;
 
-            const qGastos = query(collection(db, "gastos"), where("userId", "==", currentUid), where("mes", "==", currentMes));
-            
-            // Suscripción a gastos adicionales
-            const qAdicionales = query(collection(db, "gastos_adicionales"), where("userId", "==", currentUid));
-            
-            onSnapshot(qAdicionales, async (snapshot) => {
-                const list = document.getElementById('items-list');
-                list.innerHTML = '';
+                const qAdicionales = query(collection(db, "gastos_adicionales"), where("userId", "==", currentUid));
                 
-                // Calcular total gastado en el mes actual para la regla de viabilidad
-                let gastadoMes = 0;
-                // Nota simplificada: evaluamos contra el disponible libre
-                const disponible = Math.max(0, budget - gastadoMes);
+                onSnapshot(qAdicionales, (snapshot) => {
+                    const list = document.getElementById('items-list');
+                    list.innerHTML = '';
+                    
+                    let gastadoMes = 0;
+                    const disponible = Math.max(0, budget - gastadoMes);
 
-                snapshot.forEach(d => {
-                    const data = d.data();
-                    // Algoritmo simple de viabilidad: si el monto es menor o igual al dinero disponible estimado
-                    const esViable = data.monto <= (disponible > 0 ? disponible : 500); 
-                    const badgeColor = esViable ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700';
-                    const textoSugerencia = esViable ? 'Viable este mes' : 'Recomendado posponer';
+                    snapshot.forEach(d => {
+                        const data = d.data();
+                        const esViable = data.monto <= (disponible > 0 ? disponible : 500); 
+                        const badgeColor = esViable ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700';
+                        const textoSugerencia = esViable ? 'Viable este mes' : 'Recomendado posponer';
 
-                    list.innerHTML += `
-                        <tr class="text-sm">
-                            <td class="py-3 font-medium text-gray-800">
-                                ${data.articulo} 
-                                ${data.url ? `<a href="${data.url}" target="_blank" class="text-indigo-600 text-xs ml-1 hover:underline">[Enlace]</a>` : ''}
-                            </td>
-                            <td class="py-3 font-bold text-slate-700">$${data.monto.toFixed(2)}</td>
-                            <td class="py-3 text-gray-500">${data.prioridad}</td>
-                            <td class="py-3"><span class="px-2.5 py-1 rounded-full text-xs font-bold ${badgeColor}">${textoSugerencia}</span></td>
-                            <td class="py-3 text-right"><button onclick="window.deleteItem('${d.id}')" class="text-red-500 hover:underline">Eliminar</button></td>
-                        </tr>`;
+                        list.innerHTML += `
+                            <tr class="text-sm">
+                                <td class="py-3 font-medium text-gray-800">
+                                    ${data.articulo} 
+                                    ${data.url ? `<a href="${data.url}" target="_blank" class="text-indigo-600 text-xs ml-1 hover:underline">[Enlace]</a>` : ''}
+                                </td>
+                                <td class="py-3 font-bold text-slate-700">$${data.monto.toFixed(2)}</td>
+                                <td class="py-3 text-gray-500">${data.prioridad}</td>
+                                <td class="py-3"><span class="px-2.5 py-1 rounded-full text-xs font-bold ${badgeColor}">${textoSugerencia}</span></td>
+                                <td class="py-3 text-right"><button onclick="window.deleteItem('${d.id}')" class="text-red-500 hover:underline">Eliminar</button></td>
+                            </tr>`;
+                    });
                 });
-            });
+            } catch (err) {
+                console.error("Error cargando gastos adicionales:", err);
+            }
         }
 
         window.deleteItem = async (id) => { await deleteDoc(doc(db, "gastos_adicionales", id)); };
