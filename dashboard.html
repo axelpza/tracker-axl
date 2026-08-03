@@ -55,10 +55,10 @@
         <div class="flex gap-2 overflow-x-auto pb-2" id="month-tabs"></div>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <!-- Columna Izquierda -->
+            <!-- Columna Izquierda: Planificador Quincenal Panamá -->
             <div class="space-y-6">
                 
-                <!-- MODO VISTA -->
+                <!-- MODO VISTA (Summary Card No Editable) -->
                 <div id="budget-view-mode" class="bg-white p-5 sm:p-6 rounded-2xl shadow-sm border border-slate-200 space-y-4 hidden">
                     <div class="flex justify-between items-center border-b pb-3">
                         <h3 class="font-bold text-gray-800 text-sm">Resumen de Planilla (<span id="view-mes-title">Mes</span>)</h3>
@@ -67,6 +67,7 @@
                         </button>
                     </div>
 
+                    <!-- Q1 View -->
                     <div class="bg-slate-50 p-3 rounded-xl border text-xs space-y-1.5">
                         <p class="font-bold text-indigo-600">1ra Quincena (1 - 15)</p>
                         <div class="flex justify-between text-gray-600"><span>Salario Base:</span> <span id="v-q1-salario" class="font-semibold">$0.00</span></div>
@@ -78,6 +79,7 @@
                         <div class="flex justify-between font-bold text-slate-800 pt-1 border-t"><span>Neto Q1:</span> <span id="v-q1-neto" class="text-indigo-600">$0.00</span></div>
                     </div>
 
+                    <!-- Q2 View -->
                     <div class="bg-slate-50 p-3 rounded-xl border text-xs space-y-1.5">
                         <p class="font-bold text-indigo-600">2da Quincena (16 - 31)</p>
                         <div class="flex justify-between text-gray-600"><span>Salario Base:</span> <span id="v-q2-salario" class="font-semibold">$0.00</span></div>
@@ -89,16 +91,18 @@
                         <div class="flex justify-between font-bold text-slate-800 pt-1 border-t"><span>Neto Q2:</span> <span id="v-q2-neto" class="text-indigo-600">$0.00</span></div>
                     </div>
 
+                    <!-- Total Net View -->
                     <div class="bg-indigo-50 p-3 rounded-xl border border-indigo-100 flex justify-between items-center text-xs">
                         <span class="font-bold text-indigo-950">Presupuesto Neto Mensual:</span>
                         <span id="v-neto-total" class="font-bold text-indigo-700 text-sm">$0.00</span>
                     </div>
                 </div>
 
-                <!-- MODO EDICIÓN -->
+                <!-- MODO EDICIÓN (Inputs Editables) -->
                 <div id="budget-edit-mode" class="bg-white p-5 sm:p-6 rounded-2xl shadow-sm border border-slate-200 space-y-6">
                     <h3 class="font-bold text-gray-800 border-b pb-2">Planificador de Planilla (Panamá)</h3>
                     
+                    <!-- BLOQUE 1RA QUINCENA (Incluye Décimo) -->
                     <div class="space-y-3 bg-slate-50 p-4 rounded-xl border">
                         <h4 class="font-bold text-indigo-600 text-sm">1ra Quincena (1 - 15)</h4>
                         <div>
@@ -119,6 +123,7 @@
                         </div>
                     </div>
 
+                    <!-- BLOQUE 2DA QUINCENA -->
                     <div class="space-y-3 bg-slate-50 p-4 rounded-xl border">
                         <h4 class="font-bold text-indigo-600 text-sm">2da Quincena (16 - 31)</h4>
                         <div>
@@ -139,24 +144,26 @@
                         </div>
                     </div>
 
+                    <!-- RESUMEN NETO PREVIO -->
                     <div class="bg-indigo-50 p-3 rounded-xl text-xs space-y-1 text-indigo-950 border border-indigo-100">
-                        <div class="flex justify-between"><span>Neto Q1:</span> <span id="neto-q1" class="font-bold">$0.00</span></div>
-                        <div class="flex justify-between"><span>Neto Q2:</span> <span id="neto-q2" class="font-bold">$0.00</span></div>
-                        <div class="flex justify-between font-bold text-sm text-indigo-700 pt-1 border-t border-indigo-200"><span>Neto Mensual:</span> <span id="calc-neto">$0.00</span></div>
+                        <div class="flex justify-between"><span>Neto Q1 Estimado:</span> <span id="neto-q1" class="font-bold">$0.00</span></div>
+                        <div class="flex justify-between"><span>Neto Q2 Estimado:</span> <span id="neto-q2" class="font-bold">$0.00</span></div>
+                        <div class="flex justify-between font-bold text-sm text-indigo-700 pt-1 border-t border-indigo-200"><span>Presupuesto Neto Mensual:</span> <span id="calc-neto">$0.00</span></div>
                     </div>
 
                     <button id="save-budget" class="w-full bg-indigo-600 text-white py-2.5 rounded-xl font-bold text-sm hover:bg-indigo-700 transition">Calcular y Guardar Planilla</button>
                 </div>
             </div>
 
-            <!-- Columna Derecha -->
+            <!-- Columna Derecha: Tacómetros y Tabla de Gastos -->
             <div class="lg:col-span-2 space-y-6">
                 
-                <!-- TACÓMETROS -->
+                <!-- 3 TACÓMETROS FINANCIEROS -->
                 <div class="bg-white p-5 sm:p-6 rounded-2xl shadow-sm border border-slate-200">
                     <h3 class="font-bold text-gray-800 mb-4 text-center">Tacómetros Financieros</h3>
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                         
+                        <!-- Q1 -->
                         <div class="text-center bg-slate-50 p-4 rounded-xl border border-slate-200">
                             <h4 class="text-xs font-bold text-indigo-600 uppercase mb-2">1ra Quincena</h4>
                             <div class="relative w-28 h-28 mx-auto">
@@ -171,6 +178,7 @@
                             </div>
                         </div>
 
+                        <!-- Q2 -->
                         <div class="text-center bg-slate-50 p-4 rounded-xl border border-slate-200">
                             <h4 class="text-xs font-bold text-indigo-600 uppercase mb-2">2da Quincena</h4>
                             <div class="relative w-28 h-28 mx-auto">
@@ -185,6 +193,7 @@
                             </div>
                         </div>
 
+                        <!-- TOTAL MES -->
                         <div class="text-center bg-indigo-50/50 p-4 rounded-xl border border-indigo-100">
                             <h4 class="text-xs font-bold text-indigo-700 uppercase mb-2">Mes Total</h4>
                             <div class="relative w-28 h-28 mx-auto">
@@ -202,7 +211,7 @@
                     </div>
                 </div>
 
-                <!-- Formulario -->
+                <!-- Formulario de Agregar Gasto -->
                 <div class="bg-white p-5 sm:p-6 rounded-2xl shadow-sm border border-slate-200">
                     <h3 class="font-bold text-gray-800 mb-4">Agregar Gasto Mensual</h3>
                     <form id="expense-form" class="grid grid-cols-1 sm:grid-cols-5 gap-3">
@@ -220,7 +229,7 @@
                     </form>
                 </div>
 
-                <!-- Tabla -->
+                <!-- Tabla de Registros -->
                 <div class="bg-white p-5 sm:p-6 rounded-2xl shadow-sm border border-slate-200">
                     <h3 class="font-bold text-gray-800 mb-4" id="table-title">Registros del Mes</h3>
                     <div class="overflow-x-auto">
@@ -321,7 +330,10 @@
             let ssDecimo = 0;
 
             if (incluyeDecimo) {
-                decimoMonto = q1Salario / 3;
+                // Salario mensual completo = Salario quincenal * 2 ($2400 si q1Salario es 1200)
+                // El décimo cuatrimestral completo es 1/3 del salario mensual
+                const salarioMensual = q1Salario * 2;
+                decimoMonto = salarioMensual / 3; // $2400 / 3 = $800
                 ssDecimo = decimoMonto * 0.0725;
                 q1Bruto += decimoMonto;
             }
