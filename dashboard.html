@@ -7,7 +7,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
-<body class="bg-slate-100 min-h-screen">
+<body class="bg-slate-100 min-h-screen pb-12">
 
     <!-- Menú de Navegación Compartido -->
     <nav class="bg-white shadow-sm px-4 sm:px-6 py-4 flex flex-col sm:flex-row justify-between items-center gap-3">
@@ -25,7 +25,7 @@
 
     <main class="max-w-6xl mx-auto p-4 sm:p-6 space-y-6">
         
-        <!-- Dashboard YTD y Mes Seleccionado Superior -->
+        <!-- Dashboard YTD Superior -->
         <div class="bg-gradient-to-r from-indigo-600 to-violet-600 text-white p-5 sm:p-6 rounded-2xl shadow-md grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
             <div>
                 <p class="text-indigo-200 text-xs font-semibold uppercase tracking-wider">Resumen Anual (YTD Enero al Mes Actual)</p>
@@ -55,6 +55,7 @@
         <div class="flex gap-2 overflow-x-auto pb-2" id="month-tabs"></div>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            
             <!-- Columna Izquierda: Planificador Quincenal Panamá -->
             <div class="space-y-6">
                 
@@ -68,41 +69,41 @@
                     </div>
 
                     <!-- Q1 View -->
-                    <div class="bg-slate-50 p-3 rounded-xl border text-xs space-y-1.5">
-                        <p class="font-bold text-indigo-600">1ra Quincena (1 - 15)</p>
-                        <div class="flex justify-between text-gray-600"><span>Salario Base Q1:</span> <span id="v-q1-salario" class="font-semibold">$0.00</span></div>
-                        <div class="flex justify-between text-gray-600"><span>Seguro Social (9.75%):</span> <span id="v-q1-ss">$0.00</span></div>
-                        <div class="flex justify-between text-gray-600"><span>Seguro Educativo (1.25%):</span> <span id="v-q1-se">$0.00</span></div>
-                        <div class="flex justify-between text-gray-600"><span>ISR Q1:</span> <span id="v-q1-isr">$0.00</span></div>
-                        <div class="flex justify-between text-gray-600"><span>Acreedores Q1:</span> <span id="v-q1-acreedores">$0.00</span></div>
+                    <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200 text-xs space-y-1.5">
+                        <p class="font-bold text-indigo-600 border-b border-slate-200 pb-1">1ra Quincena (1 - 15)</p>
+                        <div class="flex justify-between text-gray-600"><span>Salario Base Q1:</span> <span id="v-q1-salario" class="font-semibold text-slate-800">$0.00</span></div>
+                        <div class="flex justify-between text-gray-600"><span>Seguro Social (9.75%):</span> <span id="v-q1-ss" class="text-rose-600">-$0.00</span></div>
+                        <div class="flex justify-between text-gray-600"><span>Seguro Educativo (1.25%):</span> <span id="v-q1-se" class="text-rose-600">-$0.00</span></div>
+                        <div class="flex justify-between text-gray-600"><span>ISR Q1:</span> <span id="v-q1-isr" class="text-rose-600">-$0.00</span></div>
+                        <div class="flex justify-between text-gray-600"><span>Acreedores Q1:</span> <span id="v-q1-acreedores" class="text-rose-600">-$0.00</span></div>
                         
                         <!-- Caja Separada de Décimo Tercer Mes en Modo Vista -->
-                        <div id="v-container-decimo" class="bg-indigo-50/70 p-2 rounded-lg border border-indigo-100 my-1 space-y-1 hidden">
+                        <div id="v-container-decimo" class="bg-indigo-50 p-2.5 rounded-lg border border-indigo-100 my-1 space-y-1 hidden">
                             <p class="font-bold text-indigo-900 text-[11px] border-b border-indigo-200 pb-0.5"> Partida Décimo Tercer Mes</p>
                             <div class="flex justify-between text-indigo-800"><span>Monto Bruto Décimo:</span> <span id="v-q1-decimo-bruto" class="font-semibold">$0.00</span></div>
-                            <div class="flex justify-between text-indigo-700"><span>CSS Décimo (7.25%):</span> <span id="v-q1-decimo-css">-$0.00</span></div>
+                            <div class="flex justify-between text-indigo-700"><span>CSS Décimo (7.25%):</span> <span id="v-q1-decimo-css" class="text-rose-600">-$0.00</span></div>
                             <div class="flex justify-between text-indigo-900 font-bold border-t border-indigo-200 pt-0.5"><span>Neto Décimo Líquido:</span> <span id="v-q1-decimo-neto">$0.00</span></div>
                         </div>
 
-                        <div class="flex justify-between font-bold text-slate-800 pt-1 border-t"><span>Neto Q1 Recibido:</span> <span id="v-q1-neto" class="text-indigo-600">$0.00</span></div>
+                        <div class="flex justify-between font-bold text-slate-800 pt-1.5 border-t"><span>Neto Q1 Recibido:</span> <span id="v-q1-neto" class="text-indigo-600 text-sm">$0.00</span></div>
                     </div>
 
                     <!-- Q2 View -->
-                    <div class="bg-slate-50 p-3 rounded-xl border text-xs space-y-1.5">
-                        <p class="font-bold text-indigo-600">2da Quincena (16 - 31)</p>
-                        <div class="flex justify-between text-gray-600"><span>Salario Base Q2:</span> <span id="v-q2-salario" class="font-semibold">$0.00</span></div>
-                        <div class="flex justify-between text-gray-600"><span>Bonificación Q2:</span> <span id="v-q2-bono" class="font-semibold">$0.00</span></div>
-                        <div class="flex justify-between text-gray-600"><span>Seguro Social (9.75%):</span> <span id="v-q2-ss">$0.00</span></div>
-                        <div class="flex justify-between text-gray-600"><span>Seguro Educativo (1.25%):</span> <span id="v-q2-se">$0.00</span></div>
-                        <div class="flex justify-between text-gray-600"><span>ISR Q2:</span> <span id="v-q2-isr">$0.00</span></div>
-                        <div class="flex justify-between text-gray-600"><span>Acreedores Q2:</span> <span id="v-q2-acreedores">$0.00</span></div>
-                        <div class="flex justify-between font-bold text-slate-800 pt-1 border-t"><span>Neto Q2 Recibido:</span> <span id="v-q2-neto" class="text-indigo-600">$0.00</span></div>
+                    <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200 text-xs space-y-1.5">
+                        <p class="font-bold text-indigo-600 border-b border-slate-200 pb-1">2da Quincena (16 - 31)</p>
+                        <div class="flex justify-between text-gray-600"><span>Salario Base Q2:</span> <span id="v-q2-salario" class="font-semibold text-slate-800">$0.00</span></div>
+                        <div class="flex justify-between text-gray-600"><span>Bonificación Q2:</span> <span id="v-q2-bono" class="font-semibold text-emerald-600">+$0.00</span></div>
+                        <div class="flex justify-between text-gray-600"><span>Seguro Social (9.75%):</span> <span id="v-q2-ss" class="text-rose-600">-$0.00</span></div>
+                        <div class="flex justify-between text-gray-600"><span>Seguro Educativo (1.25%):</span> <span id="v-q2-se" class="text-rose-600">-$0.00</span></div>
+                        <div class="flex justify-between text-gray-600"><span>ISR Q2:</span> <span id="v-q2-isr" class="text-rose-600">-$0.00</span></div>
+                        <div class="flex justify-between text-gray-600"><span>Acreedores Q2:</span> <span id="v-q2-acreedores" class="text-rose-600">-$0.00</span></div>
+                        <div class="flex justify-between font-bold text-slate-800 pt-1.5 border-t"><span>Neto Q2 Recibido:</span> <span id="v-q2-neto" class="text-indigo-600 text-sm">$0.00</span></div>
                     </div>
 
                     <!-- Total Net View -->
-                    <div class="bg-indigo-50 p-3 rounded-xl border border-indigo-100 flex justify-between items-center text-xs">
+                    <div class="bg-indigo-50 p-3.5 rounded-xl border border-indigo-100 flex justify-between items-center text-xs">
                         <span class="font-bold text-indigo-950">Presupuesto Neto Mensual:</span>
-                        <span id="v-neto-total" class="font-bold text-indigo-700 text-sm">$0.00</span>
+                        <span id="v-neto-total" class="font-bold text-indigo-700 text-base">$0.00</span>
                     </div>
                 </div>
 
@@ -180,15 +181,13 @@
                 </div>
             </div>
 
-            <!-- Columna Derecha: Tacómetros y Tablas de Gastos por Quincena -->
+            <!-- Columna Derecha: Tacómetros, Formulario y Tablas de Gastos -->
             <div class="lg:col-span-2 space-y-6">
                 
                 <!-- 3 TACÓMETROS FINANCIEROS -->
                 <div class="bg-white p-5 sm:p-6 rounded-2xl shadow-sm border border-slate-200">
                     <h3 class="font-bold text-gray-800 mb-4 text-center">Tacómetros Financieros</h3>
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                        
-                        <!-- Q1 -->
                         <div class="text-center bg-slate-50 p-4 rounded-xl border border-slate-200">
                             <h4 class="text-xs font-bold text-indigo-600 uppercase mb-2">1ra Quincena</h4>
                             <div class="relative w-28 h-28 mx-auto">
@@ -203,7 +202,6 @@
                             </div>
                         </div>
 
-                        <!-- Q2 -->
                         <div class="text-center bg-slate-50 p-4 rounded-xl border border-slate-200">
                             <h4 class="text-xs font-bold text-indigo-600 uppercase mb-2">2da Quincena</h4>
                             <div class="relative w-28 h-28 mx-auto">
@@ -218,7 +216,6 @@
                             </div>
                         </div>
 
-                        <!-- TOTAL MES -->
                         <div class="text-center bg-indigo-50/50 p-4 rounded-xl border border-indigo-100">
                             <h4 class="text-xs font-bold text-indigo-700 uppercase mb-2">Mes Total</h4>
                             <div class="relative w-28 h-28 mx-auto">
@@ -232,87 +229,195 @@
                                 <div>Disp: <strong id="total-avail" class="text-emerald-600">$0.00</strong></div>
                             </div>
                         </div>
-
                     </div>
                 </div>
 
-                <!-- Formulario de Agregar Gasto -->
+                <!-- Formulario de Agregar Gasto Mejorado -->
                 <div class="bg-white p-5 sm:p-6 rounded-2xl shadow-sm border border-slate-200">
                     <h3 class="font-bold text-gray-800 mb-4">Agregar Gasto Mensual</h3>
-                    <form id="expense-form" class="grid grid-cols-1 sm:grid-cols-5 gap-3">
-                        <input type="text" id="e-desc" placeholder="Descripción" class="p-2.5 border rounded-xl outline-none text-sm" required>
-                        <input type="number" step="0.01" id="e-monto" placeholder="Monto ($)" class="p-2.5 border rounded-xl outline-none text-sm" required>
-                        <select id="e-quincena" class="p-2.5 border rounded-xl outline-none text-sm bg-white">
+                    <form id="expense-form" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                        <input type="text" id="e-desc" placeholder="Descripción del Gasto" class="p-2.5 border rounded-xl outline-none text-sm focus:border-indigo-600" required>
+                        <input type="number" step="0.01" id="e-monto" placeholder="Monto ($)" class="p-2.5 border rounded-xl outline-none text-sm focus:border-indigo-600" required>
+                        
+                        <select id="e-quincena" class="p-2.5 border rounded-xl outline-none text-sm bg-white focus:border-indigo-600">
                             <option value="1ra Quincena">1ra Quincena (1-15)</option>
                             <option value="2da Quincena">2da Quincena (16-31)</option>
                         </select>
-                        <select id="e-tipo" class="p-2.5 border rounded-xl outline-none text-sm bg-white">
+                        
+                        <select id="e-tipo" class="p-2.5 border rounded-xl outline-none text-sm bg-white focus:border-indigo-600">
                             <option value="fijo">Fijo</option>
                             <option value="extra">Extraordinario</option>
                         </select>
-                        <button type="submit" class="bg-emerald-600 text-white font-bold rounded-xl text-sm hover:bg-emerald-700 transition">Agregar</button>
+
+                        <select id="e-categoria" class="p-2.5 border rounded-xl outline-none text-sm bg-white focus:border-indigo-600">
+                            <option value="Restaurante">Restaurante</option>
+                            <option value="Supermercado">Supermercado</option>
+                            <option value="Vivienda">Vivienda</option>
+                            <option value="Automóvil">Automóvil</option>
+                            <option value="Banco">Banco</option>
+                            <option value="Préstamos">Préstamos</option>
+                            <option value="Combustible">Combustible</option>
+                            <option value="Escuela/Universidad">Escuela/Universidad</option>
+                            <option value="Servicios Públicos">Servicios Públicos</option>
+                            <option value="Chucherías/Compras">Chucherías/Compras</option>
+                            <option value="Ropa">Ropa</option>
+                            <option value="Otros" selected>Otros</option>
+                        </select>
+
+                        <select id="e-prioridad" class="p-2.5 border rounded-xl outline-none text-sm bg-white focus:border-indigo-600">
+                            <option value="Alta">Prioridad Alta</option>
+                            <option value="Media" selected>Prioridad Media</option>
+                            <option value="Baja">Prioridad Baja</option>
+                        </select>
+
+                        <button type="submit" class="sm:col-span-2 lg:col-span-3 bg-emerald-600 text-white font-bold py-2.5 rounded-xl text-sm hover:bg-emerald-700 transition mt-1">
+                            + Agregar Gasto
+                        </button>
                     </form>
                 </div>
 
-                <!-- TABLAS DE REGISTROS SEPARADAS POR QUINCENA (Lado a lado en Desktop, Apiladas en Móvil) -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    
+                <!-- CONTROLES DE VISTA DE QUINCENA Y TABLAS DE REGISTROS -->
+                <div class="space-y-4">
+                    <!-- Botones de Control de Pantalla/Vista -->
+                    <div class="flex flex-wrap justify-between items-center bg-white p-3 rounded-2xl border border-slate-200 gap-2">
+                        <span class="text-xs font-bold text-gray-500 uppercase tracking-wider px-2">Ver Gastos De:</span>
+                        <div class="flex gap-1.5 overflow-x-auto">
+                            <button id="btn-view-q1" class="px-3.5 py-1.5 rounded-xl text-xs font-bold transition bg-indigo-600 text-white shadow-sm">1ra Quincena</button>
+                            <button id="btn-view-q2" class="px-3.5 py-1.5 rounded-xl text-xs font-bold transition bg-slate-100 text-gray-600 hover:bg-slate-200">2da Quincena</button>
+                            <button id="btn-view-mes" class="px-3.5 py-1.5 rounded-xl text-xs font-bold transition bg-slate-100 text-gray-600 hover:bg-slate-200">Mes Completo</button>
+                        </div>
+                    </div>
+
                     <!-- TABLA 1RA QUINCENA -->
-                    <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
-                        <div class="flex justify-between items-center mb-3 pb-2 border-b">
-                            <h4 class="font-bold text-blue-700 text-sm flex items-center gap-1.5">
-                                <span class="w-2.5 h-2.5 rounded-full bg-blue-500 inline-block"></span> 1ra Quincena (1 - 15)
+                    <div id="wrapper-q1" class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 space-y-3">
+                        <div class="flex justify-between items-center pb-2 border-b">
+                            <h4 class="font-bold text-blue-700 text-sm flex items-center gap-2">
+                                <span class="w-3 h-3 rounded-full bg-blue-500 inline-block"></span> 1ra Quincena (1 - 15)
                             </h4>
-                            <span class="text-xs font-bold text-slate-700" id="q1-expense-total">$0.00</span>
+                            <span class="text-xs font-bold text-slate-800 bg-blue-50 px-2.5 py-1 rounded-lg border border-blue-100" id="q1-expense-total">$0.00</span>
                         </div>
-                        <div class="overflow-x-auto">
-                            <table class="w-full text-left text-xs">
-                                <thead>
-                                    <tr class="text-gray-400 border-b">
-                                        <th class="pb-2">Descripción</th>
-                                        <th class="pb-2">Tipo</th>
-                                        <th class="pb-2">Monto</th>
-                                        <th class="pb-2 text-right">Acción</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="expense-list-q1" class="divide-y divide-slate-100"></tbody>
-                            </table>
-                        </div>
+                        <div id="expense-cards-q1" class="space-y-2"></div>
                     </div>
 
                     <!-- TABLA 2DA QUINCENA -->
-                    <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
-                        <div class="flex justify-between items-center mb-3 pb-2 border-b">
-                            <h4 class="font-bold text-purple-700 text-sm flex items-center gap-1.5">
-                                <span class="w-2.5 h-2.5 rounded-full bg-purple-500 inline-block"></span> 2da Quincena (16 - 31)
+                    <div id="wrapper-q2" class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 space-y-3 hidden">
+                        <div class="flex justify-between items-center pb-2 border-b">
+                            <h4 class="font-bold text-purple-700 text-sm flex items-center gap-2">
+                                <span class="w-3 h-3 rounded-full bg-purple-500 inline-block"></span> 2da Quincena (16 - 31)
                             </h4>
-                            <span class="text-xs font-bold text-slate-700" id="q2-expense-total">$0.00</span>
+                            <span class="text-xs font-bold text-slate-800 bg-purple-50 px-2.5 py-1 rounded-lg border border-purple-100" id="q2-expense-total">$0.00</span>
                         </div>
-                        <div class="overflow-x-auto">
-                            <table class="w-full text-left text-xs">
-                                <thead>
-                                    <tr class="text-gray-400 border-b">
-                                        <th class="pb-2">Descripción</th>
-                                        <th class="pb-2">Tipo</th>
-                                        <th class="pb-2">Monto</th>
-                                        <th class="pb-2 text-right">Acción</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="expense-list-q2" class="divide-y divide-slate-100"></tbody>
-                            </table>
+                        <div id="expense-cards-q2" class="space-y-2"></div>
+                    </div>
+                </div>
+
+                <!-- GRÁFICOS DE CATEGORÍAS (MENSUAL Y YTD) -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Categorías Mes -->
+                    <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 space-y-3">
+                        <h4 class="font-bold text-gray-800 text-xs uppercase tracking-wider">Gastos por Categoría (Mes Actual)</h4>
+                        <div class="h-48 relative">
+                            <canvas id="categoryMonthChart"></canvas>
                         </div>
+                        <div id="category-month-list" class="text-xs space-y-1 pt-2 border-t max-h-36 overflow-y-auto"></div>
                     </div>
 
+                    <!-- Categorías YTD Anual -->
+                    <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 space-y-3">
+                        <h4 class="font-bold text-gray-800 text-xs uppercase tracking-wider">Gastos por Categoría (Acumulado Anual YTD)</h4>
+                        <div class="h-48 relative">
+                            <canvas id="categoryYtdChart"></canvas>
+                        </div>
+                        <div id="category-ytd-list" class="text-xs space-y-1 pt-2 border-t max-h-36 overflow-y-auto"></div>
+                    </div>
                 </div>
 
             </div>
         </div>
     </main>
 
+    <!-- MODAL POPUP PARA EDITAR Y ELIMINAR GASTO -->
+    <div id="edit-expense-modal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white w-full max-w-md rounded-2xl p-6 shadow-xl space-y-4 relative">
+            <div class="flex justify-between items-center border-b pb-3">
+                <h3 class="font-bold text-gray-800 text-base">Editar Gasto</h3>
+                <button id="btn-close-modal" class="text-gray-400 hover:text-gray-600 text-xl font-bold">&times;</button>
+            </div>
+
+            <form id="edit-expense-form" class="space-y-3 text-xs">
+                <input type="hidden" id="modal-expense-id">
+                
+                <div>
+                    <label class="block font-semibold text-gray-600 mb-1">Descripción</label>
+                    <input type="text" id="m-desc" class="w-full p-2.5 border rounded-xl outline-none text-sm" required>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block font-semibold text-gray-600 mb-1">Monto ($)</label>
+                        <input type="number" step="0.01" id="m-monto" class="w-full p-2.5 border rounded-xl outline-none text-sm" required>
+                    </div>
+                    <div>
+                        <label class="block font-semibold text-gray-600 mb-1">Quincena</label>
+                        <select id="m-quincena" class="w-full p-2.5 border rounded-xl outline-none text-sm bg-white">
+                            <option value="1ra Quincena">1ra Quincena (1-15)</option>
+                            <option value="2da Quincena">2da Quincena (16-31)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block font-semibold text-gray-600 mb-1">Tipo</label>
+                        <select id="m-tipo" class="w-full p-2.5 border rounded-xl outline-none text-sm bg-white">
+                            <option value="fijo">Fijo</option>
+                            <option value="extra">Extraordinario</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block font-semibold text-gray-600 mb-1">Categoría</label>
+                        <select id="m-categoria" class="w-full p-2.5 border rounded-xl outline-none text-sm bg-white">
+                            <option value="Restaurante">Restaurante</option>
+                            <option value="Supermercado">Supermercado</option>
+                            <option value="Vivienda">Vivienda</option>
+                            <option value="Automóvil">Automóvil</option>
+                            <option value="Banco">Banco</option>
+                            <option value="Préstamos">Préstamos</option>
+                            <option value="Combustible">Combustible</option>
+                            <option value="Escuela/Universidad">Escuela/Universidad</option>
+                            <option value="Servicios Públicos">Servicios Públicos</option>
+                            <option value="Chucherías/Compras">Chucherías/Compras</option>
+                            <option value="Ropa">Ropa</option>
+                            <option value="Otros">Otros</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block font-semibold text-gray-600 mb-1">Prioridad</label>
+                    <select id="m-prioridad" class="w-full p-2.5 border rounded-xl outline-none text-sm bg-white">
+                        <option value="Alta">Alta</option>
+                        <option value="Media">Media</option>
+                        <option value="Baja">Baja</option>
+                    </select>
+                </div>
+
+                <div class="pt-3 flex gap-2">
+                    <button type="submit" class="flex-1 bg-indigo-600 text-white font-bold py-2.5 rounded-xl hover:bg-indigo-700 transition">
+                        Guardar Cambios
+                    </button>
+                    <button type="button" id="btn-delete-modal" class="bg-red-50 text-red-600 font-bold px-4 py-2.5 rounded-xl hover:bg-red-100 transition">
+                        Eliminar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <script type="module">
         import { auth, db } from './firebase-config.js';
         import { signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-        import { doc, getDoc, setDoc, collection, addDoc, query, where, onSnapshot, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+        import { doc, getDoc, setDoc, updateDoc, collection, addDoc, query, where, onSnapshot, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
         let currentUid = null;
         const meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
@@ -324,6 +429,23 @@
         let chartQ1 = null;
         let chartQ2 = null;
         let chartTotal = null;
+        let categoryMonthChartInstance = null;
+        let categoryYtdChartInstance = null;
+
+        const categoryColors = {
+            'Restaurante': '#f97316',
+            'Supermercado': '#10b981',
+            'Vivienda': '#6366f1',
+            'Automóvil': '#06b6d4',
+            'Banco': '#64748b',
+            'Préstamos': '#ef4444',
+            'Combustible': '#eab308',
+            'Escuela/Universidad': '#8b5cf6',
+            'Servicios Públicos': '#3b82f6',
+            'Chucherías/Compras': '#ec4899',
+            'Ropa': '#14b8a6',
+            'Otros': '#94a3b8'
+        };
 
         async function initDashboard() {
             await auth.authStateReady();
@@ -371,6 +493,34 @@
             });
         }
 
+        // Control de vistas por botones (1ra Quincena, 2da Quincena, Mes Completo)
+        const btnQ1 = document.getElementById('btn-view-q1');
+        const btnQ2 = document.getElementById('btn-view-q2');
+        const btnMes = document.getElementById('btn-view-mes');
+        const wrapQ1 = document.getElementById('wrapper-q1');
+        const wrapQ2 = document.getElementById('wrapper-q2');
+
+        function setQuincenaView(viewMode) {
+            btnQ1.className = `px-3.5 py-1.5 rounded-xl text-xs font-bold transition ${viewMode === 'q1' ? 'bg-indigo-600 text-white shadow-sm' : 'bg-slate-100 text-gray-600 hover:bg-slate-200'}`;
+            btnQ2.className = `px-3.5 py-1.5 rounded-xl text-xs font-bold transition ${viewMode === 'q2' ? 'bg-indigo-600 text-white shadow-sm' : 'bg-slate-100 text-gray-600 hover:bg-slate-200'}`;
+            btnMes.className = `px-3.5 py-1.5 rounded-xl text-xs font-bold transition ${viewMode === 'mes' ? 'bg-indigo-600 text-white shadow-sm' : 'bg-slate-100 text-gray-600 hover:bg-slate-200'}`;
+
+            if (viewMode === 'q1') {
+                wrapQ1.classList.remove('hidden');
+                wrapQ2.classList.add('hidden');
+            } else if (viewMode === 'q2') {
+                wrapQ1.classList.add('hidden');
+                wrapQ2.classList.remove('hidden');
+            } else {
+                wrapQ1.classList.remove('hidden');
+                wrapQ2.classList.remove('hidden');
+            }
+        }
+
+        btnQ1.onclick = () => setQuincenaView('q1');
+        btnQ2.onclick = () => setQuincenaView('q2');
+        btnMes.onclick = () => setQuincenaView('mes');
+
         // Dividir automáticamente Salario Mensual entre las dos quincenas
         document.getElementById('in-salario-mensual').oninput = (e) => {
             const mensual = parseFloat(e.target.value) || 0;
@@ -391,12 +541,10 @@
             const q2Acreedores = parseFloat(document.getElementById('q2-acreedores').value) || 0;
             const q2Isr = parseFloat(document.getElementById('q2-isr').value) || 0;
 
-            // Q1 Deducciones del Salario Ordinario
             const q1SsRegular = q1Salario * 0.0975;
             const q1SeRegular = q1Salario * 0.0125;
             const netoQ1Regular = q1Salario - (q1SsRegular + q1SeRegular + q1Isr + q1Acreedores);
 
-            // Cálculo Exclusivo e Independiente del Décimo Tercer Mes (15 de Abril, Agosto, Diciembre)
             let decimoBruto = 0;
             let decimoCss = 0;
             let decimoNeto = 0;
@@ -405,11 +553,10 @@
 
             if (incluyeDecimo) {
                 boxDecimoEdit.classList.remove('hidden');
-                // Salario Mensual Estimado = Q1 Salario * 2 (Ej. 1200 * 2 = 2400)
                 const salarioMensual = q1Salario * 2;
-                decimoBruto = salarioMensual / 3; // $800.00
-                decimoCss = decimoBruto * 0.0725;  // $58.00 (Exento de Seguro Educativo)
-                decimoNeto = decimoBruto - decimoCss; // $742.00
+                decimoBruto = salarioMensual / 3; 
+                decimoCss = decimoBruto * 0.0725; 
+                decimoNeto = decimoBruto - decimoCss; 
 
                 document.getElementById('e-decimo-bruto').textContent = `$${decimoBruto.toFixed(2)}`;
                 document.getElementById('e-decimo-css').textContent = `-$${decimoCss.toFixed(2)}`;
@@ -418,10 +565,8 @@
                 boxDecimoEdit.classList.add('hidden');
             }
 
-            // Neto Total Q1 = Salario Neto Regular Q1 + Neto Líquido del Décimo
             const netoQ1Total = netoQ1Regular + decimoNeto;
 
-            // Q2 Deducciones
             const q2Bruto = q2Salario + q2Bonificacion;
             const q2Ss = q2Bruto * 0.0975;
             const q2Se = q2Salario * 0.0125; 
@@ -435,27 +580,8 @@
 
             return {
                 netoTotal: netoTotalMensual,
-                q1Data: { 
-                    salario: q1Salario, 
-                    acreedores: q1Acreedores, 
-                    isr: q1Isr, 
-                    ss: q1SsRegular, 
-                    se: q1SeRegular, 
-                    incluyeDecimo, 
-                    decimoBruto, 
-                    decimoCss, 
-                    decimoNeto, 
-                    neto: netoQ1Total 
-                },
-                q2Data: { 
-                    salario: q2Salario, 
-                    bonificacion: q2Bonificacion, 
-                    acreedores: q2Acreedores, 
-                    isr: q2Isr, 
-                    ss: q2Ss, 
-                    se: q2Se, 
-                    neto: netoQ2 
-                }
+                q1Data: { salario: q1Salario, acreedores: q1Acreedores, isr: q1Isr, ss: q1SsRegular, se: q1SeRegular, incluyeDecimo, decimoBruto, decimoCss, decimoNeto, neto: netoQ1Total },
+                q2Data: { salario: q2Salario, bonificacion: q2Bonificacion, acreedores: q2Acreedores, isr: q2Isr, ss: q2Ss, se: q2Se, neto: netoQ2 }
             };
         }
 
@@ -518,13 +644,12 @@
                     document.getElementById('q2-isr').value = bData.q2.isr || '';
                 }
 
-                // Llenar Tarjeta en Modo Vista
                 if (bData.q1 && bData.q2) {
                     document.getElementById('v-q1-salario').textContent = `$${(bData.q1.salario || 0).toFixed(2)}`;
-                    document.getElementById('v-q1-ss').textContent = `$${(bData.q1.ss || 0).toFixed(2)}`;
-                    document.getElementById('v-q1-se').textContent = `$${(bData.q1.se || 0).toFixed(2)}`;
-                    document.getElementById('v-q1-isr').textContent = `$${(bData.q1.isr || 0).toFixed(2)}`;
-                    document.getElementById('v-q1-acreedores').textContent = `$${(bData.q1.acreedores || 0).toFixed(2)}`;
+                    document.getElementById('v-q1-ss').textContent = `-$${(bData.q1.ss || 0).toFixed(2)}`;
+                    document.getElementById('v-q1-se').textContent = `-$${(bData.q1.se || 0).toFixed(2)}`;
+                    document.getElementById('v-q1-isr').textContent = `-$${(bData.q1.isr || 0).toFixed(2)}`;
+                    document.getElementById('v-q1-acreedores').textContent = `-$${(bData.q1.acreedores || 0).toFixed(2)}`;
                     document.getElementById('v-q1-neto').textContent = `$${(bData.q1.neto || 0).toFixed(2)}`;
 
                     const vDecimoBox = document.getElementById('v-container-decimo');
@@ -538,11 +663,11 @@
                     }
 
                     document.getElementById('v-q2-salario').textContent = `$${(bData.q2.salario || 0).toFixed(2)}`;
-                    document.getElementById('v-q2-bono').textContent = `$${(bData.q2.bonificacion || 0).toFixed(2)}`;
-                    document.getElementById('v-q2-ss').textContent = `$${(bData.q2.ss || 0).toFixed(2)}`;
-                    document.getElementById('v-q2-se').textContent = `$${(bData.q2.se || 0).toFixed(2)}`;
-                    document.getElementById('v-q2-isr').textContent = `$${(bData.q2.isr || 0).toFixed(2)}`;
-                    document.getElementById('v-q2-acreedores').textContent = `$${(bData.q2.acreedores || 0).toFixed(2)}`;
+                    document.getElementById('v-q2-bono').textContent = `+$${(bData.q2.bonificacion || 0).toFixed(2)}`;
+                    document.getElementById('v-q2-ss').textContent = `-$${(bData.q2.ss || 0).toFixed(2)}`;
+                    document.getElementById('v-q2-se').textContent = `-$${(bData.q2.se || 0).toFixed(2)}`;
+                    document.getElementById('v-q2-isr').textContent = `-$${(bData.q2.isr || 0).toFixed(2)}`;
+                    document.getElementById('v-q2-acreedores').textContent = `-$${(bData.q2.acreedores || 0).toFixed(2)}`;
                     document.getElementById('v-q2-neto').textContent = `$${(bData.q2.neto || 0).toFixed(2)}`;
 
                     document.getElementById('v-neto-total').textContent = `$${budgetTotal.toFixed(2)}`;
@@ -550,7 +675,6 @@
 
                 setBudgetMode(false);
             } else {
-                // Limpiar campos para mes o usuario nuevo
                 document.getElementById('in-salario-mensual').value = '';
                 document.getElementById('q1-salario').value = '';
                 document.getElementById('q1-acreedores').value = '';
@@ -568,7 +692,7 @@
 
             calcularNetoQuincenal();
 
-            // Cargar y Renderizar Gastos en Tablas Separadas por Quincena
+            // Cargar y Renderizar Gastos en Formato de Tarjetas Elegantes
             const q = query(
                 collection(db, "gastos"), 
                 where("userId", "==", currentUid), 
@@ -577,8 +701,8 @@
             );
             
             onSnapshot(q, (snapshot) => {
-                const listQ1 = document.getElementById('expense-list-q1');
-                const listQ2 = document.getElementById('expense-list-q2');
+                const listQ1 = document.getElementById('expense-cards-q1');
+                const listQ2 = document.getElementById('expense-cards-q2');
                 listQ1.innerHTML = '';
                 listQ2.innerHTML = '';
 
@@ -587,33 +711,53 @@
                 let spentQ2 = 0;
                 let fixedSpent = 0;
                 let extraSpent = 0;
-                
+                const categoryTotals = {};
+
                 snapshot.forEach(d => {
                     const data = d.data();
+                    const itemData = { id: d.id, ...data };
                     totalSpent += data.monto;
+
+                    const catName = data.categoria || 'Otros';
+                    categoryTotals[catName] = (categoryTotals[catName] || 0) + data.monto;
 
                     if (data.tipo === 'fijo') fixedSpent += data.monto;
                     else extraSpent += data.monto;
 
-                    const rowHtml = `
-                        <tr class="text-xs">
-                            <td class="py-2.5 font-medium text-gray-800">${data.descripcion}</td>
-                            <td class="py-2.5 text-gray-500 capitalize">${data.tipo}</td>
-                            <td class="py-2.5 font-bold text-slate-700">$${data.monto.toFixed(2)}</td>
-                            <td class="py-2.5 text-right"><button onclick="window.deleteExpense('${d.id}')" class="text-red-500 hover:underline font-semibold">Eliminar</button></td>
-                        </tr>`;
+                    const prioColor = data.prioridad === 'Alta' ? 'bg-red-100 text-red-700' : (data.prioridad === 'Baja' ? 'bg-slate-100 text-slate-600' : 'bg-amber-100 text-amber-800');
+
+                    const cardHtml = `
+                        <div class="bg-slate-50 border border-slate-200 rounded-xl p-3 flex justify-between items-center text-xs hover:border-indigo-200 transition">
+                            <div class="space-y-1">
+                                <div class="flex items-center gap-2">
+                                    <span class="font-bold text-gray-800 text-sm">${data.descripcion}</span>
+                                    <span class="px-2 py-0.5 rounded-md text-[10px] font-bold ${prioColor}">${data.prioridad || 'Media'}</span>
+                                </div>
+                                <div class="flex items-center gap-2 text-[11px] text-gray-500">
+                                    <span class="font-semibold text-indigo-600">${data.categoria || 'Otros'}</span>
+                                    <span>•</span>
+                                    <span class="capitalize">${data.tipo}</span>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <span class="font-bold text-slate-800 text-sm">$${data.monto.toFixed(2)}</span>
+                                <button onclick='window.openEditModal(${JSON.stringify(itemData)})' class="p-1.5 rounded-lg bg-white border border-slate-200 hover:bg-slate-100 text-indigo-600 transition" title="Editar Gasto">
+                                    ✏️
+                                </button>
+                            </div>
+                        </div>`;
 
                     if (data.quincena === '2da Quincena') {
                         spentQ2 += data.monto;
-                        listQ2.innerHTML += rowHtml;
+                        listQ2.innerHTML += cardHtml;
                     } else {
                         spentQ1 += data.monto;
-                        listQ1.innerHTML += rowHtml;
+                        listQ1.innerHTML += cardHtml;
                     }
                 });
 
-                if (listQ1.innerHTML === '') listQ1.innerHTML = `<tr><td colspan="4" class="py-4 text-center text-gray-400">Sin registros en 1ra Quincena</td></tr>`;
-                if (listQ2.innerHTML === '') listQ2.innerHTML = `<tr><td colspan="4" class="py-4 text-center text-gray-400">Sin registros en 2da Quincena</td></tr>`;
+                if (listQ1.innerHTML === '') listQ1.innerHTML = `<p class="py-4 text-center text-gray-400 text-xs">Sin registros en 1ra Quincena</p>`;
+                if (listQ2.innerHTML === '') listQ2.innerHTML = `<p class="py-4 text-center text-gray-400 text-xs">Sin registros en 2da Quincena</p>`;
 
                 document.getElementById('q1-expense-total').textContent = `$${spentQ1.toFixed(2)}`;
                 document.getElementById('q2-expense-total').textContent = `$${spentQ2.toFixed(2)}`;
@@ -627,11 +771,11 @@
                 renderGauge('gaugeTotal', 'total-pct', 'total-spent', 'total-avail', totalSpent, budgetTotal, chartTotal, (inst) => chartTotal = inst, ['#4f46e5', '#e2e8f0']);
 
                 renderTypeChart(fixedSpent, extraSpent);
+                renderCategoryMonthChart(categoryTotals, totalSpent);
             });
         }
 
-        window.deleteExpense = async (id) => { await deleteDoc(doc(db, "gastos", id)); };
-
+        // AGREGAR NUEVO GASTO
         document.getElementById('expense-form').onsubmit = async (e) => {
             e.preventDefault();
             await addDoc(collection(db, "gastos"), {
@@ -639,6 +783,8 @@
                 monto: parseFloat(document.getElementById('e-monto').value),
                 quincena: document.getElementById('e-quincena').value,
                 tipo: document.getElementById('e-tipo').value,
+                categoria: document.getElementById('e-categoria').value,
+                prioridad: document.getElementById('e-prioridad').value,
                 mes: currentMes,
                 year: currentYear,
                 userId: currentUid,
@@ -648,6 +794,50 @@
             loadMonthData();
         };
 
+        // LÓGICA DEL MODAL POPUP DE EDICIÓN
+        const modal = document.getElementById('edit-expense-modal');
+        const btnCloseModal = document.getElementById('btn-close-modal');
+
+        window.openEditModal = (item) => {
+            document.getElementById('modal-expense-id').value = item.id;
+            document.getElementById('m-desc').value = item.descripcion || '';
+            document.getElementById('m-monto').value = item.monto || '';
+            document.getElementById('m-quincena').value = item.quincena || '1ra Quincena';
+            document.getElementById('m-tipo').value = item.tipo || 'fijo';
+            document.getElementById('m-categoria').value = item.categoria || 'Otros';
+            document.getElementById('m-prioridad').value = item.prioridad || 'Media';
+            modal.classList.remove('hidden');
+        };
+
+        btnCloseModal.onclick = () => modal.classList.add('hidden');
+
+        document.getElementById('edit-expense-form').onsubmit = async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('modal-expense-id').value;
+            
+            await updateDoc(doc(db, "gastos", id), {
+                descripcion: document.getElementById('m-desc').value,
+                monto: parseFloat(document.getElementById('m-monto').value),
+                quincena: document.getElementById('m-quincena').value,
+                tipo: document.getElementById('m-tipo').value,
+                categoria: document.getElementById('m-categoria').value,
+                prioridad: document.getElementById('m-prioridad').value
+            });
+
+            modal.classList.add('hidden');
+            loadMonthData();
+        };
+
+        document.getElementById('btn-delete-modal').onclick = async () => {
+            const id = document.getElementById('modal-expense-id').value;
+            if (confirm("¿Estás seguro de que deseas eliminar este gasto?")) {
+                await deleteDoc(doc(db, "gastos", id));
+                modal.classList.add('hidden');
+                loadMonthData();
+            }
+        };
+
+        // RENDERS DE GRÁFICOS
         function renderGauge(canvasId, pctId, spentId, availId, spent, budget, chartInstanceVar, setInstanceCallback, colors) {
             const available = Math.max(0, budget - spent);
             const percentage = budget > 0 ? Math.round((spent / budget) * 100) : 0;
@@ -681,6 +871,39 @@
             });
         }
 
+        function renderCategoryMonthChart(categoriesObj, totalMonth) {
+            const labels = Object.keys(categoriesObj);
+            const data = Object.values(categoriesObj);
+            const colors = labels.map(l => categoryColors[l] || '#94a3b8');
+
+            const listContainer = document.getElementById('category-month-list');
+            listContainer.innerHTML = '';
+
+            labels.forEach(l => {
+                const amount = categoriesObj[l];
+                const pct = totalMonth > 0 ? ((amount / totalMonth) * 100).toFixed(1) : '0';
+                listContainer.innerHTML += `
+                    <div class="flex justify-between items-center">
+                        <span class="flex items-center gap-1.5 font-medium text-gray-700">
+                            <span class="w-2 h-2 rounded-full" style="background-color: ${categoryColors[l] || '#94a3b8'}"></span>
+                            ${l}
+                        </span>
+                        <span class="font-bold text-slate-800">$${amount.toFixed(2)} (${pct}%)</span>
+                    </div>`;
+            });
+
+            if (labels.length === 0) listContainer.innerHTML = `<p class="text-center text-gray-400">Sin gastos este mes.</p>`;
+
+            const ctx = document.getElementById('categoryMonthChart').getContext('2d');
+            if (categoryMonthChartInstance) categoryMonthChartInstance.destroy();
+
+            categoryMonthChartInstance = new Chart(ctx, {
+                type: 'doughnut',
+                data: { labels, datasets: [{ data: data.length > 0 ? data : [1], backgroundColor: data.length > 0 ? colors : ['#f1f5f9'], borderWidth: 0 }] },
+                options: { cutout: '65%', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+            });
+        }
+
         async function loadYTDData() {
             const q = query(
                 collection(db, "gastos"), 
@@ -692,6 +915,7 @@
                 let totalYTD = 0;
                 let ytdFijo = 0;
                 let ytdExtra = 0;
+                const categoryYtdTotals = {};
                 
                 const validMonths = meses.slice(0, currentMonthIndex + 1);
 
@@ -701,12 +925,50 @@
                         totalYTD += data.monto;
                         if (data.tipo === 'fijo') ytdFijo += data.monto;
                         else ytdExtra += data.monto;
+
+                        const catName = data.categoria || 'Otros';
+                        categoryYtdTotals[catName] = (categoryYtdTotals[catName] || 0) + data.monto;
                     }
                 });
 
                 document.getElementById('ytd-total-spent').textContent = `$${totalYTD.toFixed(2)} Gastados`;
                 document.getElementById('ytd-fijo').textContent = `$${ytdFijo.toFixed(2)}`;
                 document.getElementById('ytd-extra').textContent = `$${ytdExtra.toFixed(2)}`;
+
+                renderCategoryYtdChart(categoryYtdTotals, totalYTD);
+            });
+        }
+
+        function renderCategoryYtdChart(categoriesObj, totalYtd) {
+            const labels = Object.keys(categoriesObj);
+            const data = Object.values(categoriesObj);
+            const colors = labels.map(l => categoryColors[l] || '#94a3b8');
+
+            const listContainer = document.getElementById('category-ytd-list');
+            listContainer.innerHTML = '';
+
+            labels.forEach(l => {
+                const amount = categoriesObj[l];
+                const pct = totalYtd > 0 ? ((amount / totalYtd) * 100).toFixed(1) : '0';
+                listContainer.innerHTML += `
+                    <div class="flex justify-between items-center">
+                        <span class="flex items-center gap-1.5 font-medium text-gray-700">
+                            <span class="w-2 h-2 rounded-full" style="background-color: ${categoryColors[l] || '#94a3b8'}"></span>
+                            ${l}
+                        </span>
+                        <span class="font-bold text-slate-800">$${amount.toFixed(2)} (${pct}%)</span>
+                    </div>`;
+            });
+
+            if (labels.length === 0) listContainer.innerHTML = `<p class="text-center text-gray-400">Sin gastos acumulados en el año.</p>`;
+
+            const ctx = document.getElementById('categoryYtdChart').getContext('2d');
+            if (categoryYtdChartInstance) categoryYtdChartInstance.destroy();
+
+            categoryYtdChartInstance = new Chart(ctx, {
+                type: 'doughnut',
+                data: { labels, datasets: [{ data: data.length > 0 ? data : [1], backgroundColor: data.length > 0 ? colors : ['#f1f5f9'], borderWidth: 0 }] },
+                options: { cutout: '65%', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
             });
         }
     </script>
