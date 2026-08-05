@@ -175,7 +175,7 @@
                 </div>
             </div>
 
-            <!-- Columna Derecha: Tacómetros, Formulario e Indicador a Pantalla de Gastos -->
+            <!-- Columna Derecha: Tacómetros, Formulario y Gráficos -->
             <div class="lg:col-span-2 space-y-6">
                 
                 <!-- 3 TACÓMETROS FINANCIEROS -->
@@ -283,22 +283,24 @@
                     </a>
                 </div>
 
-                <!-- GRÁFICOS DE BARRAS POR CATEGORÍA (ELEVADOS Y MÁS CLAROS) -->
+                <!-- GRÁFICOS DE BARRAS CON MONTOS Y PORCENTAJES VISIBLES -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <!-- Categorías Mes (Barras Horizontales) -->
+                    <!-- Categorías Mes -->
                     <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 space-y-3">
                         <h4 class="font-bold text-gray-800 text-xs uppercase tracking-wider">Gastos por Categoría (<span id="lbl-cat-month">Mes</span>)</h4>
                         <div class="h-64 relative">
                             <canvas id="categoryMonthBarChart"></canvas>
                         </div>
+                        <div id="category-month-list" class="text-xs space-y-1.5 pt-3 border-t max-h-40 overflow-y-auto"></div>
                     </div>
 
-                    <!-- Categorías YTD Anual (Barras Horizontales) -->
+                    <!-- Categorías YTD Anual -->
                     <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 space-y-3">
                         <h4 class="font-bold text-gray-800 text-xs uppercase tracking-wider">Gastos por Categoría (Anual YTD)</h4>
                         <div class="h-64 relative">
                             <canvas id="categoryYtdBarChart"></canvas>
                         </div>
+                        <div id="category-ytd-list" class="text-xs space-y-1.5 pt-3 border-t max-h-40 overflow-y-auto"></div>
                     </div>
                 </div>
 
@@ -558,7 +560,7 @@
 
             calcularNetoQuincenal();
 
-            // Cargar datos para Tacómetros y Gráfico de Barras Mensual
+            // Cargar datos para Tacómetros y Gráficos de Categorías
             const q = query(
                 collection(db, "gastos"), 
                 where("userId", "==", currentUid), 
@@ -597,7 +599,7 @@
                 renderGauge('gaugeTotal', 'total-pct', 'total-spent', 'total-avail', totalSpent, budgetTotal, chartTotal, (inst) => chartTotal = inst, ['#4f46e5', '#e2e8f0']);
 
                 renderTypeChart(fixedSpent, extraSpent);
-                renderCategoryBarChart('categoryMonthBarChart', categoryTotals, categoryMonthChartInstance, (inst) => categoryMonthChartInstance = inst);
+                renderCategoryBarChart('categoryMonthBarChart', 'category-month-list', categoryTotals, totalSpent, categoryMonthChartInstance, (inst) => categoryMonthChartInstance = inst);
             });
         }
 
@@ -630,7 +632,8 @@
             document.getElementById(spentId).textContent = `$${spent.toFixed(2)}`;
             document.getElementById(availId).textContent = `$${available.toFixed(2)}`;
 
-            const ctx = document.getElementById(canvasId).getContext('2d');
+            const ctx = document.getElementById(canvasId).getContext('2d').getContext ? document.getElementById(canvasId).getContext('2d') : null;
+            if (!ctx) return;
             if (chartInstanceVar) chartInstanceVar.destroy();
             
             const newInstance = new Chart(ctx, {
@@ -655,11 +658,41 @@
             });
         }
 
-        // Gráfico de Barras Horizontales para Categorías (Alta Claridad)
-        function renderCategoryBarChart(canvasId, categoriesObj, chartInstanceVar, setInstanceCallback) {
-            const labels = Object.keys(categoriesObj);
+        // Gráfico de Barras Horizontales con Nombres, Montos y Porcentajes Visibles
+        function renderCategoryBarChart(canvasId, listContainerId, categoriesObj, totalSpentVal, chartInstanceVar, setInstanceCallback) {
+            const rawLabels = Object.keys(categoriesObj);
             const data = Object.values(categoriesObj);
-            const colors = labels.map(l => categoryColors[l] || '#94a3b8');
+            const total = totalSpentVal || data.reduce((a, b) => a + b, 0);
+
+            // Generar etiquetas enriquecidas con Nombre + Monto + Porcentaje
+            const formattedLabels = rawLabels.map((cat, i) => {
+                const amount = data[i];
+                const pct = total > 0 ? ((amount / total) * 100).toFixed(1) : '0';
+                return `${cat}: $${amount.toFixed(2)} (${pct}%)`;
+            });
+
+            const colors = rawLabels.map(l => categoryColors[l] || '#94a3b8');
+
+            // Renderizar Lista Detallada Inferior
+            const listContainer = document.getElementById(listContainerId);
+            listContainer.innerHTML = '';
+
+            rawLabels.forEach((cat, i) => {
+                const amount = data[i];
+                const pct = total > 0 ? ((amount / total) * 100).toFixed(1) : '0';
+                listContainer.innerHTML += `
+                    <div class="flex justify-between items-center text-xs">
+                        <span class="flex items-center gap-1.5 font-medium text-slate-700">
+                            <span class="w-2.5 h-2.5 rounded-full" style="background-color: ${categoryColors[cat] || '#94a3b8'}"></span>
+                            ${cat}
+                        </span>
+                        <span class="font-bold text-slate-900">$${amount.toFixed(2)} <span class="text-gray-400 font-normal">(${pct}%)</span></span>
+                    </div>`;
+            });
+
+            if (rawLabels.length === 0) {
+                listContainer.innerHTML = `<p class="text-center text-gray-400 py-2">Sin gastos registrados.</p>`;
+            }
 
             const ctx = document.getElementById(canvasId).getContext('2d');
             if (chartInstanceVar) chartInstanceVar.destroy();
@@ -667,22 +700,45 @@
             const newInstance = new Chart(ctx, {
                 type: 'bar',
                 data: {
-                    labels: labels.length > 0 ? labels : ['Sin datos'],
+                    labels: formattedLabels.length > 0 ? formattedLabels : ['Sin datos ($0.00)'],
                     datasets: [{
                         label: 'Monto ($)',
                         data: data.length > 0 ? data : [0],
                         backgroundColor: data.length > 0 ? colors : ['#e2e8f0'],
-                        borderRadius: 8
+                        borderRadius: 6
                     }]
                 },
                 options: {
-                    indexAxis: 'y', // Convertir en barras horizontales
+                    indexAxis: 'y',
                     responsive: true,
                     maintainAspectRatio: false,
-                    plugins: { legend: { display: false } },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const val = context.raw || 0;
+                                    const pct = total > 0 ? ((val / total) * 100).toFixed(1) : '0';
+                                    return ` Total: $${val.toFixed(2)} (${pct}%)`;
+                                }
+                            }
+                        }
+                    },
                     scales: {
-                        x: { grid: { display: false }, ticks: { font: { size: 10 } } },
-                        y: { grid: { display: false }, ticks: { font: { size: 10, weight: 'bold' } } }
+                        x: {
+                            grid: { display: false },
+                            ticks: {
+                                font: { size: 10 },
+                                callback: function(value) { return '$' + value; }
+                            }
+                        },
+                        y: {
+                            grid: { display: false },
+                            ticks: {
+                                font: { size: 10, weight: 'bold' },
+                                color: '#1e293b'
+                            }
+                        }
                     }
                 }
             });
@@ -720,7 +776,7 @@
                 document.getElementById('ytd-fijo').textContent = `$${ytdFijo.toFixed(2)}`;
                 document.getElementById('ytd-extra').textContent = `$${ytdExtra.toFixed(2)}`;
 
-                renderCategoryBarChart('categoryYtdBarChart', categoryYtdTotals, categoryYtdChartInstance, (inst) => categoryYtdChartInstance = inst);
+                renderCategoryBarChart('categoryYtdBarChart', 'category-ytd-list', categoryYtdTotals, totalYTD, categoryYtdChartInstance, (inst) => categoryYtdChartInstance = inst);
             });
         }
     </script>
