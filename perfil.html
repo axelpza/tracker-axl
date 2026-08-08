@@ -3,124 +3,103 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mi Perfil - Tracker Finanzas</title>
+    <title>Mi Perfil y Temas - Tracker Finanzas</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="css/styles.css">
 </head>
-<body class="bg-slate-100 min-h-screen">
+<body class="min-h-screen pb-12 relative">
 
-    <!-- Menú de Navegación Compartido -->
-    <nav class="bg-white shadow-sm px-4 sm:px-6 py-4 flex flex-col sm:flex-row justify-between items-center gap-3">
+    <!-- Menú de Navegación -->
+    <nav class="theme-nav backdrop-blur-md shadow-sm px-4 sm:px-6 py-4 flex flex-col sm:flex-row justify-between items-center gap-3 relative z-10">
         <div class="flex items-center gap-3">
             <span id="nav-avatar" class="text-2xl">👨‍💻</span>
-            <h1 class="font-bold text-lg text-indigo-600">Hola, <span id="nav-name">Usuario</span></h1>
+            <h1 class="font-bold text-lg text-indigo-400">Hola, <span id="nav-name">Alexis</span></h1>
         </div>
         <div class="flex flex-wrap justify-center gap-3 sm:gap-4 items-center text-sm font-semibold">
-            <a href="dashboard.html" class="text-gray-600 hover:text-indigo-600">Budget</a>
-            <a href="gastos.html" class="text-gray-600 hover:text-indigo-600">Gastos</a>
-            <a href="adicionales.html" class="text-gray-600 hover:text-indigo-600">Gastos Adicionales</a>
-            <a href="perfil.html" class="text-gray-600 hover:text-indigo-600">Mi Perfil</a>
-            <button id="btn-logout" class="bg-red-50 text-red-600 px-3 py-1.5 rounded-lg hover:bg-red-100 transition">Salir</button>
+            <a href="dashboard.html" class="text-gray-400 hover:text-indigo-400">Budget</a>
+            <a href="gastos.html" class="text-gray-400 hover:text-indigo-400">Gastos</a>
+            <a href="adicionales.html" class="text-gray-400 hover:text-indigo-400">Gastos Adicionales</a>
+            <a href="perfil.html" class="text-indigo-400 border-b-2 border-indigo-400 pb-1">Mi Perfil</a>
+            <button id="btn-logout" class="bg-red-500/10 text-red-400 px-3 py-1.5 rounded-lg hover:bg-red-500/20 transition">Salir</button>
         </div>
     </nav>
 
-    <main class="max-w-xl mx-auto p-4 sm:p-6 space-y-6">
-        <div class="bg-white p-6 sm:p-8 rounded-2xl shadow-sm border border-slate-200">
-            <h2 class="text-xl font-bold text-gray-800 mb-6">Ajustes de Perfil</h2>
-            
-            <form id="profile-form" class="space-y-4">
-                <div>
-                    <label class="block text-sm font-semibold text-gray-600 mb-1">Nombre Completo</label>
-                    <input type="text" id="p-name" class="w-full p-3 border rounded-xl outline-none focus:border-indigo-600 text-sm" required>
-                </div>
-                <div>
-                    <label class="block text-sm font-semibold text-gray-600 mb-1">Nombre de Usuario</label>
-                    <input type="text" id="p-user" class="w-full p-3 border rounded-xl outline-none focus:border-indigo-600 text-sm" required>
-                </div>
-                <div>
-                    <label class="block text-sm font-semibold text-gray-600 mb-1">Elige tu Avatar</label>
-                    <div class="flex gap-4 justify-around sm:justify-start">
-                        <label class="cursor-pointer p-3 border rounded-xl hover:bg-slate-50"><input type="radio" name="avatar" value="👨‍💻" class="mr-1"> 👨‍💻</label>
-                        <label class="cursor-pointer p-3 border rounded-xl hover:bg-slate-50"><input type="radio" name="avatar" value="👩‍💼" class="mr-1"> 👩‍💼</label>
-                        <label class="cursor-pointer p-3 border rounded-xl hover:bg-slate-50"><input type="radio" name="avatar" value="🚀" class="mr-1"> 🚀</label>
-                        <label class="cursor-pointer p-3 border rounded-xl hover:bg-slate-50"><input type="radio" name="avatar" value="💰" class="mr-1"> 💰</label>
+    <main class="max-w-4xl mx-auto p-4 sm:p-6 space-y-6 relative z-10">
+        
+        <!-- SECCIÓN DE SELECCIÓN DE TEMAS CON SWATCHES DE COLOR -->
+        <div class="theme-card p-6 rounded-2xl shadow-lg border space-y-4">
+            <div>
+                <h2 class="text-xl font-bold">Personalización de Apariencia</h2>
+                <p class="text-xs text-slate-400">Selecciona el tema de color y el patrón de animación de fondo para tu dashboard.</p>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+                
+                <!-- Tema 1: Cyberpunk -->
+                <div onclick="selectTheme('dark-cyber')" class="theme-card p-4 rounded-xl border-2 cursor-pointer hover:border-indigo-500 transition relative space-y-3">
+                    <div class="flex justify-between items-center">
+                        <span class="font-bold text-sm">Cyberpunk Oscuro</span>
+                        <div class="flex gap-1.5">
+                            <span class="w-4 h-4 rounded-full bg-[#070a12] border border-slate-600"></span>
+                            <span class="w-4 h-4 rounded-full bg-[#6366f1]"></span>
+                            <span class="w-4 h-4 rounded-full bg-[#ec4899]"></span>
+                        </div>
                     </div>
+                    <p class="text-[11px] text-slate-400">Fondo azul noche con burbujas flotantes interactivas.</p>
                 </div>
-                <button type="submit" class="w-full bg-indigo-600 text-white font-bold py-3 rounded-xl hover:bg-indigo-700 transition text-sm">Guardar Cambios</button>
-            </form>
 
-            <hr class="my-6">
+                <!-- Tema 2: Dust Vortex (Imagen) -->
+                <div onclick="selectTheme('dust-vortex')" class="theme-card p-4 rounded-xl border-2 cursor-pointer hover:border-orange-500 transition relative space-y-3">
+                    <div class="flex justify-between items-center">
+                        <span class="font-bold text-sm">Vórtice de Polvo 🌌</span>
+                        <div class="flex gap-1.5">
+                            <span class="w-4 h-4 rounded-full bg-[#020408] border border-slate-600"></span>
+                            <span class="w-4 h-4 rounded-full bg-[#38bdf8]"></span>
+                            <span class="w-4 h-4 rounded-full bg-[#f97316]"></span>
+                        </div>
+                    </div>
+                    <p class="text-[11px] text-slate-400">Oleada de micropartículas cian y coral (Inspirado en imagen).</p>
+                </div>
 
-            <div class="space-y-3">
-                <h3 class="font-bold text-gray-800">Seguridad</h3>
-                <button id="btn-reset-pass" class="w-full bg-slate-100 text-slate-700 font-semibold py-2.5 rounded-xl hover:bg-slate-200 transition text-sm">Enviar correo para cambiar contraseña</button>
+                <!-- Tema 3: Neon Matrix -->
+                <div onclick="selectTheme('neon-matrix')" class="theme-card p-4 rounded-xl border-2 cursor-pointer hover:border-emerald-500 transition relative space-y-3">
+                    <div class="flex justify-between items-center">
+                        <span class="font-bold text-sm">Matriz Esmeralda</span>
+                        <div class="flex gap-1.5">
+                            <span class="w-4 h-4 rounded-full bg-[#04120e] border border-slate-600"></span>
+                            <span class="w-4 h-4 rounded-full bg-[#10b981]"></span>
+                            <span class="w-4 h-4 rounded-full bg-[#34d399]"></span>
+                        </div>
+                    </div>
+                    <p class="text-[11px] text-slate-400">Tonalidad oscura esmeralda con alto contraste.</p>
+                </div>
+
+                <!-- Tema 4: Light Clean -->
+                <div onclick="selectTheme('light-clean')" class="theme-card p-4 rounded-xl border-2 cursor-pointer hover:border-indigo-600 transition relative space-y-3">
+                    <div class="flex justify-between items-center">
+                        <span class="font-bold text-sm text-slate-900">Luminoso Minimalista</span>
+                        <div class="flex gap-1.5">
+                            <span class="w-4 h-4 rounded-full bg-[#f1f5f9] border border-slate-300"></span>
+                            <span class="w-4 h-4 rounded-full bg-[#4f46e5]"></span>
+                            <span class="w-4 h-4 rounded-full bg-[#ffffff] border"></span>
+                        </div>
+                    </div>
+                    <p class="text-[11px] text-slate-500">Apariencia clara, limpia y profesional.</p>
+                </div>
+
             </div>
         </div>
     </main>
 
+    <!-- Carga de Módulos JS -->
     <script type="module">
-        import { auth, db } from './firebase-config.js';
-        import { signOut, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-        import { doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+        import { applyTheme, getSavedTheme } from './js/theme.js';
 
-        let currentUser = null;
-
-        async function initPerfil() {
-            await auth.authStateReady();
-            const user = auth.currentUser;
-            if (!user) { window.location.href = "index.html"; return; }
-            currentUser = user;
-            
-            try {
-                const userSnap = await getDoc(doc(db, "users", user.uid));
-                if (userSnap.exists()) {
-                    const data = userSnap.data();
-                    document.getElementById('nav-name').textContent = data.name || "Usuario";
-                    document.getElementById('nav-avatar').textContent = data.avatar || "👨‍💻";
-                    document.getElementById('p-name').value = data.name || "";
-                    document.getElementById('p-user').value = data.user || "";
-                    
-                    const avatarRadio = document.querySelector(`input[name="avatar"][value="${data.avatar}"]`);
-                    if (avatarRadio) avatarRadio.checked = true;
-                }
-            } catch (err) {
-                console.error("Error cargando perfil:", err);
-            }
-        }
-
-        initPerfil();
-
-        document.getElementById('btn-logout').onclick = () => signOut(auth).then(() => window.location.href = "index.html");
-
-        document.getElementById('profile-form').onsubmit = async (e) => {
-            e.preventDefault();
-            const name = document.getElementById('p-name').value;
-            const userVal = document.getElementById('p-user').value;
-            const avatar = document.querySelector('input[name="avatar"]:checked')?.value || "👨‍💻";
-
-            try {
-                await setDoc(doc(db, "users", currentUser.uid), { 
-                    name, 
-                    user: userVal, 
-                    avatar,
-                    email: currentUser.email 
-                }, { merge: true });
-
-                alert("Perfil actualizado correctamente.");
-                location.reload();
-            } catch (err) {
-                console.error("Error al actualizar perfil:", err);
-                alert("Error al guardar: " + err.message);
-            }
-        };
-
-        document.getElementById('btn-reset-pass').onclick = async () => {
-            try {
-                await sendPasswordResetEmail(auth, currentUser.email);
-                alert("Te hemos enviado un correo para restablecer tu contraseña.");
-            } catch (err) {
-                alert("Error: " + err.message);
-            }
+        window.selectTheme = (themeId) => {
+            applyTheme(themeId);
+            alert("¡Tema actualizado correctamente!");
         };
     </script>
+    <script type="module" src="js/background.js"></script>
 </body>
 </html>

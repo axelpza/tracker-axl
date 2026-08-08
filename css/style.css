@@ -1,0 +1,119 @@
+/* VARIABLES DE TEMAS Y PALETAS DE COLOR */
+:root {
+    --bg-body: #0a0f1d;
+    --card-bg: rgba(15, 23, 42, 0.85);
+    --card-border: rgba(51, 65, 85, 0.6);
+    --text-primary: #f8fafc;
+    --text-secondary: #94a3b8;
+    --accent-primary: #6366f1;
+    --accent-hover: #4f46e5;
+    --nav-bg: rgba(15, 23, 42, 0.9);
+    --input-bg: rgba(30, 41, 59, 0.7);
+    --input-border: #334155;
+}
+
+/* TEMA 1: OSCURO CYBERPUNK (Default) */
+[data-theme="dark-cyber"] {
+    --bg-body: #070a12;
+    --card-bg: rgba(15, 23, 42, 0.85);
+    --card-border: rgba(99, 102, 241, 0.25);
+    --text-primary: #f8fafc;
+    --text-secondary: #94a3b8;
+    --accent-primary: #6366f1;
+    --accent-hover: #4f46e5;
+    --nav-bg: rgba(15, 23, 42, 0.9);
+    --input-bg: #1e293b;
+    --input-border: #334155;
+}
+
+/* TEMA 2: DUST VORTEX (Basado en la imagen adjunta: Micropartículas azul/naranja) */
+[data-theme="dust-vortex"] {
+    --bg-body: #020408;
+    --card-bg: rgba(10, 16, 26, 0.88);
+    --card-border: rgba(249, 115, 22, 0.25);
+    --text-primary: #f1f5f9;
+    --text-secondary: #64748b;
+    --accent-primary: #f97316;
+    --accent-hover: #ea580c;
+    --nav-bg: rgba(8, 12, 20, 0.92);
+    --input-bg: #0f172a;
+    --input-border: #1e293b;
+}
+
+/* TEMA 3: NEON MATRIX / ESMERALDA */
+[data-theme="neon-matrix"] {
+    --bg-body: #04120e;
+    --card-bg: rgba(6, 30, 22, 0.85);
+    --card-border: rgba(16, 185, 129, 0.3);
+    --text-primary: #ecfdf5;
+    --text-secondary: #6ee7b7;
+    --accent-primary: #10b981;
+    --accent-hover: #059669;
+    --nav-bg: rgba(6, 26, 20, 0.92);
+    --input-bg: #062e22;
+    --input-border: #047857;
+}
+
+/* TEMA 4: MODO CLARO MINIMALISTA */
+[data-theme="light-clean"] {
+    --bg-body: #f1f5f9;
+    --card-bg: rgba(255, 255, 255, 0.9);
+    --card-border: #e2e8f0;
+    --text-primary: #0f172a;
+    --text-secondary: #64748b;
+    --accent-primary: #4f46e5;
+    --accent-hover: #4338ca;
+    --nav-bg: rgba(255, 255, 255, 0.95);
+    --input-bg: #ffffff;
+    --input-border: #cbd5e1;
+}
+
+/* APLICACIÓN GLOBAL DE ESTILOS DE TEMA */
+body {
+    background-color: var(--bg-body);
+    color: var(--text-primary);
+    transition: background-color 0.4s ease, color 0.4s ease;
+}
+
+.theme-card {
+    background-color: var(--card-bg);
+    border-color: var(--card-border);
+    color: var(--text-primary);
+    backdrop-filter: blur(12px);
+}
+
+.theme-nav {
+    background-color: var(--nav-bg);
+    border-color: var(--card-border);
+}
+
+.theme-input {
+    background-color: var(--input-bg) !important;
+    border-color: var(--input-border) !important;
+    color: var(--text-primary) !important;
+}
+
+/* TOOLTIP PERSONALIZADO */
+.tooltip-container { position: relative; display: inline-flex; align-items: center; }
+.tooltip-text {
+    visibility: hidden;
+    width: 220px;
+    background-color: #0f172a;
+    color: #f8fafc;
+    text-align: center;
+    border-radius: 8px;
+    padding: 8px 12px;
+    position: absolute;
+    z-index: 50;
+    bottom: 125%;
+    left: 50%;
+    transform: translateX(-50%);
+    opacity: 0;
+    transition: opacity 0.2s;
+    font-size: 11px;
+    line-height: 1.3;
+    pointer-events: none;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+    border: 1px solid var(--card-border);
+}
+.tooltip-container:hover .tooltip-text { visibility: visible; opacity: 1; }
