@@ -1,7 +1,6 @@
-import { auth, db } from './firebase-config.js';
+import { auth, db } from '../firebase-config.js'; // Cambia a './firebase-config.js' si tu archivo está dentro de la carpeta /js
 import { signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { doc, getDoc, updateDoc, collection, addDoc, query, where, onSnapshot, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js"; // or firestore.js
-import { doc as fsDoc, getDoc as fsGetDoc, updateDoc as fsUpdateDoc, collection as fsCollection, addDoc as fsAddDoc, query as fsQuery, where as fsWhere, onSnapshot as fsOnSnapshot, deleteDoc as fsDeleteDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { doc, getDoc, updateDoc, collection, addDoc, query, where, onSnapshot, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 let currentUid = null;
 const meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
@@ -15,7 +14,7 @@ async function initGastosPage() {
     currentUid = user.uid;
 
     try {
-        const userSnap = await fsGetDoc(fsDoc(db, "users", user.uid));
+        const userSnap = await getDoc(doc(db, "users", user.uid));
         if (userSnap.exists()) {
             const data = userSnap.data();
             document.getElementById('nav-name').textContent = data.name || "Usuario";
@@ -35,6 +34,7 @@ document.getElementById('btn-logout').onclick = () => signOut(auth).then(() => w
 
 function initMonthTabs() {
     const container = document.getElementById('month-tabs');
+    if (!container) return;
     container.innerHTML = '';
 
     meses.forEach(m => {
@@ -57,6 +57,7 @@ const wrapQ1 = document.getElementById('wrapper-q1');
 const wrapQ2 = document.getElementById('wrapper-q2');
 
 function setQuincenaView(viewMode) {
+    if (!btnQ1 || !btnQ2 || !btnMes) return;
     btnQ1.className = `px-4 py-2 rounded-xl text-xs font-bold transition ${viewMode === 'q1' ? 'bg-indigo-600 text-white shadow-sm' : 'theme-card'}`;
     btnQ2.className = `px-4 py-2 rounded-xl text-xs font-bold transition ${viewMode === 'q2' ? 'bg-indigo-600 text-white shadow-sm' : 'theme-card'}`;
     btnMes.className = `px-4 py-2 rounded-xl text-xs font-bold transition ${viewMode === 'mes' ? 'bg-indigo-600 text-white shadow-sm' : 'theme-card'}`;
@@ -73,21 +74,23 @@ function setQuincenaView(viewMode) {
     }
 }
 
-btnQ1.onclick = () => setQuincenaView('q1');
-btnQ2.onclick = () => setQuincenaView('q2');
-btnMes.onclick = () => setQuincenaView('mes');
+if (btnQ1) btnQ1.onclick = () => setQuincenaView('q1');
+if (btnQ2) btnQ2.onclick = () => setQuincenaView('q2');
+if (btnMes) btnMes.onclick = () => setQuincenaView('mes');
 
 function loadGastosData() {
-    const q = fsQuery(
-        fsCollection(db, "gastos"), 
-        fsWhere("userId", "==", currentUid), 
-        fsWhere("mes", "==", currentMes),
-        fsWhere("year", "==", currentYear)
+    const q = query(
+        collection(db, "gastos"), 
+        where("userId", "==", currentUid), 
+        where("mes", "==", currentMes),
+        where("year", "==", currentYear)
     );
 
-    fsOnSnapshot(q, (snapshot) => {
+    onSnapshot(q, (snapshot) => {
         const listQ1 = document.getElementById('expense-cards-q1');
         const listQ2 = document.getElementById('expense-cards-q2');
+        if (!listQ1 || !listQ2) return;
+
         listQ1.innerHTML = '';
         listQ2.innerHTML = '';
 
@@ -106,7 +109,7 @@ function loadGastosData() {
                 <div class="theme-card border rounded-xl p-3.5 flex justify-between items-center text-xs hover:border-indigo-500/50 transition shadow-sm">
                     <div class="space-y-1">
                         <div class="flex items-center gap-2">
-                            <span class="font-bold text-sm">${data.descripcion}</span>
+                            <span class="font-bold text-sm text-slate-100">${data.descripcion}</span>
                             <span class="px-2 py-0.5 rounded-md text-[10px] font-bold ${prioColor}">${data.prioridad || 'Media'}</span>
                         </div>
                         <div class="flex items-center gap-2 text-[11px] text-slate-400">
@@ -116,7 +119,7 @@ function loadGastosData() {
                         </div>
                     </div>
                     <div class="flex items-center gap-3">
-                        <span class="font-bold text-sm">$${data.monto.toFixed(2)}</span>
+                        <span class="font-bold text-sm text-slate-100">$${data.monto.toFixed(2)}</span>
                         <button onclick='openEditModal(${JSON.stringify(itemData).replace(/'/g, "&apos;")})' class="p-2 rounded-lg theme-card border hover:bg-indigo-500/20 text-indigo-400 transition" title="Editar Gasto">
                             ✏️
                         </button>
@@ -143,28 +146,34 @@ function loadGastosData() {
 
 // MODAL PARA REGISTRAR NUEVO GASTO
 const addModal = document.getElementById('add-expense-modal');
-document.getElementById('btn-open-add-modal').onclick = () => addModal.classList.remove('hidden');
-document.getElementById('btn-close-add-modal').onclick = () => addModal.classList.add('hidden');
+const btnOpenAdd = document.getElementById('btn-open-add-modal');
+const btnCloseAdd = document.getElementById('btn-close-add-modal');
 
-document.getElementById('add-expense-form').onsubmit = async (e) => {
-    e.preventDefault();
-    await fsAddDoc(fsCollection(db, "gastos"), {
-        descripcion: document.getElementById('add-e-desc').value,
-        monto: parseFloat(document.getElementById('add-e-monto').value),
-        quincena: document.getElementById('add-e-quincena').value,
-        tipo: document.getElementById('add-e-tipo').value,
-        categoria: document.getElementById('add-e-categoria').value,
-        prioridad: document.getElementById('add-e-prioridad').value,
-        mes: currentMes,
-        year: currentYear,
-        userId: currentUid,
-        createdAt: new Date()
-    });
-    document.getElementById('add-expense-form').reset();
-    addModal.classList.add('hidden');
-    alert("Gasto registrado correctamente.");
-    loadGastosData();
-};
+if (btnOpenAdd) btnOpenAdd.onclick = () => addModal.classList.remove('hidden');
+if (btnCloseAdd) btnCloseAdd.onclick = () => addModal.classList.add('hidden');
+
+const addExpenseForm = document.getElementById('add-expense-form');
+if (addExpenseForm) {
+    addExpenseForm.onsubmit = async (e) => {
+        e.preventDefault();
+        await addDoc(collection(db, "gastos"), {
+            descripcion: document.getElementById('add-e-desc').value,
+            monto: parseFloat(document.getElementById('add-e-monto').value),
+            quincena: document.getElementById('add-e-quincena').value,
+            tipo: document.getElementById('add-e-tipo').value,
+            categoria: document.getElementById('add-e-categoria').value,
+            prioridad: document.getElementById('add-e-prioridad').value,
+            mes: currentMes,
+            year: currentYear,
+            userId: currentUid,
+            createdAt: new Date()
+        });
+        addExpenseForm.reset();
+        addModal.classList.add('hidden');
+        alert("Gasto registrado correctamente.");
+        loadGastosData();
+    };
+}
 
 // MODAL PARA EDITAR GASTO
 const editModal = document.getElementById('edit-expense-modal');
@@ -181,30 +190,36 @@ window.openEditModal = (item) => {
     editModal.classList.remove('hidden');
 };
 
-btnCloseModal.onclick = () => editModal.classList.add('hidden');
+if (btnCloseModal) btnCloseModal.onclick = () => editModal.classList.add('hidden');
 
-document.getElementById('edit-expense-form').onsubmit = async (e) => {
-    e.preventDefault();
-    const id = document.getElementById('modal-expense-id').value;
-    
-    await fsUpdateDoc(fsDoc(db, "gastos", id), {
-        descripcion: document.getElementById('m-desc').value,
-        monto: parseFloat(document.getElementById('m-monto').value),
-        quincena: document.getElementById('m-quincena').value,
-        tipo: document.getElementById('m-tipo').value,
-        categoria: document.getElementById('m-categoria').value,
-        prioridad: document.getElementById('m-prioridad').value
-    });
+const editExpenseForm = document.getElementById('edit-expense-form');
+if (editExpenseForm) {
+    editExpenseForm.onsubmit = async (e) => {
+        e.preventDefault();
+        const id = document.getElementById('modal-expense-id').value;
+        
+        await updateDoc(doc(db, "gastos", id), {
+            descripcion: document.getElementById('m-desc').value,
+            monto: parseFloat(document.getElementById('m-monto').value),
+            quincena: document.getElementById('m-quincena').value,
+            tipo: document.getElementById('m-tipo').value,
+            categoria: document.getElementById('m-categoria').value,
+            prioridad: document.getElementById('m-prioridad').value
+        });
 
-    editModal.classList.add('hidden');
-    loadGastosData();
-};
-
-document.getElementById('btn-delete-modal').onclick = async () => {
-    const id = document.getElementById('modal-expense-id').value;
-    if (confirm("¿Estás seguro de que deseas eliminar este gasto?")) {
-        await fsDeleteDoc(fsDoc(db, "gastos", id));
         editModal.classList.add('hidden');
         loadGastosData();
-    }
-};
+    };
+}
+
+const btnDelete = document.getElementById('btn-delete-modal');
+if (btnDelete) {
+    btnDelete.onclick = async () => {
+        const id = document.getElementById('modal-expense-id').value;
+        if (confirm("¿Estás seguro de que deseas eliminar este gasto?")) {
+            await deleteDoc(doc(db, "gastos", id));
+            editModal.classList.add('hidden');
+            loadGastosData();
+        }
+    };
+}

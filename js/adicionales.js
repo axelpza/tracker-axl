@@ -1,4 +1,4 @@
-import { auth, db } from './firebase-config.js';
+import { auth, db } from '../firebase-config.js'; // Cambia a './firebase-config.js' si tu archivo está dentro de /js
 import { signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { doc, getDoc, collection, addDoc, query, where, onSnapshot, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
@@ -34,24 +34,27 @@ initAdicionales();
 
 document.getElementById('btn-logout').onclick = () => signOut(auth).then(() => window.location.href = "index.html");
 
-document.getElementById('item-form').onsubmit = async (e) => {
-    e.preventDefault();
-    if (!currentUid) return;
+const itemForm = document.getElementById('item-form');
+if (itemForm) {
+    itemForm.onsubmit = async (e) => {
+        e.preventDefault();
+        if (!currentUid) return;
 
-    try {
-        await addDoc(collection(db, "gastos_adicionales"), {
-            articulo: document.getElementById('i-articulo').value,
-            monto: parseFloat(document.getElementById('i-monto').value),
-            url: document.getElementById('i-url').value,
-            prioridad: document.getElementById('i-prioridad').value,
-            userId: currentUid,
-            createdAt: new Date()
-        });
-        e.target.reset();
-    } catch (err) {
-        alert("Error al guardar: " + err.message);
-    }
-};
+        try {
+            await addDoc(collection(db, "gastos_adicionales"), {
+                articulo: document.getElementById('i-articulo').value,
+                monto: parseFloat(document.getElementById('i-monto').value),
+                url: document.getElementById('i-url').value,
+                prioridad: document.getElementById('i-prioridad').value,
+                userId: currentUid,
+                createdAt: new Date()
+            });
+            itemForm.reset();
+        } catch (err) {
+            alert("Error al guardar: " + err.message);
+        }
+    };
+}
 
 async function cargarDatosAnualesYListar() {
     for (let m of mesesVisibles) {
@@ -81,6 +84,7 @@ async function cargarDatosAnualesYListar() {
 
 function renderWishlist(snapshot) {
     const container = document.getElementById('wishlist-container');
+    if (!container) return;
     container.innerHTML = '';
 
     if (snapshot.empty) {
@@ -123,13 +127,13 @@ function renderWishlist(snapshot) {
                 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
                     <div>
                         <div class="flex items-center gap-2">
-                            <h4 class="font-bold text-base">${item.articulo}</h4>
+                            <h4 class="font-bold text-base text-slate-100">${item.articulo}</h4>
                             <span class="px-2 py-0.5 rounded-md text-[10px] font-bold ${prioBadgeColor}">${item.prioridad || 'Media'}</span>
                             ${item.url ? `<a href="${item.url}" target="_blank" class="text-indigo-400 text-xs font-semibold hover:underline">[Ver Enlace]</a>` : ''}
                         </div>
                     </div>
                     <div class="flex items-center gap-4">
-                        <span class="text-xl font-bold">$${item.monto.toFixed(2)}</span>
+                        <span class="text-xl font-bold text-slate-100">$${item.monto.toFixed(2)}</span>
                         <button onclick="deleteItem('${itemId}')" class="text-red-400 hover:text-red-300 text-xs font-semibold">Eliminar</button>
                     </div>
                 </div>
@@ -160,32 +164,35 @@ window.openAssignModal = (articulo, monto, prioridad, mesDestino) => {
     assignModal.classList.remove('hidden');
 };
 
-btnCloseAssignModal.onclick = () => assignModal.classList.add('hidden');
+if (btnCloseAssignModal) btnCloseAssignModal.onclick = () => assignModal.classList.add('hidden');
 
-document.getElementById('assign-expense-form').onsubmit = async (e) => {
-    e.preventDefault();
-    const mesDestino = document.getElementById('a-target-mes').value;
+const assignExpenseForm = document.getElementById('assign-expense-form');
+if (assignExpenseForm) {
+    assignExpenseForm.onsubmit = async (e) => {
+        e.preventDefault();
+        const mesDestino = document.getElementById('a-target-mes').value;
 
-    try {
-        await addDoc(collection(db, "gastos"), {
-            descripcion: document.getElementById('a-desc').value,
-            monto: parseFloat(document.getElementById('a-monto').value),
-            quincena: document.getElementById('a-quincena').value,
-            tipo: document.getElementById('a-tipo').value,
-            categoria: document.getElementById('a-categoria').value,
-            prioridad: document.getElementById('a-prioridad').value,
-            mes: mesDestino,
-            year: currentYear,
-            userId: currentUid,
-            createdAt: new Date()
-        });
+        try {
+            await addDoc(collection(db, "gastos"), {
+                descripcion: document.getElementById('a-desc').value,
+                monto: parseFloat(document.getElementById('a-monto').value),
+                quincena: document.getElementById('a-quincena').value,
+                tipo: document.getElementById('a-tipo').value,
+                categoria: document.getElementById('a-categoria').value,
+                prioridad: document.getElementById('a-prioridad').value,
+                mes: mesDestino,
+                year: currentYear,
+                userId: currentUid,
+                createdAt: new Date()
+            });
 
-        alert(`¡Éxito! El gasto fue asignado correctamente a ${mesDestino}.`);
-        assignModal.classList.add('hidden');
-    } catch (err) {
-        alert("Error al asignar gasto: " + err.message);
-    }
-};
+            alert(`¡Éxito! El gasto fue asignado correctamente a ${mesDestino}.`);
+            assignModal.classList.add('hidden');
+        } catch (err) {
+            alert("Error al asignar gasto: " + err.message);
+        }
+    };
+}
 
 window.deleteItem = async (id) => { 
     if (confirm("¿Estás seguro de que deseas eliminar este artículo de tus deseos?")) {
