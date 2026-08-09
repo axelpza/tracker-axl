@@ -1,96 +1,172 @@
-/* VARIABLES DE TEMAS Y PALETAS DE COLOR */
+/* VARIABLES DE TEMA CON ALTO CONTRASTE */
 :root {
-    --bg-body: #0a0f1d;
-    --card-bg: rgba(15, 23, 42, 0.85);
-    --card-border: rgba(51, 65, 85, 0.6);
-    --text-primary: #f8fafc;
-    --text-secondary: #94a3b8;
+    --bg-body: #070a12;
+    --card-bg: rgba(15, 23, 42, 0.92);
+    --card-sub-bg: rgba(30, 41, 59, 0.75);
+    --card-border: rgba(99, 102, 241, 0.35);
+    --text-primary: #ffffff;
+    --text-secondary: #cbd5e1;
+    --text-muted: #94a3b8;
     --accent-primary: #6366f1;
     --accent-hover: #4f46e5;
-    --nav-bg: rgba(15, 23, 42, 0.9);
-    --input-bg: rgba(30, 41, 59, 0.7);
-    --input-border: #334155;
+    --nav-bg: rgba(15, 23, 42, 0.95);
+    --input-bg: #1e293b;
+    --input-border: #475569;
+    --input-text: #ffffff;
+    --badge-bg: rgba(99, 102, 241, 0.25);
+    --badge-text: #a5b4fc;
+    --btn-secondary-bg: #1e293b;
+    --btn-secondary-text: #cbd5e1;
 }
 
-/* TEMA 1: OSCURO CYBERPUNK (Default) */
+/* TEMA 1: CYBERPUNK OSCURO */
 [data-theme="dark-cyber"] {
     --bg-body: #070a12;
-    --card-bg: rgba(15, 23, 42, 0.85);
-    --card-border: rgba(99, 102, 241, 0.25);
-    --text-primary: #f8fafc;
-    --text-secondary: #94a3b8;
+    --card-bg: rgba(15, 23, 42, 0.92);
+    --card-sub-bg: rgba(30, 41, 59, 0.8);
+    --card-border: rgba(99, 102, 241, 0.35);
+    --text-primary: #ffffff;
+    --text-secondary: #cbd5e1;
+    --text-muted: #94a3b8;
     --accent-primary: #6366f1;
     --accent-hover: #4f46e5;
-    --nav-bg: rgba(15, 23, 42, 0.9);
+    --nav-bg: rgba(15, 23, 42, 0.95);
     --input-bg: #1e293b;
-    --input-border: #334155;
+    --input-border: #475569;
+    --input-text: #ffffff;
+    --badge-bg: rgba(99, 102, 241, 0.25);
+    --badge-text: #a5b4fc;
+    --btn-secondary-bg: #1e293b;
+    --btn-secondary-text: #e2e8f0;
 }
 
-/* TEMA 2: DUST VORTEX (Basado en la imagen adjunta: Micropartículas azul/naranja) */
+/* TEMA 2: VÓRTICE DE POLVO (Partículas Azul/Coral) */
 [data-theme="dust-vortex"] {
     --bg-body: #020408;
-    --card-bg: rgba(10, 16, 26, 0.88);
-    --card-border: rgba(249, 115, 22, 0.25);
-    --text-primary: #f1f5f9;
-    --text-secondary: #64748b;
+    --card-bg: rgba(10, 16, 26, 0.94);
+    --card-sub-bg: rgba(21, 32, 51, 0.85);
+    --card-border: rgba(249, 115, 22, 0.35);
+    --text-primary: #ffffff;
+    --text-secondary: #cbd5e1;
+    --text-muted: #94a3b8;
     --accent-primary: #f97316;
     --accent-hover: #ea580c;
-    --nav-bg: rgba(8, 12, 20, 0.92);
+    --nav-bg: rgba(8, 12, 20, 0.95);
     --input-bg: #0f172a;
-    --input-border: #1e293b;
+    --input-border: #334155;
+    --input-text: #ffffff;
+    --badge-bg: rgba(249, 115, 22, 0.25);
+    --badge-text: #fdba74;
+    --btn-secondary-bg: #1e293b;
+    --btn-secondary-text: #e2e8f0;
 }
 
-/* TEMA 3: NEON MATRIX / ESMERALDA */
+/* TEMA 3: MATRIZ ESMERALDA */
 [data-theme="neon-matrix"] {
-    --bg-body: #04120e;
-    --card-bg: rgba(6, 30, 22, 0.85);
-    --card-border: rgba(16, 185, 129, 0.3);
-    --text-primary: #ecfdf5;
-    --text-secondary: #6ee7b7;
+    --bg-body: #030f0c;
+    --card-bg: rgba(6, 30, 22, 0.92);
+    --card-sub-bg: rgba(12, 48, 36, 0.85);
+    --card-border: rgba(16, 185, 129, 0.35);
+    --text-primary: #ffffff;
+    --text-secondary: #a7f3d0;
+    --text-muted: #6ee7b7;
     --accent-primary: #10b981;
     --accent-hover: #059669;
-    --nav-bg: rgba(6, 26, 20, 0.92);
+    --nav-bg: rgba(6, 26, 20, 0.95);
     --input-bg: #062e22;
     --input-border: #047857;
+    --input-text: #ffffff;
+    --badge-bg: rgba(16, 185, 129, 0.25);
+    --badge-text: #6ee7b7;
+    --btn-secondary-bg: #062e22;
+    --btn-secondary-text: #e2e8f0;
 }
 
-/* TEMA 4: MODO CLARO MINIMALISTA */
+/* TEMA 4: LUMINOSO MINIMALISTA (Alta Legibilidad en Modo Claro) */
 [data-theme="light-clean"] {
-    --bg-body: #f1f5f9;
-    --card-bg: rgba(255, 255, 255, 0.9);
-    --card-border: #e2e8f0;
-    --text-primary: #0f172a;
-    --text-secondary: #64748b;
+    --bg-body: #f8fafc;
+    --card-bg: #ffffff;
+    --card-sub-bg: #f1f5f9;
+    --card-border: #cbd5e1;
+    --text-primary: #0f172a;      /* Negro / Azul Oscuro Intenso */
+    --text-secondary: #334155;    /* Gris Oscuro legible */
+    --text-muted: #475569;       /* Gris medio legible */
     --accent-primary: #4f46e5;
     --accent-hover: #4338ca;
-    --nav-bg: rgba(255, 255, 255, 0.95);
+    --nav-bg: #ffffff;
     --input-bg: #ffffff;
-    --input-border: #cbd5e1;
+    --input-border: #94a3b8;
+    --input-text: #0f172a;
+    --badge-bg: #e0e7ff;
+    --badge-text: #3730a3;
+    --btn-secondary-bg: #e2e8f0;
+    --btn-secondary-text: #1e293b;
 }
 
-/* APLICACIÓN GLOBAL DE ESTILOS DE TEMA */
+/* APLICACIÓN GLOBAL DE ESTILOS UNIVERSALES */
 body {
     background-color: var(--bg-body);
     color: var(--text-primary);
-    transition: background-color 0.4s ease, color 0.4s ease;
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
+/* TARJETAS PRINCIPALES */
 .theme-card {
-    background-color: var(--card-bg);
-    border-color: var(--card-border);
-    color: var(--text-primary);
+    background-color: var(--card-bg) !important;
+    border-color: var(--card-border) !important;
+    color: var(--text-primary) !important;
     backdrop-filter: blur(12px);
 }
 
-.theme-nav {
-    background-color: var(--nav-bg);
-    border-color: var(--card-border);
+/* SUB-TARJETAS Y CONTENEDORES INTERNOS */
+.theme-card-sub {
+    background-color: var(--card-sub-bg) !important;
+    border-color: var(--card-border) !important;
+    color: var(--text-primary) !important;
 }
 
+/* NAVEGACIÓN Y CABECERA */
+.theme-nav {
+    background-color: var(--nav-bg) !important;
+    border-color: var(--card-border) !important;
+    color: var(--text-primary) !important;
+}
+
+/* CLASES DE TEXTO DINÁMICAS */
+.theme-text-primary {
+    color: var(--text-primary) !important;
+}
+
+.theme-text-secondary {
+    color: var(--text-secondary) !important;
+}
+
+.theme-text-muted {
+    color: var(--text-muted) !important;
+}
+
+/* INPUTS Y SELECTS */
 .theme-input {
     background-color: var(--input-bg) !important;
     border-color: var(--input-border) !important;
-    color: var(--text-primary) !important;
+    color: var(--input-text) !important;
+}
+
+/* BOTONES SECUNDARIOS Y PESTAÑAS NO SELECCIONADAS */
+.theme-btn-secondary {
+    background-color: var(--btn-secondary-bg) !important;
+    color: var(--btn-secondary-text) !important;
+    border: 1px solid var(--card-border) !important;
+}
+
+.theme-btn-secondary:hover {
+    filter: brightness(1.1);
+}
+
+/* BADGES DE ESTADO */
+.theme-badge {
+    background-color: var(--badge-bg) !important;
+    color: var(--badge-text) !important;
 }
 
 /* TOOLTIP PERSONALIZADO */
@@ -98,8 +174,8 @@ body {
 .tooltip-text {
     visibility: hidden;
     width: 220px;
-    background-color: #0f172a;
-    color: #f8fafc;
+    background-color: var(--card-bg);
+    color: var(--text-primary);
     text-align: center;
     border-radius: 8px;
     padding: 8px 12px;
@@ -113,7 +189,7 @@ body {
     font-size: 11px;
     line-height: 1.3;
     pointer-events: none;
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.4);
     border: 1px solid var(--card-border);
 }
 .tooltip-container:hover .tooltip-text { visibility: visible; opacity: 1; }

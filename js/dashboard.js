@@ -33,6 +33,12 @@ const categoryColors = {
     'Otros': '#94a3b8'
 };
 
+// HELPER: Extrae variables de CSS del tema activo para asegurar contraste en Canvas/Chart.js
+function getCssVar(varName, fallback) {
+    const val = getComputedStyle(document.documentElement).getPropertyValue(varName).trim();
+    return val || fallback;
+}
+
 async function initDashboard() {
     await auth.authStateReady();
     const user = auth.currentUser;
@@ -60,6 +66,12 @@ async function initDashboard() {
 
 initDashboard();
 
+// Re-renderizar gráficos cuando el usuario cambie de tema en perfil
+window.addEventListener('themeChanged', () => {
+    loadMonthData();
+    loadYTDData();
+});
+
 const btnLogout = document.getElementById('btn-logout');
 if (btnLogout) btnLogout.onclick = () => signOut(auth).then(() => window.location.href = "index.html");
 
@@ -79,7 +91,7 @@ function initMonthTabs() {
     meses.forEach(m => {
         const btn = document.createElement('button');
         btn.textContent = m;
-        btn.className = `px-4 py-2 rounded-xl font-semibold whitespace-nowrap transition ${m === currentMes ? 'bg-indigo-600 text-white shadow-md' : 'theme-card text-slate-300 border hover:bg-slate-800/50'}`;
+        btn.className = `px-4 py-2 rounded-xl font-semibold whitespace-nowrap transition ${m === currentMes ? 'bg-indigo-600 text-white shadow-md' : 'theme-btn-secondary'}`;
         btn.onclick = () => { 
             currentMes = m; 
             initMonthTabs(); 
@@ -96,9 +108,9 @@ function initDashFilterButtons() {
 
     const setFilterState = (mode) => {
         dashboardFilter = mode;
-        if (btnQ1) btnQ1.className = `px-4 py-2 rounded-xl text-xs font-bold transition ${mode === 'q1' ? 'bg-indigo-600 text-white shadow-sm' : 'theme-card'}`;
-        if (btnQ2) btnQ2.className = `px-4 py-2 rounded-xl text-xs font-bold transition ${mode === 'q2' ? 'bg-indigo-600 text-white shadow-sm' : 'theme-card'}`;
-        if (btnMes) btnMes.className = `px-4 py-2 rounded-xl text-xs font-bold transition ${mode === 'mes' ? 'bg-indigo-600 text-white shadow-sm' : 'theme-card'}`;
+        if (btnQ1) btnQ1.className = `px-4 py-2 rounded-xl text-xs font-bold transition ${mode === 'q1' ? 'bg-indigo-600 text-white shadow-sm' : 'theme-btn-secondary'}`;
+        if (btnQ2) btnQ2.className = `px-4 py-2 rounded-xl text-xs font-bold transition ${mode === 'q2' ? 'bg-indigo-600 text-white shadow-sm' : 'theme-btn-secondary'}`;
+        if (btnMes) btnMes.className = `px-4 py-2 rounded-xl text-xs font-bold transition ${mode === 'mes' ? 'bg-indigo-600 text-white shadow-sm' : 'theme-btn-secondary'}`;
         loadMonthData();
     };
 
@@ -158,9 +170,13 @@ function calcularNetoQuincenal() {
         decimoCss = aplicaLeySalario ? (decimoBruto * 0.0725) : 0; 
         decimoNeto = decimoBruto - decimoCss; 
 
-        document.getElementById('e-decimo-bruto').textContent = `$${decimoBruto.toFixed(2)}`;
-        document.getElementById('e-decimo-css').textContent = `-$${decimoCss.toFixed(2)}`;
-        document.getElementById('e-decimo-neto').textContent = `$${decimoNeto.toFixed(2)}`;
+        const eBruto = document.getElementById('e-decimo-bruto');
+        const eCss = document.getElementById('e-decimo-css');
+        const eNeto = document.getElementById('e-decimo-neto');
+
+        if (eBruto) eBruto.textContent = `$${decimoBruto.toFixed(2)}`;
+        if (eCss) eCss.textContent = `-$${decimoCss.toFixed(2)}`;
+        if (eNeto) eNeto.textContent = `$${decimoNeto.toFixed(2)}`;
     } else {
         if (boxDecimoEdit) boxDecimoEdit.classList.add('hidden');
     }
@@ -246,81 +262,122 @@ async function loadMonthData() {
         budgetQ1 = bData.q1 ? bData.q1.neto : (budgetTotal / 2);
         budgetQ2 = bData.q2 ? bData.q2.neto : (budgetTotal / 2);
         
-        document.getElementById('in-salario-mensual').value = bData.salarioMensual || '';
-        document.getElementById('in-ley-salario').checked = bData.aplicaLeySalario !== undefined ? bData.aplicaLeySalario : true;
+        const inSalario = document.getElementById('in-salario-mensual');
+        const inLey = document.getElementById('in-ley-salario');
+        if (inSalario) inSalario.value = bData.salarioMensual || '';
+        if (inLey) inLey.checked = bData.aplicaLeySalario !== undefined ? bData.aplicaLeySalario : true;
 
         if (bData.q1) {
-            document.getElementById('q1-salario').value = bData.q1.salario || '';
-            document.getElementById('q1-ingreso2').value = bData.q1.ing2 || '';
-            document.getElementById('q1-ing2-ley').checked = bData.q1.ing2Ley || false;
-            document.getElementById('q1-ingreso3').value = bData.q1.ing3 || '';
-            document.getElementById('q1-ing3-ley').checked = bData.q1.ing3Ley || false;
-            document.getElementById('q1-acreedores').value = bData.q1.acreedores || '';
-            document.getElementById('q1-isr').value = bData.q1.isr || '';
-            document.getElementById('in-decimo').checked = bData.q1.incluyeDecimo || false;
+            const elSal = document.getElementById('q1-salario');
+            const elIng2 = document.getElementById('q1-ingreso2');
+            const elIng2L = document.getElementById('q1-ing2-ley');
+            const elIng3 = document.getElementById('q1-ingreso3');
+            const elIng3L = document.getElementById('q1-ing3-ley');
+            const elAcr = document.getElementById('q1-acreedores');
+            const elIsr = document.getElementById('q1-isr');
+            const elDec = document.getElementById('in-decimo');
+
+            if (elSal) elSal.value = bData.q1.salario || '';
+            if (elIng2) elIng2.value = bData.q1.ing2 || '';
+            if (elIng2L) elIng2L.checked = bData.q1.ing2Ley || false;
+            if (elIng3) elIng3.value = bData.q1.ing3 || '';
+            if (elIng3L) elIng3L.checked = bData.q1.ing3Ley || false;
+            if (elAcr) elAcr.value = bData.q1.acreedores || '';
+            if (elIsr) elIsr.value = bData.q1.isr || '';
+            if (elDec) elDec.checked = bData.q1.incluyeDecimo || false;
         }
         if (bData.q2) {
-            document.getElementById('q2-salario').value = bData.q2.salario || '';
-            document.getElementById('q2-ingreso2').value = bData.q2.ing2 || '';
-            document.getElementById('q2-ing2-ley').checked = bData.q2.ing2Ley || false;
-            document.getElementById('q2-ingreso3').value = bData.q2.ing3 || '';
-            document.getElementById('q2-ing3-ley').checked = bData.q2.ing3Ley || false;
-            document.getElementById('q2-acreedores').value = bData.q2.acreedores || '';
-            document.getElementById('q2-isr').value = bData.q2.isr || '';
+            const elSal = document.getElementById('q2-salario');
+            const elIng2 = document.getElementById('q2-ingreso2');
+            const elIng2L = document.getElementById('q2-ing2-ley');
+            const elIng3 = document.getElementById('q2-ingreso3');
+            const elIng3L = document.getElementById('q2-ing3-ley');
+            const elAcr = document.getElementById('q2-acreedores');
+            const elIsr = document.getElementById('q2-isr');
+
+            if (elSal) elSal.value = bData.q2.salario || '';
+            if (elIng2) elIng2.value = bData.q2.ing2 || '';
+            if (elIng2L) elIng2L.checked = bData.q2.ing2Ley || false;
+            if (elIng3) elIng3.value = bData.q2.ing3 || '';
+            if (elIng3L) elIng3L.checked = bData.q2.ing3Ley || false;
+            if (elAcr) elAcr.value = bData.q2.acreedores || '';
+            if (elIsr) elIsr.value = bData.q2.isr || '';
         }
 
         if (bData.q1 && bData.q2) {
-            document.getElementById('v-q1-salario').textContent = `$${(bData.q1.salario || 0).toFixed(2)}`;
+            const vQ1Sal = document.getElementById('v-q1-salario');
+            const vQ1Ss = document.getElementById('v-q1-ss');
+            const vQ1Se = document.getElementById('v-q1-se');
+            const vQ1Isr = document.getElementById('v-q1-isr');
+            const vQ1Acr = document.getElementById('v-q1-acreedores');
+            const vQ1Neto = document.getElementById('v-q1-neto');
+
+            if (vQ1Sal) vQ1Sal.textContent = `$${(bData.q1.salario || 0).toFixed(2)}`;
             
             const boxIng2Q1 = document.getElementById('v-q1-ing2-box');
             if (bData.q1.ing2 > 0) {
                 if (boxIng2Q1) boxIng2Q1.classList.remove('hidden');
-                document.getElementById('v-q1-ing2').textContent = `+$${bData.q1.ing2.toFixed(2)}`;
+                const vQ1Ing2 = document.getElementById('v-q1-ing2');
+                if (vQ1Ing2) vQ1Ing2.textContent = `+$${bData.q1.ing2.toFixed(2)}`;
             } else if (boxIng2Q1) boxIng2Q1.classList.add('hidden');
 
             const boxIng3Q1 = document.getElementById('v-q1-ing3-box');
             if (bData.q1.ing3 > 0) {
                 if (boxIng3Q1) boxIng3Q1.classList.remove('hidden');
-                document.getElementById('v-q1-ing3').textContent = `+$${bData.q1.ing3.toFixed(2)}`;
+                const vQ1Ing3 = document.getElementById('v-q1-ing3');
+                if (vQ1Ing3) vQ1Ing3.textContent = `+$${bData.q1.ing3.toFixed(2)}`;
             } else if (boxIng3Q1) boxIng3Q1.classList.add('hidden');
 
-            document.getElementById('v-q1-ss').textContent = `-$${(bData.q1.ss || 0).toFixed(2)}`;
-            document.getElementById('v-q1-se').textContent = `-$${(bData.q1.se || 0).toFixed(2)}`;
-            document.getElementById('v-q1-isr').textContent = `-$${(bData.q1.isr || 0).toFixed(2)}`;
-            document.getElementById('v-q1-acreedores').textContent = `-$${(bData.q1.acreedores || 0).toFixed(2)}`;
-            document.getElementById('v-q1-neto').textContent = `$${(bData.q1.neto || 0).toFixed(2)}`;
+            if (vQ1Ss) vQ1Ss.textContent = `-$${(bData.q1.ss || 0).toFixed(2)}`;
+            if (vQ1Se) vQ1Se.textContent = `-$${(bData.q1.se || 0).toFixed(2)}`;
+            if (vQ1Isr) vQ1Isr.textContent = `-$${(bData.q1.isr || 0).toFixed(2)}`;
+            if (vQ1Acr) vQ1Acr.textContent = `-$${(bData.q1.acreedores || 0).toFixed(2)}`;
+            if (vQ1Neto) vQ1Neto.textContent = `$${(bData.q1.neto || 0).toFixed(2)}`;
 
             const vDecimoBox = document.getElementById('v-container-decimo');
             if (bData.q1.incluyeDecimo) {
                 if (vDecimoBox) vDecimoBox.classList.remove('hidden');
-                document.getElementById('v-q1-decimo-bruto').textContent = `$${(bData.q1.decimoBruto || 0).toFixed(2)}`;
-                document.getElementById('v-q1-decimo-css').textContent = `-$${(bData.q1.decimoCss || 0).toFixed(2)}`;
-                document.getElementById('v-q1-decimo-neto').textContent = `$${(bData.q1.decimoNeto || 0).toFixed(2)}`;
+                const vDBruto = document.getElementById('v-q1-decimo-bruto');
+                const vDCss = document.getElementById('v-q1-decimo-css');
+                const vDNeto = document.getElementById('v-q1-decimo-neto');
+                if (vDBruto) vDBruto.textContent = `$${(bData.q1.decimoBruto || 0).toFixed(2)}`;
+                if (vDCss) vDCss.textContent = `-$${(bData.q1.decimoCss || 0).toFixed(2)}`;
+                if (vDNeto) vDNeto.textContent = `$${(bData.q1.decimoNeto || 0).toFixed(2)}`;
             } else if (vDecimoBox) {
                 vDecimoBox.classList.add('hidden');
             }
 
-            document.getElementById('v-q2-salario').textContent = `$${(bData.q2.salario || 0).toFixed(2)}`;
+            const vQ2Sal = document.getElementById('v-q2-salario');
+            const vQ2Ss = document.getElementById('v-q2-ss');
+            const vQ2Se = document.getElementById('v-q2-se');
+            const vQ2Isr = document.getElementById('v-q2-isr');
+            const vQ2Acr = document.getElementById('v-q2-acreedores');
+            const vQ2Neto = document.getElementById('v-q2-neto');
+            const vNetoTot = document.getElementById('v-neto-total');
+
+            if (vQ2Sal) vQ2Sal.textContent = `$${(bData.q2.salario || 0).toFixed(2)}`;
             
             const boxIng2Q2 = document.getElementById('v-q2-ing2-box');
             if (bData.q2.ing2 > 0) {
                 if (boxIng2Q2) boxIng2Q2.classList.remove('hidden');
-                document.getElementById('v-q2-ing2').textContent = `+$${bData.q2.ing2.toFixed(2)}`;
+                const vQ2Ing2 = document.getElementById('v-q2-ing2');
+                if (vQ2Ing2) vQ2Ing2.textContent = `+$${bData.q2.ing2.toFixed(2)}`;
             } else if (boxIng2Q2) boxIng2Q2.classList.add('hidden');
 
             const boxIng3Q2 = document.getElementById('v-q2-ing3-box');
             if (bData.q2.ing3 > 0) {
                 if (boxIng3Q2) boxIng3Q2.classList.remove('hidden');
-                document.getElementById('v-q2-ing3').textContent = `+$${bData.q2.ing3.toFixed(2)}`;
+                const vQ2Ing3 = document.getElementById('v-q2-ing3');
+                if (vQ2Ing3) vQ2Ing3.textContent = `+$${bData.q2.ing3.toFixed(2)}`;
             } else if (boxIng3Q2) boxIng3Q2.classList.add('hidden');
 
-            document.getElementById('v-q2-ss').textContent = `-$${(bData.q2.ss || 0).toFixed(2)}`;
-            document.getElementById('v-q2-se').textContent = `-$${(bData.q2.se || 0).toFixed(2)}`;
-            document.getElementById('v-q2-isr').textContent = `-$${(bData.q2.isr || 0).toFixed(2)}`;
-            document.getElementById('v-q2-acreedores').textContent = `-$${(bData.q2.acreedores || 0).toFixed(2)}`;
-            document.getElementById('v-q2-neto').textContent = `$${(bData.q2.neto || 0).toFixed(2)}`;
+            if (vQ2Ss) vQ2Ss.textContent = `-$${(bData.q2.ss || 0).toFixed(2)}`;
+            if (vQ2Se) vQ2Se.textContent = `-$${(bData.q2.se || 0).toFixed(2)}`;
+            if (vQ2Isr) vQ2Isr.textContent = `-$${(bData.q2.isr || 0).toFixed(2)}`;
+            if (vQ2Acr) vQ2Acr.textContent = `-$${(bData.q2.acreedores || 0).toFixed(2)}`;
+            if (vQ2Neto) vQ2Neto.textContent = `$${(bData.q2.neto || 0).toFixed(2)}`;
 
-            document.getElementById('v-neto-total').textContent = `$${budgetTotal.toFixed(2)}`;
+            if (vNetoTot) vNetoTot.textContent = `$${budgetTotal.toFixed(2)}`;
         }
 
         setBudgetMode(false);
@@ -359,13 +416,19 @@ async function loadMonthData() {
             else spentQ1 += data.monto;
         });
 
-        document.getElementById('current-month-total').textContent = `$${totalSpent.toFixed(2)}`;
-        document.getElementById('m-fijo').textContent = `$${fixedSpent.toFixed(2)}`;
-        document.getElementById('m-extra').textContent = `$${extraSpent.toFixed(2)}`;
+        const cMonthTot = document.getElementById('current-month-total');
+        const mFijo = document.getElementById('m-fijo');
+        const mExtra = document.getElementById('m-extra');
 
-        renderGauge('gaugeQ1', 'q1-pct', 'q1-spent', 'q1-avail', spentQ1, budgetQ1, chartQ1, (inst) => chartQ1 = inst, ['#3b82f6', '#334155']);
-        renderGauge('gaugeQ2', 'q2-pct', 'q2-spent', 'q2-avail', spentQ2, budgetQ2, chartQ2, (inst) => chartQ2 = inst, ['#a855f7', '#334155']);
-        renderGauge('gaugeTotal', 'total-pct', 'total-spent', 'total-avail', totalSpent, budgetTotal, chartTotal, (inst) => chartTotal = inst, ['#6366f1', '#334155']);
+        if (cMonthTot) cMonthTot.textContent = `$${totalSpent.toFixed(2)}`;
+        if (mFijo) mFijo.textContent = `$${fixedSpent.toFixed(2)}`;
+        if (mExtra) mExtra.textContent = `$${extraSpent.toFixed(2)}`;
+
+        const accentColor = getCssVar('--accent-primary', '#6366f1');
+
+        renderGauge('gaugeQ1', 'q1-pct', 'q1-spent', 'q1-avail', spentQ1, budgetQ1, chartQ1, (inst) => chartQ1 = inst, ['#3b82f6']);
+        renderGauge('gaugeQ2', 'q2-pct', 'q2-spent', 'q2-avail', spentQ2, budgetQ2, chartQ2, (inst) => chartQ2 = inst, ['#a855f7']);
+        renderGauge('gaugeTotal', 'total-pct', 'total-spent', 'total-avail', totalSpent, budgetTotal, chartTotal, (inst) => chartTotal = inst, [accentColor]);
 
         renderTypeChart(fixedSpent, extraSpent);
         renderCategoryBarChart('categoryMonthBarChart', 'category-month-list', categoryTotals, totalSpent, categoryMonthChartInstance, (inst) => categoryMonthChartInstance = inst);
@@ -406,18 +469,25 @@ function renderGauge(canvasId, pctId, spentId, availId, spent, budget, chartInst
     const available = Math.max(0, budget - spent);
     const percentage = budget > 0 ? Math.round((spent / budget) * 100) : 0;
     
-    document.getElementById(pctId).textContent = percentage + '%';
-    document.getElementById(spentId).textContent = `$${spent.toFixed(2)}`;
-    document.getElementById(availId).textContent = `$${available.toFixed(2)}`;
+    const elPct = document.getElementById(pctId);
+    const elSpent = document.getElementById(spentId);
+    const elAvail = document.getElementById(availId);
+
+    if (elPct) elPct.textContent = percentage + '%';
+    if (elSpent) elSpent.textContent = `$${spent.toFixed(2)}`;
+    if (elAvail) elAvail.textContent = `$${available.toFixed(2)}`;
 
     const canvasEl = document.getElementById(canvasId);
     if (!canvasEl) return;
     const ctx = canvasEl.getContext('2d');
     if (chartInstanceVar) chartInstanceVar.destroy();
     
+    const subBgColor = getCssVar('--card-sub-bg', '#334155');
+    const gaugeColors = [colors[0], subBgColor];
+
     const newInstance = new Chart(ctx, {
         type: 'doughnut',
-        data: { datasets: [{ data: [spent, available], backgroundColor: colors, borderWidth: 0 }] },
+        data: { datasets: [{ data: [spent, available], backgroundColor: gaugeColors, borderWidth: 0 }] },
         options: { rotation: -90, circumference: 180, cutout: '80%', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
     });
     setInstanceCallback(newInstance);
@@ -430,7 +500,7 @@ function renderTypeChart(fijo, extra) {
     if (typeChartInstance) typeChartInstance.destroy();
     
     const dataValues = (fijo === 0 && extra === 0) ? [1] : [fijo, extra];
-    const bgColors = (fijo === 0 && extra === 0) ? ['#ffffff20'] : ['#38bdf8', '#fb7185'];
+    const bgColors = (fijo === 0 && extra === 0) ? ['#ffffff30'] : ['#38bdf8', '#fb7185'];
 
     typeChartInstance = new Chart(ctx, {
         type: 'doughnut',
@@ -445,6 +515,8 @@ function renderCategoryBarChart(canvasId, listContainerId, categoriesObj, totalS
     const total = totalSpentVal || data.reduce((a, b) => a + b, 0);
 
     const colors = rawLabels.map(l => categoryColors[l] || '#94a3b8');
+    const textColor = getCssVar('--text-primary', '#ffffff');
+    const subBgColor = getCssVar('--card-sub-bg', '#334155');
 
     const listContainer = document.getElementById(listContainerId);
     if (listContainer) {
@@ -454,16 +526,16 @@ function renderCategoryBarChart(canvasId, listContainerId, categoriesObj, totalS
             const pct = total > 0 ? ((amount / total) * 100).toFixed(1) : '0';
             listContainer.innerHTML += `
                 <div class="flex justify-between items-center text-xs py-0.5">
-                    <span class="flex items-center gap-1.5 font-medium text-slate-300">
+                    <span class="flex items-center gap-1.5 font-medium theme-text-secondary">
                         <span class="w-2.5 h-2.5 rounded-full flex-shrink-0" style="background-color: ${categoryColors[cat] || '#94a3b8'}"></span>
                         ${cat}
                     </span>
-                    <span class="font-bold text-slate-100">$${amount.toFixed(2)} <span class="text-slate-400 font-normal">(${pct}%)</span></span>
+                    <span class="font-bold theme-text-primary">$${amount.toFixed(2)} <span class="theme-text-muted font-normal">(${pct}%)</span></span>
                 </div>`;
         });
 
         if (rawLabels.length === 0) {
-            listContainer.innerHTML = `<p class="text-center text-slate-500 py-2">Sin gastos registrados.</p>`;
+            listContainer.innerHTML = `<p class="text-center theme-text-muted py-2">Sin gastos registrados.</p>`;
         }
     }
 
@@ -479,7 +551,7 @@ function renderCategoryBarChart(canvasId, listContainerId, categoriesObj, totalS
             datasets: [{
                 label: 'Monto ($)',
                 data: data.length > 0 ? data : [0],
-                backgroundColor: data.length > 0 ? colors : ['#334155'],
+                backgroundColor: data.length > 0 ? colors : [subBgColor],
                 borderRadius: 6
             }]
         },
@@ -501,7 +573,7 @@ function renderCategoryBarChart(canvasId, listContainerId, categoriesObj, totalS
                 }
             },
             scales: {
-                x: { grid: { display: false }, ticks: { font: { size: 10 }, color: '#94a3b8', callback: (value) => '$' + value } },
+                x: { grid: { display: false }, ticks: { font: { size: 10 }, color: textColor, callback: (value) => '$' + value } },
                 y: { grid: { display: false }, ticks: { display: false } }
             }
         }
@@ -533,9 +605,13 @@ async function loadYTDData() {
             }
         });
 
-        document.getElementById('ytd-total-spent').textContent = `$${totalYTD.toFixed(2)} Gastados`;
-        document.getElementById('ytd-fijo').textContent = `$${ytdFijo.toFixed(2)}`;
-        document.getElementById('ytd-extra').textContent = `$${ytdExtra.toFixed(2)}`;
+        const ytdTot = document.getElementById('ytd-total-spent');
+        const ytdF = document.getElementById('ytd-fijo');
+        const ytdE = document.getElementById('ytd-extra');
+
+        if (ytdTot) ytdTot.textContent = `$${totalYTD.toFixed(2)} Gastados`;
+        if (ytdF) ytdF.textContent = `$${ytdFijo.toFixed(2)}`;
+        if (ytdE) ytdE.textContent = `$${ytdExtra.toFixed(2)}`;
 
         renderCategoryBarChart('categoryYtdBarChart', 'category-ytd-list', categoryYtdTotals, totalYTD, categoryYtdChartInstance, (inst) => categoryYtdChartInstance = inst);
     });
