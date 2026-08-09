@@ -1,6 +1,6 @@
 export const themes = [
-    { id: 'dark-cyber', name: 'Cyberpunk Oscuro' },
     { id: 'dark-crimson', name: 'Crimson Midnight' },
+    { id: 'dark-cyber', name: 'Cyberpunk Oscuro' },
     { id: 'dust-vortex', name: 'Vórtice de Polvo' },
     { id: 'neon-matrix', name: 'Matriz Esmeralda' },
     { id: 'light-clean', name: 'Luminoso Minimalista' }

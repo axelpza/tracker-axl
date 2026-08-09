@@ -1,39 +1,7 @@
 /* VARIABLES GLOBALES Y SISTEMA DE TEMAS COMPLETO CON FONDOS SÓLIDOS */
 
-/* 1. CYBERPUNK OSCURO (Índigo Nocturno) */
-html[data-theme="dark-cyber"], body[data-theme="dark-cyber"], :root {
-    --bg-body: #070a12;
-    --card-bg: #0f172a;
-    --card-sub-bg: #1e293b;
-    --card-border: #334155;
-    
-    --banner-bg: linear-gradient(135deg, #4338ca 0%, #6d28d9 100%);
-    --banner-text: #ffffff;
-    --banner-subtext: #c7d2fe;
-    
-    --text-primary: #f8fafc;
-    --text-secondary: #cbd5e1;
-    --text-muted: #94a3b8;
-    
-    --accent-primary: #6366f1;
-    --accent-hover: #4f46e5;
-    --accent-text: #a5b4fc;
-    --accent-badge-bg: #1e1b4b;
-    --accent-badge-border: #4338ca;
-    
-    --nav-bg: #0f172a;
-    --input-bg: #1e293b;
-    --input-border: #475569;
-    --input-text: #ffffff;
-    
-    --chart-q1: #3b82f6;
-    --chart-q2: #a855f7;
-    --btn-secondary-bg: #1e293b;
-    --btn-secondary-text: #e2e8f0;
-}
-
-/* 2. CRIMSON MIDNIGHT (Azul Marino & Rojo Carmesí Oscuro) */
-html[data-theme="dark-crimson"], body[data-theme="dark-crimson"] {
+/* 1. CRIMSON MIDNIGHT (PREDETERMINADO OSCURO) */
+html[data-theme="dark-crimson"], body[data-theme="dark-crimson"], :root {
     --bg-body: #080c14;
     --card-bg: #111827;
     --card-sub-bg: #1f2937;
@@ -62,6 +30,38 @@ html[data-theme="dark-crimson"], body[data-theme="dark-crimson"] {
     --chart-q2: #ef4444;
     --btn-secondary-bg: #1f2937;
     --btn-secondary-text: #f3f4f6;
+}
+
+/* 2. CYBERPUNK OSCURO (Índigo Nocturno) */
+html[data-theme="dark-cyber"], body[data-theme="dark-cyber"] {
+    --bg-body: #070a12;
+    --card-bg: #0f172a;
+    --card-sub-bg: #1e293b;
+    --card-border: #334155;
+    
+    --banner-bg: linear-gradient(135deg, #4338ca 0%, #6d28d9 100%);
+    --banner-text: #ffffff;
+    --banner-subtext: #c7d2fe;
+    
+    --text-primary: #f8fafc;
+    --text-secondary: #cbd5e1;
+    --text-muted: #94a3b8;
+    
+    --accent-primary: #6366f1;
+    --accent-hover: #4f46e5;
+    --accent-text: #a5b4fc;
+    --accent-badge-bg: #1e1b4b;
+    --accent-badge-border: #4338ca;
+    
+    --nav-bg: #0f172a;
+    --input-bg: #1e293b;
+    --input-border: #475569;
+    --input-text: #ffffff;
+    
+    --chart-q1: #3b82f6;
+    --chart-q2: #a855f7;
+    --btn-secondary-bg: #1e293b;
+    --btn-secondary-text: #e2e8f0;
 }
 
 /* 3. VÓRTICE DE POLVO (Naranja Estelar Oscuro) */
@@ -128,7 +128,7 @@ html[data-theme="neon-matrix"], body[data-theme="neon-matrix"] {
     --btn-secondary-text: #e2e8f0;
 }
 
-/* 5. LUMINOSO MINIMALISTA (Tema Claro) */
+/* 5. LUMINOSO MINIMALISTA (Tema Claro Seleccionable) */
 html[data-theme="light-clean"], body[data-theme="light-clean"] {
     --bg-body: #f1f5f9;
     --card-bg: #ffffff;
@@ -161,10 +161,11 @@ html[data-theme="light-clean"], body[data-theme="light-clean"] {
 }
 
 /* ESTILOS BASE Y FORZADO DE FONDO SÓLIDO */
-body {
+html, body {
     background-color: var(--bg-body) !important;
     color: var(--text-primary) !important;
-    transition: background-color 0.3s ease, color 0.3s ease;
+    transition: background-color 0.2s ease, color 0.2s ease;
+    min-height: 100vh;
 }
 
 /* BANNER SUPERIOR */
@@ -233,11 +234,15 @@ body {
     color: var(--accent-text) !important;
 }
 
-/* INPUTS Y SELECTS */
+/* INPUTS Y SELECTS PREVENCIÓN DE ZOOM MÓVIL */
 .theme-input {
     background-color: var(--input-bg) !important;
     border: 1px solid var(--input-border) !important;
     color: var(--input-text) !important;
+    font-size: 16px !important; /* Previene auto-zoom en iOS */
+}
+@media (min-width: 640px) {
+    .theme-input { font-size: 14px !important; }
 }
 
 /* TARJETAS DE CATEGORÍA INTERACTIVAS (HOVER SINCRONIZADO) */
@@ -255,6 +260,10 @@ body {
     opacity: 0.35;
     filter: grayscale(30%);
 }
+
+/* OCULTAR SCROLLBARS EN CONTENEDORES HORIZONTALES TOUCH */
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
 /* TOOLTIP */
 .tooltip-container { position: relative; display: inline-flex; align-items: center; }

@@ -1,95 +1,120 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" data-theme="dark-crimson">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Dashboard - Tracker Finanzas</title>
+    <!-- Script de inyección inmediata para evitar que se vea blanco al cargar -->
+    <script>
+        (function() {
+            var theme = localStorage.getItem('app_theme') || 'dark-crimson';
+            document.documentElement.setAttribute('data-theme', theme);
+        })();
+    </script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="css/styles.css">
 </head>
-<body class="min-h-screen pb-12 relative overflow-x-hidden">
+<body class="min-h-screen pb-12 relative overflow-x-hidden" data-theme="dark-crimson">
 
     <div class="relative z-10">
-        <!-- Menú de Navegación -->
-        <nav class="theme-nav shadow-md px-4 sm:px-6 py-4 flex flex-col sm:flex-row justify-between items-center gap-3">
-            <div class="flex items-center gap-3">
-                <span id="nav-avatar" class="text-2xl">👨‍💻</span>
-                <h1 class="font-bold text-lg theme-accent-text">Hola, <span id="nav-name">Usuario</span></h1>
+        <!-- Menú de Navegación con Hamburguesa Móvil -->
+        <nav class="theme-nav shadow-md px-4 sm:px-6 py-3.5">
+            <div class="max-w-6xl mx-auto flex justify-between items-center">
+                <div class="flex items-center gap-3">
+                    <span id="nav-avatar" class="text-2xl">👨‍💻</span>
+                    <h1 class="font-bold text-base sm:text-lg theme-accent-text">Hola, <span id="nav-name">Usuario</span></h1>
+                </div>
+
+                <!-- Botón Hamburguesa para Móvil -->
+                <button id="mobile-menu-toggle" class="sm:hidden text-2xl theme-text-primary p-1 focus:outline-none" aria-label="Abrir Menú">
+                    ☰
+                </button>
+
+                <!-- Menú Escritorio -->
+                <div class="hidden sm:flex items-center gap-4 text-sm font-semibold">
+                    <a href="dashboard.html" class="theme-nav-link-active pb-1">Budget</a>
+                    <a href="gastos.html" class="theme-text-secondary hover:text-indigo-400">Gastos</a>
+                    <a href="adicionales.html" class="theme-text-secondary hover:text-indigo-400">Gastos Adicionales</a>
+                    <a href="perfil.html" class="theme-text-secondary hover:text-indigo-400">Mi Perfil</a>
+                    <button id="btn-logout" class="bg-red-500/10 text-red-400 px-3 py-1.5 rounded-lg hover:bg-red-500/20 transition">Salir</button>
+                </div>
             </div>
-            <div class="flex flex-wrap justify-center gap-3 sm:gap-4 items-center text-sm font-semibold">
-                <a href="dashboard.html" class="theme-nav-link-active pb-1">Budget</a>
-                <a href="gastos.html" class="theme-text-secondary hover:text-indigo-400">Gastos</a>
-                <a href="adicionales.html" class="theme-text-secondary hover:text-indigo-400">Gastos Adicionales</a>
-                <a href="perfil.html" class="theme-text-secondary hover:text-indigo-400">Mi Perfil</a>
-                <button id="btn-logout" class="bg-red-500/10 text-red-400 px-3 py-1.5 rounded-lg hover:bg-red-500/20 transition">Salir</button>
+
+            <!-- Desplegable Menú Móvil -->
+            <div id="mobile-menu" class="sm:hidden hidden pt-3 pb-2 border-t border-slate-700/40 mt-3 space-y-2 text-sm font-semibold">
+                <a href="dashboard.html" class="block py-2 px-3 rounded-lg theme-accent-btn">Budget</a>
+                <a href="gastos.html" class="block py-2 px-3 rounded-lg theme-btn-secondary">Gastos</a>
+                <a href="adicionales.html" class="block py-2 px-3 rounded-lg theme-btn-secondary">Gastos Adicionales</a>
+                <a href="perfil.html" class="block py-2 px-3 rounded-lg theme-btn-secondary">Mi Perfil</a>
+                <button id="btn-logout-mobile" class="w-full text-left py-2 px-3 rounded-lg bg-red-500/10 text-red-400">Salir</button>
             </div>
         </nav>
 
-        <main class="max-w-6xl mx-auto p-4 sm:p-6 space-y-6">
+        <main class="max-w-6xl mx-auto p-3.5 sm:p-6 space-y-5 sm:space-y-6">
             
             <!-- PANEL CONSOLIDADO EJECUTIVO (YTD + MES + CATEGORÍAS) -->
             <div class="theme-card rounded-2xl shadow-lg border overflow-hidden">
-                <!-- Header del Banner -->
-                <div class="theme-banner p-5 sm:p-6 grid grid-cols-1 md:grid-cols-3 gap-6 items-center">
-                    <div>
-                        <p class="theme-banner-subtext text-xs font-semibold uppercase tracking-wider">Resumen Anual (YTD Enero - Actual)</p>
-                        <h2 class="text-2xl font-black mt-1" id="ytd-total-spent">$0.00 Gastados</h2>
-                        <div class="flex gap-4 mt-2 text-xs theme-banner-subtext">
+                <!-- Header del Banner (Responsive) -->
+                <div class="theme-banner p-4 sm:p-6 grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 items-center">
+                    <div class="theme-card-sub md:bg-transparent p-3 sm:p-0 rounded-xl md:border-0 border">
+                        <p class="theme-banner-subtext text-[10px] sm:text-xs font-bold uppercase tracking-wider">Resumen Anual (YTD Enero - Actual)</p>
+                        <h2 class="text-xl sm:text-2xl font-black mt-0.5" id="ytd-total-spent">$0.00 Gastados</h2>
+                        <div class="flex gap-4 mt-1.5 text-xs theme-banner-subtext">
                             <span>Fijos YTD: <strong id="ytd-fijo">$0.00</strong></span>
                             <span>Extra YTD: <strong id="ytd-extra">$0.00</strong></span>
                         </div>
                     </div>
 
-                    <div>
-                        <p class="theme-banner-subtext text-xs font-semibold uppercase tracking-wider">Total Mes (<span id="lbl-current-mes">Mes</span>)</p>
-                        <h3 class="text-2xl font-black mt-1" id="current-month-total">$0.00</h3>
-                        <div class="flex gap-4 mt-2 text-xs theme-banner-subtext">
+                    <div class="theme-card-sub md:bg-transparent p-3 sm:p-0 rounded-xl md:border-0 border">
+                        <p class="theme-banner-subtext text-[10px] sm:text-xs font-bold uppercase tracking-wider">Total Mes (<span id="lbl-current-mes">Mes</span>)</p>
+                        <h3 class="text-xl sm:text-2xl font-black mt-0.5" id="current-month-total">$0.00</h3>
+                        <div class="flex gap-4 mt-1.5 text-xs theme-banner-subtext">
                             <span>Fijo: <strong id="m-fijo">$0.00</strong></span>
                             <span>Extra: <strong id="m-extra">$0.00</strong></span>
                         </div>
                     </div>
 
-                    <div class="bg-black/25 p-3.5 rounded-xl flex items-center justify-between border border-white/10">
+                    <div class="bg-black/30 p-3 sm:p-3.5 rounded-xl flex items-center justify-between border border-white/10">
                         <div>
-                            <p class="text-[11px] font-bold uppercase theme-banner-subtext">Distribución Gasto</p>
-                            <p class="text-xs text-white/90 font-semibold mt-1">Fijo vs Extraordinario</p>
+                            <p class="text-[10px] sm:text-[11px] font-bold uppercase theme-banner-subtext">Distribución Gasto</p>
+                            <p class="text-xs text-white/90 font-semibold mt-0.5">Fijo vs Extraordinario</p>
                         </div>
-                        <div class="w-16 h-16 relative">
+                        <div class="w-14 h-14 sm:w-16 sm:h-16 relative flex-shrink-0">
                             <canvas id="typeChart"></canvas>
                         </div>
                     </div>
                 </div>
 
                 <!-- Desglose por Categorías con Rueda Interactiva -->
-                <div class="p-5 sm:p-6 space-y-6">
-                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-b border-slate-700/50 pb-3">
-                        <h3 class="font-bold text-sm uppercase tracking-wider theme-text-primary flex items-center gap-2">
+                <div class="p-4 sm:p-6 space-y-4 sm:space-y-6">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2.5 border-b border-slate-700/50 pb-3">
+                        <h3 class="font-bold text-xs sm:text-sm uppercase tracking-wider theme-text-primary flex items-center gap-2">
                             <span>🎨</span> Desglose Interactivo por Categorías
                         </h3>
-                        <div class="flex gap-2">
-                            <button id="btn-cat-view-month" class="px-3.5 py-1.5 rounded-xl text-xs font-bold theme-accent-btn">Ver Mes (<span id="lbl-cat-toggle-month">Mes</span>)</button>
-                            <button id="btn-cat-view-ytd" class="px-3.5 py-1.5 rounded-xl text-xs font-bold theme-btn-secondary">Ver Anual (YTD)</button>
+                        <div class="flex gap-2 w-full sm:w-auto">
+                            <button id="btn-cat-view-month" class="flex-1 sm:flex-none px-3 py-1.5 rounded-xl text-xs font-bold theme-accent-btn">Ver Mes (<span id="lbl-cat-toggle-month">Mes</span>)</button>
+                            <button id="btn-cat-view-ytd" class="flex-1 sm:flex-none px-3 py-1.5 rounded-xl text-xs font-bold theme-btn-secondary">Ver Anual (YTD)</button>
                         </div>
                     </div>
 
                     <!-- RUEDA CIRCULAR Y MESH INTERACTIVO DE CATEGORÍAS -->
-                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-6 items-center">
                         <!-- Rueda de Colores (Donut Chart) -->
-                        <div class="lg:col-span-5 flex flex-col items-center justify-center relative">
-                            <div class="relative w-56 h-56 sm:w-64 sm:h-64">
+                        <div class="lg:col-span-5 flex flex-col items-center justify-center relative py-2 sm:py-0">
+                            <div class="relative w-44 h-44 sm:w-64 sm:h-64">
                                 <canvas id="categoryWheelChart"></canvas>
                                 <!-- Overlay central con total dinámico -->
-                                <div class="absolute inset-0 flex flex-col items-center justify-center text-center pointer-events-none p-4">
-                                    <span id="wheel-center-amount" class="text-xl sm:text-2xl font-black theme-text-primary">$0.00</span>
-                                    <span id="wheel-center-label" class="text-[11px] font-semibold theme-text-muted mt-0.5">Total Gastado</span>
+                                <div class="absolute inset-0 flex flex-col items-center justify-center text-center pointer-events-none p-2 sm:p-4">
+                                    <span id="wheel-center-amount" class="text-lg sm:text-2xl font-black theme-text-primary">$0.00</span>
+                                    <span id="wheel-center-label" class="text-[10px] sm:text-[11px] font-semibold theme-text-muted mt-0.5">Total Gastado</span>
                                 </div>
                             </div>
                         </div>
 
                         <!-- Grid de Categorías con Hover Sincronizado -->
                         <div class="lg:col-span-7">
-                            <div id="category-interactive-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 max-h-80 overflow-y-auto pr-1">
+                            <div id="category-interactive-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-2.5 max-h-72 sm:max-h-80 overflow-y-auto pr-1">
                                 <!-- Generado dinámicamente por JS -->
                             </div>
                         </div>
@@ -97,14 +122,14 @@
                 </div>
             </div>
 
-            <!-- Selector de Meses -->
-            <div class="flex gap-2 overflow-x-auto pb-2" id="month-tabs"></div>
+            <!-- Selector de Meses con Scroll Táctil -->
+            <div class="flex gap-2 overflow-x-auto pb-1 no-scrollbar" id="month-tabs"></div>
 
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-5 sm:gap-6">
                 <!-- Columna Izquierda: Planificador Quincenal -->
-                <div class="space-y-6">
+                <div class="space-y-5 sm:space-y-6">
                     <!-- MODO VISTA -->
-                    <div id="budget-view-mode" class="theme-card p-5 sm:p-6 rounded-2xl border space-y-4 hidden">
+                    <div id="budget-view-mode" class="theme-card p-4 sm:p-6 rounded-2xl border space-y-4 hidden">
                         <div class="flex justify-between items-center border-b border-slate-700/50 pb-3">
                             <h3 class="font-bold theme-text-primary text-sm">Resumen de Planilla (<span id="view-mes-title">Mes</span>)</h3>
                             <button id="btn-edit-budget" class="theme-accent-text p-1.5 rounded-xl theme-badge-accent transition flex items-center gap-1 text-xs font-bold" title="Editar Planilla">
@@ -153,8 +178,8 @@
                     </div>
 
                     <!-- MODO EDICIÓN -->
-                    <div id="budget-edit-mode" class="theme-card p-5 sm:p-6 rounded-2xl border space-y-5">
-                        <h3 class="font-bold border-b border-slate-700/50 pb-2 theme-text-primary">Planificador de Planilla (Panamá)</h3>
+                    <div id="budget-edit-mode" class="theme-card p-4 sm:p-6 rounded-2xl border space-y-4 sm:space-y-5">
+                        <h3 class="font-bold border-b border-slate-700/50 pb-2 theme-text-primary text-sm">Planificador de Planilla (Panamá)</h3>
                         
                         <div class="theme-badge-accent p-3 rounded-xl space-y-2">
                             <div class="flex justify-between items-center">
@@ -172,12 +197,12 @@
                                     </div>
                                 </div>
                             </div>
-                            <input type="number" step="0.01" id="in-salario-mensual" placeholder="Ej: 2400.00" class="theme-input w-full p-2 border rounded-xl text-sm font-semibold outline-none">
+                            <input type="number" step="0.01" id="in-salario-mensual" placeholder="Ej: 2400.00" class="theme-input w-full p-2.5 border rounded-xl text-sm font-semibold outline-none">
                         </div>
 
                         <!-- BLOQUE Q1 EDIT -->
-                        <div class="space-y-3 theme-card-sub p-4 rounded-xl border">
-                            <h4 class="font-bold theme-accent-text text-sm">1ra Quincena (1 - 15)</h4>
+                        <div class="space-y-3 theme-card-sub p-3.5 sm:p-4 rounded-xl border">
+                            <h4 class="font-bold theme-accent-text text-xs sm:text-sm">1ra Quincena (1 - 15)</h4>
                             <div>
                                 <label class="block text-[11px] font-semibold theme-text-secondary mb-1">Salario Base Q1 ($)</label>
                                 <input type="number" step="0.01" id="q1-salario" class="theme-input w-full p-2 border rounded-xl text-sm outline-none">
@@ -226,8 +251,8 @@
                         </div>
 
                         <!-- BLOQUE Q2 EDIT -->
-                        <div class="space-y-3 theme-card-sub p-4 rounded-xl border">
-                            <h4 class="font-bold theme-accent-text text-sm">2da Quincena (16 - 31)</h4>
+                        <div class="space-y-3 theme-card-sub p-3.5 sm:p-4 rounded-xl border">
+                            <h4 class="font-bold theme-accent-text text-xs sm:text-sm">2da Quincena (16 - 31)</h4>
                             <div>
                                 <label class="block text-[11px] font-semibold theme-text-secondary mb-1">Salario Base Q2 ($)</label>
                                 <input type="number" step="0.01" id="q2-salario" class="theme-input w-full p-2 border rounded-xl text-sm outline-none">
@@ -274,19 +299,19 @@
                 </div>
 
                 <!-- Columna Derecha: Tacómetros e Integración Quincenal -->
-                <div class="lg:col-span-2 space-y-6">
-                    <div class="theme-card p-5 sm:p-6 rounded-2xl border space-y-4">
-                        <h3 class="font-bold text-center theme-text-primary text-base">Consumo y Categorías por Quincena</h3>
+                <div class="lg:col-span-2 space-y-5 sm:space-y-6">
+                    <div class="theme-card p-4 sm:p-6 rounded-2xl border space-y-4">
+                        <h3 class="font-bold text-center theme-text-primary text-xs sm:text-base">Consumo y Categorías por Quincena</h3>
                         
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <!-- Tarjeta Quincena 1 -->
-                            <div class="theme-card-sub p-4 rounded-xl border space-y-3">
+                            <div class="theme-card-sub p-3.5 sm:p-4 rounded-xl border space-y-3">
                                 <div class="flex justify-between items-center border-b border-slate-700/50 pb-2">
                                     <h4 class="text-xs font-bold theme-accent-text uppercase">1ra Quincena (1 - 15)</h4>
                                     <span id="q1-pct" class="text-sm font-black theme-text-primary">0%</span>
                                 </div>
-                                <div class="flex items-center gap-4">
-                                    <div class="relative w-24 h-24 flex-shrink-0">
+                                <div class="flex items-center gap-3 sm:gap-4">
+                                    <div class="relative w-20 h-20 sm:w-24 sm:h-24 flex-shrink-0">
                                         <canvas id="gaugeQ1"></canvas>
                                     </div>
                                     <div class="text-xs space-y-1">
@@ -301,13 +326,13 @@
                             </div>
 
                             <!-- Tarjeta Quincena 2 -->
-                            <div class="theme-card-sub p-4 rounded-xl border space-y-3">
+                            <div class="theme-card-sub p-3.5 sm:p-4 rounded-xl border space-y-3">
                                 <div class="flex justify-between items-center border-b border-slate-700/50 pb-2">
                                     <h4 class="text-xs font-bold theme-accent-text uppercase">2da Quincena (16 - 31)</h4>
                                     <span id="q2-pct" class="text-sm font-black theme-text-primary">0%</span>
                                 </div>
-                                <div class="flex items-center gap-4">
-                                    <div class="relative w-24 h-24 flex-shrink-0">
+                                <div class="flex items-center gap-3 sm:gap-4">
+                                    <div class="relative w-20 h-20 sm:w-24 sm:h-24 flex-shrink-0">
                                         <canvas id="gaugeQ2"></canvas>
                                     </div>
                                     <div class="text-xs space-y-1">
@@ -323,36 +348,36 @@
                         </div>
 
                         <!-- Barra General del Mes -->
-                        <div class="theme-badge-accent p-4 rounded-xl flex flex-col sm:flex-row justify-between items-center gap-3">
+                        <div class="theme-badge-accent p-3.5 sm:p-4 rounded-xl flex flex-col sm:flex-row justify-between items-center gap-2 sm:gap-3">
                             <div class="text-center sm:text-left">
                                 <span class="text-xs font-bold uppercase theme-accent-text">Consumo Total del Mes</span>
                                 <p class="text-xs theme-text-secondary">Gastado: <strong id="total-spent" class="theme-text-primary">$0.00</strong> | Disponible: <strong id="total-avail" class="text-emerald-500 font-bold">$0.00</strong></p>
                             </div>
-                            <div class="text-xl font-black theme-text-primary" id="total-pct">0%</div>
+                            <div class="text-lg sm:text-xl font-black theme-text-primary" id="total-pct">0%</div>
                         </div>
                     </div>
 
                     <!-- Acciones Rápida Gastos -->
-                    <div class="theme-card p-5 sm:p-6 rounded-2xl border space-y-4">
+                    <div class="theme-card p-4 sm:p-6 rounded-2xl border space-y-3.5 sm:space-y-4">
                         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
                             <div>
-                                <h3 class="font-bold theme-text-primary">Gestión de Gastos</h3>
+                                <h3 class="font-bold theme-text-primary text-sm sm:text-base">Gestión de Gastos</h3>
                                 <p class="text-xs theme-text-secondary">Registra nuevos gastos rápidamente o consulta el historial completo.</p>
                             </div>
-                            <button id="btn-open-add-modal" class="w-full sm:w-auto bg-emerald-600 text-white font-bold px-5 py-2.5 rounded-xl text-sm hover:bg-emerald-700 transition shadow-sm flex items-center justify-center gap-2">
+                            <button id="btn-open-add-modal" class="w-full sm:w-auto bg-emerald-600 text-white font-bold px-5 py-2.5 rounded-xl text-xs sm:text-sm hover:bg-emerald-700 transition shadow-sm flex items-center justify-center gap-2">
                                 <span>+</span> Agregar Gasto
                             </button>
                         </div>
 
-                        <a href="gastos.html" class="flex items-center justify-between theme-banner p-4 rounded-xl font-bold hover:shadow-lg transition group">
+                        <a href="gastos.html" class="flex items-center justify-between theme-banner p-3.5 sm:p-4 rounded-xl font-bold hover:shadow-lg transition group">
                             <div class="flex items-center gap-3">
-                                <span class="text-2xl">📋</span>
+                                <span class="text-xl sm:text-2xl">📋</span>
                                 <div>
-                                    <p class="text-sm font-bold theme-banner-text">Ver Gastos y Registros Detallados</p>
-                                    <p class="text-xs theme-banner-subtext font-normal">Consulta, edita o filtra tus gastos por quincena</p>
+                                    <p class="text-xs sm:text-sm font-bold theme-banner-text">Ver Gastos y Registros Detallados</p>
+                                    <p class="text-[11px] theme-banner-subtext font-normal">Consulta, edita o filtra tus gastos por quincena</p>
                                 </div>
                             </div>
-                            <span class="text-xl group-hover:translate-x-1 transition theme-banner-text">→</span>
+                            <span class="text-lg sm:text-xl group-hover:translate-x-1 transition theme-banner-text">→</span>
                         </a>
                     </div>
                 </div>
@@ -361,8 +386,8 @@
     </div>
 
     <!-- MODAL AGREGAR GASTO -->
-    <div id="add-expense-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-        <div class="theme-card w-full max-w-md rounded-2xl p-6 shadow-xl space-y-4 relative border">
+    <div id="add-expense-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-3 sm:p-4 hidden">
+        <div class="theme-card w-full max-w-md rounded-2xl p-5 sm:p-6 shadow-xl space-y-4 relative border">
             <div class="flex justify-between items-center border-b border-slate-700/50 pb-3">
                 <h3 class="font-bold text-base theme-text-primary">Registrar Nuevo Gasto</h3>
                 <button id="btn-close-add-modal" class="theme-text-muted hover:theme-text-primary text-xl font-bold">&times;</button>

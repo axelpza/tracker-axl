@@ -8,7 +8,7 @@ let currentMes = meses[new Date().getMonth()];
 const currentYear = new Date().getFullYear();
 const currentMonthIndex = new Date().getMonth(); 
 
-let categoryViewMode = 'month'; // 'month' o 'ytd'
+let categoryViewMode = 'month';
 
 let typeChartInstance = null;
 let chartQ1 = null;
@@ -60,6 +60,7 @@ async function initDashboard() {
         console.error("Error al cargar usuario:", err);
     }
 
+    initMobileMenu();
     initMonthTabs();
     initCategoryToggle();
     loadMonthData();
@@ -72,6 +73,19 @@ window.addEventListener('themeChanged', () => {
     loadMonthData();
     loadYTDData();
 });
+
+function initMobileMenu() {
+    const toggleBtn = document.getElementById('mobile-menu-toggle');
+    const mobileMenu = document.getElementById('mobile-menu');
+    if (toggleBtn && mobileMenu) {
+        toggleBtn.onclick = () => {
+            mobileMenu.classList.toggle('hidden');
+        };
+    }
+
+    const btnLogoutMobile = document.getElementById('btn-logout-mobile');
+    if (btnLogoutMobile) btnLogoutMobile.onclick = () => signOut(auth).then(() => window.location.href = "index.html");
+}
 
 const btnLogout = document.getElementById('btn-logout');
 if (btnLogout) btnLogout.onclick = () => signOut(auth).then(() => window.location.href = "index.html");
@@ -92,7 +106,7 @@ function initMonthTabs() {
     meses.forEach(m => {
         const btn = document.createElement('button');
         btn.textContent = m;
-        btn.className = `px-4 py-2 rounded-xl font-semibold whitespace-nowrap transition ${m === currentMes ? 'theme-accent-btn shadow-md' : 'theme-btn-secondary'}`;
+        btn.className = `px-4 py-2 rounded-xl font-semibold whitespace-nowrap transition text-xs sm:text-sm ${m === currentMes ? 'theme-accent-btn shadow-md' : 'theme-btn-secondary'}`;
         btn.onclick = () => { 
             currentMes = m; 
             initMonthTabs(); 
@@ -109,8 +123,8 @@ function initCategoryToggle() {
     if (btnMonth) {
         btnMonth.onclick = () => {
             categoryViewMode = 'month';
-            btnMonth.className = "px-3.5 py-1.5 rounded-xl text-xs font-bold theme-accent-btn";
-            if (btnYtd) btnYtd.className = "px-3.5 py-1.5 rounded-xl text-xs font-bold theme-btn-secondary";
+            btnMonth.className = "flex-1 sm:flex-none px-3 py-1.5 rounded-xl text-xs font-bold theme-accent-btn";
+            if (btnYtd) btnYtd.className = "flex-1 sm:flex-none px-3 py-1.5 rounded-xl text-xs font-bold theme-btn-secondary";
             renderInteractiveCategoryWheel();
         };
     }
@@ -118,8 +132,8 @@ function initCategoryToggle() {
     if (btnYtd) {
         btnYtd.onclick = () => {
             categoryViewMode = 'ytd';
-            btnYtd.className = "px-3.5 py-1.5 rounded-xl text-xs font-bold theme-accent-btn";
-            if (btnMonth) btnMonth.className = "px-3.5 py-1.5 rounded-xl text-xs font-bold theme-btn-secondary";
+            btnYtd.className = "flex-1 sm:flex-none px-3 py-1.5 rounded-xl text-xs font-bold theme-accent-btn";
+            if (btnMonth) btnMonth.className = "flex-1 sm:flex-none px-3 py-1.5 rounded-xl text-xs font-bold theme-btn-secondary";
             renderInteractiveCategoryWheel();
         };
     }
@@ -436,8 +450,8 @@ async function loadMonthData() {
         if (mFijo) mFijo.textContent = `$${fixedSpent.toFixed(2)}`;
         if (mExtra) mExtra.textContent = `$${extraSpent.toFixed(2)}`;
 
-        const chartQ1Color = getCssVar('--chart-q1', '#3b82f6');
-        const chartQ2Color = getCssVar('--chart-q2', '#a855f7');
+        const chartQ1Color = getCssVar('--chart-q1', '#38bdf8');
+        const chartQ2Color = getCssVar('--chart-q2', '#ef4444');
 
         renderGauge('gaugeQ1', 'q1-pct', 'q1-spent', 'q1-avail', spentQ1, budgetQ1, chartQ1, (inst) => chartQ1 = inst, [chartQ1Color]);
         renderGauge('gaugeQ2', 'q2-pct', 'q2-spent', 'q2-avail', spentQ2, budgetQ2, chartQ2, (inst) => chartQ2 = inst, [chartQ2Color]);
@@ -487,7 +501,6 @@ function renderFortnightCategories(containerId, catObj, totalFortnightSpent) {
     });
 }
 
-// --- RENDERING DE LA RUEDA CIRCULAR Y LISTADO CON HOVER SINCRONIZADO ---
 function renderInteractiveCategoryWheel() {
     const gridContainer = document.getElementById('category-interactive-grid');
     const canvasEl = document.getElementById('categoryWheelChart');
@@ -502,7 +515,6 @@ function renderInteractiveCategoryWheel() {
 
     const entries = Object.entries(activeData).sort((a, b) => b[1] - a[1]);
 
-    // Reset overlay central
     if (wheelCenterAmount) wheelCenterAmount.textContent = `$${activeTotal.toFixed(2)}`;
     if (wheelCenterLabel) wheelCenterLabel.textContent = isMonth ? `Total Gastado (${currentMes})` : 'Total Gastado (YTD Anual)';
 
@@ -516,17 +528,17 @@ function renderInteractiveCategoryWheel() {
     const values = entries.map(e => e[1]);
     const colors = labels.map(l => categoryColors[l] || '#94a3b8');
 
-    // 1. Construir Tarjetas Interactivas
+    // 1. Tarjetas Interactivas
     gridContainer.innerHTML = '';
     entries.forEach(([cat, amount], index) => {
         const pct = activeTotal > 0 ? ((amount / activeTotal) * 100).toFixed(1) : '0';
         const color = categoryColors[cat] || '#94a3b8';
 
         gridContainer.innerHTML += `
-            <div class="cat-item-card theme-card-sub p-3 rounded-xl border flex justify-between items-center text-xs" data-cat-index="${index}">
+            <div class="cat-item-card theme-card-sub p-2.5 sm:p-3 rounded-xl border flex justify-between items-center text-xs" data-cat-index="${index}">
                 <div class="flex items-center gap-2 font-bold theme-text-primary">
-                    <span class="w-3 h-3 rounded-full flex-shrink-0 shadow-sm" style="background-color: ${color}"></span>
-                    <span class="truncate max-w-[120px] sm:max-w-[140px]">${cat}</span>
+                    <span class="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full flex-shrink-0 shadow-sm" style="background-color: ${color}"></span>
+                    <span class="truncate max-w-[110px] sm:max-w-[140px]">${cat}</span>
                 </div>
                 <div class="text-right">
                     <span class="font-black theme-text-primary">$${amount.toFixed(2)}</span>
@@ -535,9 +547,11 @@ function renderInteractiveCategoryWheel() {
             </div>`;
     });
 
-    // 2. Destruir y Crear Chart de Rueda (Donut)
+    // 2. Chart de Rueda (Donut)
     const ctx = canvasEl.getContext('2d');
     if (categoryWheelChartInstance) categoryWheelChartInstance.destroy();
+
+    const cardBgColor = getCssVar('--card-bg', '#111827');
 
     categoryWheelChartInstance = new Chart(ctx, {
         type: 'doughnut',
@@ -547,8 +561,8 @@ function renderInteractiveCategoryWheel() {
                 data: values,
                 backgroundColor: colors,
                 borderWidth: 2,
-                borderColor: getCssVar('--card-bg', '#0f172a'),
-                hoverOffset: 12
+                borderColor: cardBgColor,
+                hoverOffset: 10
             }]
         },
         options: {
@@ -596,26 +610,23 @@ function renderInteractiveCategoryWheel() {
         }
     });
 
-    // 3. Eventos Mouse/Touch en las Tarjetas para Activar la Rueda
+    // 3. Hover en Tarjetas
     document.querySelectorAll('.cat-item-card').forEach(card => {
         const idx = parseInt(card.getAttribute('data-cat-index'));
 
         card.addEventListener('mouseenter', () => {
             if (!categoryWheelChartInstance) return;
 
-            // Resaltar en rueda
             categoryWheelChartInstance.setActiveElements([{ datasetIndex: 0, index: idx }]);
             categoryWheelChartInstance.tooltip.setActiveElements([{ datasetIndex: 0, index: idx }]);
             categoryWheelChartInstance.update();
 
-            // Texto central
             const catName = labels[idx];
             const catAmount = values[idx];
             const catPct = activeTotal > 0 ? ((catAmount / activeTotal) * 100).toFixed(1) : '0';
             if (wheelCenterAmount) wheelCenterAmount.textContent = `$${catAmount.toFixed(2)}`;
             if (wheelCenterLabel) wheelCenterLabel.textContent = `${catName} (${catPct}%)`;
 
-            // Dim de otras tarjetas
             document.querySelectorAll('.cat-item-card').forEach((c, i) => {
                 if (i === idx) { c.classList.add('is-active'); c.classList.remove('is-dimmed'); }
                 else { c.classList.remove('is-active'); c.classList.add('is-dimmed'); }
