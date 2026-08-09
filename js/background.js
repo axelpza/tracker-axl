@@ -28,7 +28,7 @@ function setupCanvas() {
     let currentTheme = getSavedTheme();
     let particles = [];
 
-    // --- PATRÓN 1: CONSTELACIÓN CIBERNÉTICA (dark-cyber) ---
+    // 1. CYBERPUNK OSCURO
     class CyberNode {
         constructor() {
             this.x = Math.random() * width;
@@ -51,7 +51,33 @@ function setupCanvas() {
         }
     }
 
-    // --- PATRÓN 2: POLVO ESTELAR CÁLIDO (dust-vortex) ---
+    // 2. CRIMSON MIDNIGHT (Rojo Carmesí / Azul Marino)
+    class CrimsonParticle {
+        constructor() {
+            this.x = Math.random() * width;
+            this.y = Math.random() * height;
+            this.radius = Math.random() * 2.5 + 1;
+            this.vy = -(Math.random() * 0.6 + 0.2);
+            this.vx = (Math.random() - 0.5) * 0.4;
+            this.color = Math.random() > 0.4 ? '#ef4444' : '#38bdf8';
+            this.alpha = Math.random() * 0.6 + 0.2;
+        }
+        update() {
+            this.y += this.vy;
+            this.x += this.vx;
+            if (this.y < 0) { this.y = height; this.x = Math.random() * width; }
+        }
+        draw() {
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+            ctx.fillStyle = this.color;
+            ctx.globalAlpha = this.alpha;
+            ctx.fill();
+            ctx.globalAlpha = 1.0;
+        }
+    }
+
+    // 3. VÓRTICE DE POLVO
     class DustParticle {
         constructor() { this.reset(); }
         reset() {
@@ -86,7 +112,7 @@ function setupCanvas() {
         }
     }
 
-    // --- PATRÓN 3: LLUVIAS DE CÓDIGO MATRIX (neon-matrix) ---
+    // 4. MATRIZ ESMERALDA
     class MatrixDrop {
         constructor() {
             this.x = Math.random() * width;
@@ -113,7 +139,7 @@ function setupCanvas() {
         }
     }
 
-    // --- PATRÓN 4: ESFERAS FLOTANTES LIGHT (light-clean) ---
+    // 5. LUMINOSO MINIMALISTA
     class LightOrb {
         constructor() {
             this.radius = Math.random() * 15 + 8;
@@ -144,6 +170,8 @@ function setupCanvas() {
         particles = [];
         if (theme === 'dark-cyber') {
             for (let i = 0; i < 60; i++) particles.push(new CyberNode());
+        } else if (theme === 'dark-crimson') {
+            for (let i = 0; i < 90; i++) particles.push(new CrimsonParticle());
         } else if (theme === 'dust-vortex') {
             for (let i = 0; i < 200; i++) particles.push(new DustParticle());
         } else if (theme === 'neon-matrix') {
@@ -156,7 +184,6 @@ function setupCanvas() {
     function animate() {
         ctx.clearRect(0, 0, width, height);
 
-        // Si es Cyberpunk, dibujar líneas de conexión entre nodos cercanos
         if (currentTheme === 'dark-cyber') {
             for (let i = 0; i < particles.length; i++) {
                 for (let j = i + 1; j < particles.length; j++) {

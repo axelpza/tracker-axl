@@ -1,27 +1,27 @@
-/* VARIABLES GLOBALES Y SISTEMA DE TEMAS COMPLETO */
+/* VARIABLES GLOBALES Y SISTEMA DE TEMAS COMPLETO CON FONDOS SÓLIDOS */
 
-/* 1. CYBERPUNK OSCURO (Púrpura / Índigo) */
+/* 1. CYBERPUNK OSCURO (Índigo Nocturno) */
 [data-theme="dark-cyber"], :root {
     --bg-body: #070a12;
-    --card-bg: rgba(15, 23, 42, 0.92);
-    --card-sub-bg: rgba(30, 41, 59, 0.8);
-    --card-border: rgba(99, 102, 241, 0.35);
+    --card-bg: #0f172a;
+    --card-sub-bg: #1e293b;
+    --card-border: #334155;
     
-    --banner-bg: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+    --banner-bg: linear-gradient(135deg, #4338ca 0%, #6d28d9 100%);
     --banner-text: #ffffff;
     --banner-subtext: #c7d2fe;
     
-    --text-primary: #ffffff;
+    --text-primary: #f8fafc;
     --text-secondary: #cbd5e1;
     --text-muted: #94a3b8;
     
     --accent-primary: #6366f1;
     --accent-hover: #4f46e5;
     --accent-text: #a5b4fc;
-    --accent-badge-bg: rgba(99, 102, 241, 0.2);
-    --accent-badge-border: rgba(99, 102, 241, 0.35);
+    --accent-badge-bg: #1e1b4b;
+    --accent-badge-border: #4338ca;
     
-    --nav-bg: rgba(15, 23, 42, 0.95);
+    --nav-bg: #0f172a;
     --input-bg: #1e293b;
     --input-border: #475569;
     --input-text: #ffffff;
@@ -32,71 +32,103 @@
     --btn-secondary-text: #e2e8f0;
 }
 
-/* 2. VÓRTICE DE POLVO (Naranja / Coral Estelar) */
+/* 2. CRIMSON MIDNIGHT (NUEVO: Azul Marino & Rojo Carmesí Oscuro) */
+[data-theme="dark-crimson"] {
+    --bg-body: #080c14;
+    --card-bg: #111827;
+    --card-sub-bg: #1f2937;
+    --card-border: #374151;
+    
+    --banner-bg: linear-gradient(135deg, #991b1b 0%, #7f1d1d 100%);
+    --banner-text: #ffffff;
+    --banner-subtext: #fca5a5;
+    
+    --text-primary: #f9fafb;
+    --text-secondary: #d1d5db;
+    --text-muted: #9ca3af;
+    
+    --accent-primary: #dc2626;
+    --accent-hover: #b91c1c;
+    --accent-text: #fca5a5;
+    --accent-badge-bg: #450a0a;
+    --accent-badge-border: #991b1b;
+    
+    --nav-bg: #111827;
+    --input-bg: #1f2937;
+    --input-border: #4b5563;
+    --input-text: #ffffff;
+    
+    --chart-q1: #38bdf8;
+    --chart-q2: #ef4444;
+    --btn-secondary-bg: #1f2937;
+    --btn-secondary-text: #f3f4f6;
+}
+
+/* 3. VÓRTICE DE POLVO (Naranja Estelar Oscuro) */
 [data-theme="dust-vortex"] {
     --bg-body: #020408;
-    --card-bg: rgba(10, 16, 26, 0.94);
-    --card-sub-bg: rgba(21, 32, 51, 0.85);
-    --card-border: rgba(249, 115, 22, 0.35);
+    --card-bg: #0a101a;
+    --card-sub-bg: #152033;
+    --card-border: #233248;
     
-    --banner-bg: linear-gradient(135deg, #c2410c 0%, #ea580c 100%);
+    --banner-bg: linear-gradient(135deg, #9a3412 0%, #c2410c 100%);
     --banner-text: #ffffff;
     --banner-subtext: #ffedd5;
     
-    --text-primary: #ffffff;
+    --text-primary: #f8fafc;
     --text-secondary: #cbd5e1;
     --text-muted: #94a3b8;
     
-    --accent-primary: #f97316;
-    --accent-hover: #ea580c;
+    --accent-primary: #ea580c;
+    --accent-hover: #c2410c;
     --accent-text: #fdba74;
-    --accent-badge-bg: rgba(249, 115, 22, 0.2);
-    --accent-badge-border: rgba(249, 115, 22, 0.35);
+    --accent-badge-bg: #431407;
+    --accent-badge-border: #9a3412;
     
-    --nav-bg: rgba(8, 12, 20, 0.95);
-    --input-bg: #0f172a;
+    --nav-bg: #0a101a;
+    --input-bg: #152033;
     --input-border: #334155;
     --input-text: #ffffff;
     
     --chart-q1: #06b6d4;
     --chart-q2: #f97316;
-    --btn-secondary-bg: #1e293b;
+    --btn-secondary-bg: #152033;
     --btn-secondary-text: #e2e8f0;
 }
 
-/* 3. MATRIZ ESMERALDA (Verde Cíber) */
+/* 4. MATRIZ ESMERALDA (Verde Cíber Oscuro) */
 [data-theme="neon-matrix"] {
     --bg-body: #030f0c;
-    --card-bg: rgba(6, 30, 22, 0.92);
-    --card-sub-bg: rgba(12, 48, 36, 0.85);
-    --card-border: rgba(16, 185, 129, 0.35);
+    --card-bg: #062017;
+    --card-sub-bg: #0c3326;
+    --card-border: #14532d;
     
-    --banner-bg: linear-gradient(135deg, #047857 0%, #059669 100%);
+    --banner-bg: linear-gradient(135deg, #065f46 0%, #047857 100%);
     --banner-text: #ffffff;
     --banner-subtext: #a7f3d0;
     
-    --text-primary: #ffffff;
+    --text-primary: #f0fdf4;
     --text-secondary: #a7f3d0;
     --text-muted: #6ee7b7;
     
     --accent-primary: #10b981;
     --accent-hover: #059669;
     --accent-text: #6ee7b7;
-    --accent-badge-bg: rgba(16, 185, 129, 0.2);
-    --accent-badge-border: rgba(16, 185, 129, 0.35);
+    --accent-badge-bg: #022c22;
+    --accent-badge-border: #065f46;
     
-    --nav-bg: rgba(6, 26, 20, 0.95);
-    --input-bg: #062e22;
-    --input-border: #047857;
+    --nav-bg: #062017;
+    --input-bg: #0c3326;
+    --input-border: #15803d;
     --input-text: #ffffff;
     
     --chart-q1: #14b8a6;
     --chart-q2: #10b981;
-    --btn-secondary-bg: #062e22;
+    --btn-secondary-bg: #0c3326;
     --btn-secondary-text: #e2e8f0;
 }
 
-/* 4. LUMINOSO MINIMALISTA (Tema Claro de Alto Contraste) */
+/* 5. LUMINOSO MINIMALISTA (Tema Claro Pulido) */
 [data-theme="light-clean"] {
     --bg-body: #f1f5f9;
     --card-bg: #ffffff;
@@ -107,9 +139,9 @@
     --banner-text: #ffffff;
     --banner-subtext: #e2e8f0;
     
-    --text-primary: #0f172a;      /* Negro azulado nítido */
-    --text-secondary: #334155;    /* Gris oscuro legible */
-    --text-muted: #64748b;       /* Gris medio legible */
+    --text-primary: #0f172a;
+    --text-secondary: #334155;
+    --text-muted: #64748b;
     
     --accent-primary: #2563eb;
     --accent-hover: #1d4ed8;
@@ -135,7 +167,7 @@ body {
     transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-/* BANNER SUPERIOR YTD */
+/* BANNER SUPERIOR YTD Y RESUMEN */
 .theme-banner {
     background: var(--banner-bg) !important;
     color: var(--banner-text) !important;
@@ -144,24 +176,24 @@ body {
     color: var(--banner-subtext) !important;
 }
 
-/* TARJETAS Y SECCIONES */
+/* TARJETAS CON FONDOS SÓLIDOS Y BORDES DEFINIDOS */
 .theme-card {
     background-color: var(--card-bg) !important;
-    border-color: var(--card-border) !important;
+    border: 1px solid var(--card-border) !important;
     color: var(--text-primary) !important;
-    backdrop-filter: blur(12px);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
 }
 
 .theme-card-sub {
     background-color: var(--card-sub-bg) !important;
-    border-color: var(--card-border) !important;
+    border: 1px solid var(--card-border) !important;
     color: var(--text-primary) !important;
 }
 
 /* NAVEGACIÓN Y ENLACES */
 .theme-nav {
     background-color: var(--nav-bg) !important;
-    border-color: var(--card-border) !important;
+    border-bottom: 1px solid var(--card-border) !important;
     color: var(--text-primary) !important;
 }
 
@@ -191,7 +223,7 @@ body {
     border: 1px solid var(--card-border) !important;
 }
 .theme-btn-secondary:hover {
-    filter: brightness(1.1);
+    filter: brightness(1.15);
 }
 
 /* BADGES Y CONTENEDORES DESTACADOS */
@@ -204,7 +236,7 @@ body {
 /* INPUTS Y SELECTS */
 .theme-input {
     background-color: var(--input-bg) !important;
-    border-color: var(--input-border) !important;
+    border: 1px solid var(--input-border) !important;
     color: var(--input-text) !important;
 }
 
@@ -228,7 +260,7 @@ body {
     font-size: 11px;
     line-height: 1.3;
     pointer-events: none;
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
     border: 1px solid var(--card-border);
 }
 .tooltip-container:hover .tooltip-text { visibility: visible; opacity: 1; }

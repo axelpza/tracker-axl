@@ -8,14 +8,16 @@ let currentMes = meses[new Date().getMonth()];
 const currentYear = new Date().getFullYear();
 const currentMonthIndex = new Date().getMonth(); 
 
-let dashboardFilter = 'mes'; 
+let categoryViewMode = 'month'; // 'month' o 'ytd'
 
 let typeChartInstance = null;
 let chartQ1 = null;
 let chartQ2 = null;
-let chartTotal = null;
-let categoryMonthChartInstance = null;
-let categoryYtdChartInstance = null;
+
+let categoryMonthData = {};
+let categoryYtdData = {};
+let monthTotalSpentVal = 0;
+let ytdTotalSpentVal = 0;
 
 const categoryColors = {
     'Restaurante': '#f97316',
@@ -33,7 +35,6 @@ const categoryColors = {
     'Otros': '#94a3b8'
 };
 
-// HELPER: Extrae variables de CSS del tema activo para asegurar contraste en Canvas/Chart.js
 function getCssVar(varName, fallback) {
     const val = getComputedStyle(document.documentElement).getPropertyValue(varName).trim();
     return val || fallback;
@@ -59,14 +60,13 @@ async function initDashboard() {
     }
 
     initMonthTabs();
-    initDashFilterButtons();
+    initCategoryToggle();
     loadMonthData();
     loadYTDData();
 }
 
 initDashboard();
 
-// Re-renderizar gráficos cuando el usuario cambie de tema en perfil
 window.addEventListener('themeChanged', () => {
     loadMonthData();
     loadYTDData();
@@ -81,17 +81,17 @@ function initMonthTabs() {
     container.innerHTML = '';
     
     const lblMes = document.getElementById('lbl-current-mes');
-    const lblCatMes = document.getElementById('lbl-cat-month');
+    const lblCatToggleMonth = document.getElementById('lbl-cat-toggle-month');
     const lblViewMes = document.getElementById('view-mes-title');
 
     if (lblMes) lblMes.textContent = currentMes;
-    if (lblCatMes) lblCatMes.textContent = currentMes;
+    if (lblCatToggleMonth) lblCatToggleMonth.textContent = currentMes;
     if (lblViewMes) lblViewMes.textContent = currentMes;
 
     meses.forEach(m => {
         const btn = document.createElement('button');
         btn.textContent = m;
-        btn.className = `px-4 py-2 rounded-xl font-semibold whitespace-nowrap transition ${m === currentMes ? 'bg-indigo-600 text-white shadow-md' : 'theme-btn-secondary'}`;
+        btn.className = `px-4 py-2 rounded-xl font-semibold whitespace-nowrap transition ${m === currentMes ? 'theme-accent-btn shadow-md' : 'theme-btn-secondary'}`;
         btn.onclick = () => { 
             currentMes = m; 
             initMonthTabs(); 
@@ -101,22 +101,27 @@ function initMonthTabs() {
     });
 }
 
-function initDashFilterButtons() {
-    const btnQ1 = document.getElementById('btn-dash-q1');
-    const btnQ2 = document.getElementById('btn-dash-q2');
-    const btnMes = document.getElementById('btn-dash-mes');
+function initCategoryToggle() {
+    const btnMonth = document.getElementById('btn-cat-view-month');
+    const btnYtd = document.getElementById('btn-cat-view-ytd');
 
-    const setFilterState = (mode) => {
-        dashboardFilter = mode;
-        if (btnQ1) btnQ1.className = `px-4 py-2 rounded-xl text-xs font-bold transition ${mode === 'q1' ? 'bg-indigo-600 text-white shadow-sm' : 'theme-btn-secondary'}`;
-        if (btnQ2) btnQ2.className = `px-4 py-2 rounded-xl text-xs font-bold transition ${mode === 'q2' ? 'bg-indigo-600 text-white shadow-sm' : 'theme-btn-secondary'}`;
-        if (btnMes) btnMes.className = `px-4 py-2 rounded-xl text-xs font-bold transition ${mode === 'mes' ? 'bg-indigo-600 text-white shadow-sm' : 'theme-btn-secondary'}`;
-        loadMonthData();
-    };
+    if (btnMonth) {
+        btnMonth.onclick = () => {
+            categoryViewMode = 'month';
+            btnMonth.className = "px-3 py-1.5 rounded-lg text-xs font-bold theme-accent-btn";
+            if (btnYtd) btnYtd.className = "px-3 py-1.5 rounded-lg text-xs font-bold theme-btn-secondary";
+            renderConsolidatedCategories();
+        };
+    }
 
-    if (btnQ1) btnQ1.onclick = () => setFilterState('q1');
-    if (btnQ2) btnQ2.onclick = () => setFilterState('q2');
-    if (btnMes) btnMes.onclick = () => setFilterState('mes');
+    if (btnYtd) {
+        btnYtd.onclick = () => {
+            categoryViewMode = 'ytd';
+            btnYtd.className = "px-3 py-1.5 rounded-lg text-xs font-bold theme-accent-btn";
+            if (btnMonth) btnMonth.className = "px-3 py-1.5 rounded-lg text-xs font-bold theme-btn-secondary";
+            renderConsolidatedCategories();
+        };
+    }
 }
 
 const inputSalarioMensual = document.getElementById('in-salario-mensual');
@@ -247,10 +252,10 @@ if (saveBudgetBtn) {
 
 async function loadMonthData() {
     const lblMes = document.getElementById('lbl-current-mes');
-    const lblCatMes = document.getElementById('lbl-cat-month');
+    const lblCatToggleMonth = document.getElementById('lbl-cat-toggle-month');
     const lblViewMes = document.getElementById('view-mes-title');
     if (lblMes) lblMes.textContent = currentMes;
-    if (lblCatMes) lblCatMes.textContent = currentMes;
+    if (lblCatToggleMonth) lblCatToggleMonth.textContent = currentMes;
     if (lblViewMes) lblViewMes.textContent = currentMes;
 
     const bDoc = await getDoc(doc(db, "presupuestos", `${currentUid}_${currentMes}`));
@@ -396,25 +401,31 @@ async function loadMonthData() {
     
     onSnapshot(q, (snapshot) => {
         let totalSpent = 0, spentQ1 = 0, spentQ2 = 0, fixedSpent = 0, extraSpent = 0;
-        const categoryTotals = {};
+        const categoryTotalsMonth = {};
+        const catQ1 = {};
+        const catQ2 = {};
 
         snapshot.forEach(d => {
             const data = d.data();
-
-            if (dashboardFilter === 'q1' && data.quincena !== '1ra Quincena') return;
-            if (dashboardFilter === 'q2' && data.quincena !== '2da Quincena') return;
-
             totalSpent += data.monto;
 
             const catName = data.categoria || 'Otros';
-            categoryTotals[catName] = (categoryTotals[catName] || 0) + data.monto;
+            categoryTotalsMonth[catName] = (categoryTotalsMonth[catName] || 0) + data.monto;
 
             if (data.tipo === 'fijo') fixedSpent += data.monto;
             else extraSpent += data.monto;
 
-            if (data.quincena === '2da Quincena') spentQ2 += data.monto;
-            else spentQ1 += data.monto;
+            if (data.quincena === '2da Quincena') {
+                spentQ2 += data.monto;
+                catQ2[catName] = (catQ2[catName] || 0) + data.monto;
+            } else {
+                spentQ1 += data.monto;
+                catQ1[catName] = (catQ1[catName] || 0) + data.monto;
+            }
         });
+
+        monthTotalSpentVal = totalSpent;
+        categoryMonthData = categoryTotalsMonth;
 
         const cMonthTot = document.getElementById('current-month-total');
         const mFijo = document.getElementById('m-fijo');
@@ -424,14 +435,91 @@ async function loadMonthData() {
         if (mFijo) mFijo.textContent = `$${fixedSpent.toFixed(2)}`;
         if (mExtra) mExtra.textContent = `$${extraSpent.toFixed(2)}`;
 
-        const accentColor = getCssVar('--accent-primary', '#6366f1');
+        const chartQ1Color = getCssVar('--chart-q1', '#3b82f6');
+        const chartQ2Color = getCssVar('--chart-q2', '#a855f7');
 
-        renderGauge('gaugeQ1', 'q1-pct', 'q1-spent', 'q1-avail', spentQ1, budgetQ1, chartQ1, (inst) => chartQ1 = inst, ['#3b82f6']);
-        renderGauge('gaugeQ2', 'q2-pct', 'q2-spent', 'q2-avail', spentQ2, budgetQ2, chartQ2, (inst) => chartQ2 = inst, ['#a855f7']);
-        renderGauge('gaugeTotal', 'total-pct', 'total-spent', 'total-avail', totalSpent, budgetTotal, chartTotal, (inst) => chartTotal = inst, [accentColor]);
+        renderGauge('gaugeQ1', 'q1-pct', 'q1-spent', 'q1-avail', spentQ1, budgetQ1, chartQ1, (inst) => chartQ1 = inst, [chartQ1Color]);
+        renderGauge('gaugeQ2', 'q2-pct', 'q2-spent', 'q2-avail', spentQ2, budgetQ2, chartQ2, (inst) => chartQ2 = inst, [chartQ2Color]);
+
+        const availTotal = Math.max(0, budgetTotal - totalSpent);
+        const pctTotal = budgetTotal > 0 ? Math.round((totalSpent / budgetTotal) * 100) : 0;
+        
+        const elTotalSpent = document.getElementById('total-spent');
+        const elTotalAvail = document.getElementById('total-avail');
+        const elTotalPct = document.getElementById('total-pct');
+
+        if (elTotalSpent) elTotalSpent.textContent = `$${totalSpent.toFixed(2)}`;
+        if (elTotalAvail) elTotalAvail.textContent = `$${availTotal.toFixed(2)}`;
+        if (elTotalPct) elTotalPct.textContent = `${pctTotal}%`;
+
+        renderFortnightCategories('q1-categories-list', catQ1, spentQ1);
+        renderFortnightCategories('q2-categories-list', catQ2, spentQ2);
 
         renderTypeChart(fixedSpent, extraSpent);
-        renderCategoryBarChart('categoryMonthBarChart', 'category-month-list', categoryTotals, totalSpent, categoryMonthChartInstance, (inst) => categoryMonthChartInstance = inst);
+        renderConsolidatedCategories();
+    });
+}
+
+function renderFortnightCategories(containerId, catObj, totalFortnightSpent) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+    container.innerHTML = '';
+
+    const entries = Object.entries(catObj).sort((a, b) => b[1] - a[1]).slice(0, 3); // Top 3
+
+    if (entries.length === 0) {
+        container.innerHTML = `<p class="theme-text-muted text-[11px] py-1">Sin consumos en esta quincena.</p>`;
+        return;
+    }
+
+    entries.forEach(([cat, amount]) => {
+        const pct = totalFortnightSpent > 0 ? ((amount / totalFortnightSpent) * 100).toFixed(0) : 0;
+        const color = categoryColors[cat] || '#94a3b8';
+        container.innerHTML += `
+            <div class="flex justify-between items-center text-[11px]">
+                <span class="flex items-center gap-1.5 font-medium theme-text-secondary">
+                    <span class="w-2 h-2 rounded-full flex-shrink-0" style="background-color: ${color}"></span>
+                    ${cat}
+                </span>
+                <span class="font-bold theme-text-primary">$${amount.toFixed(2)} <span class="theme-text-muted font-normal text-[10px]">(${pct}%)</span></span>
+            </div>`;
+    });
+}
+
+function renderConsolidatedCategories() {
+    const container = document.getElementById('consolidated-category-list');
+    if (!container) return;
+    container.innerHTML = '';
+
+    const isMonth = categoryViewMode === 'month';
+    const activeData = isMonth ? categoryMonthData : categoryYtdData;
+    const activeTotal = isMonth ? monthTotalSpentVal : ytdTotalSpentVal;
+
+    const entries = Object.entries(activeData).sort((a, b) => b[1] - a[1]);
+
+    if (entries.length === 0) {
+        container.innerHTML = `<p class="col-span-2 text-center theme-text-muted py-6 text-xs">Sin registros de gastos para este período.</p>`;
+        return;
+    }
+
+    entries.forEach(([cat, amount]) => {
+        const pct = activeTotal > 0 ? ((amount / activeTotal) * 100).toFixed(1) : '0';
+        const barPct = activeTotal > 0 ? Math.min(100, Math.max(5, (amount / activeTotal) * 100)) : 0;
+        const color = categoryColors[cat] || '#94a3b8';
+
+        container.innerHTML += `
+            <div class="theme-card-sub p-3 rounded-xl border space-y-1.5">
+                <div class="flex justify-between items-center text-xs">
+                    <span class="flex items-center gap-2 font-bold theme-text-primary">
+                        <span class="w-2.5 h-2.5 rounded-full flex-shrink-0" style="background-color: ${color}"></span>
+                        ${cat}
+                    </span>
+                    <span class="font-extrabold theme-text-primary">$${amount.toFixed(2)} <span class="theme-text-muted font-normal text-[11px]">(${pct}%)</span></span>
+                </div>
+                <div class="w-full bg-slate-700/40 rounded-full h-2 overflow-hidden">
+                    <div class="h-2 rounded-full transition-all duration-500" style="width: ${barPct}%; background-color: ${color}"></div>
+                </div>
+            </div>`;
     });
 }
 
@@ -482,7 +570,7 @@ function renderGauge(canvasId, pctId, spentId, availId, spent, budget, chartInst
     const ctx = canvasEl.getContext('2d');
     if (chartInstanceVar) chartInstanceVar.destroy();
     
-    const subBgColor = getCssVar('--card-sub-bg', '#334155');
+    const subBgColor = getCssVar('--card-border', '#334155');
     const gaugeColors = [colors[0], subBgColor];
 
     const newInstance = new Chart(ctx, {
@@ -509,78 +597,6 @@ function renderTypeChart(fijo, extra) {
     });
 }
 
-function renderCategoryBarChart(canvasId, listContainerId, categoriesObj, totalSpentVal, chartInstanceVar, setInstanceCallback) {
-    const rawLabels = Object.keys(categoriesObj);
-    const data = Object.values(categoriesObj);
-    const total = totalSpentVal || data.reduce((a, b) => a + b, 0);
-
-    const colors = rawLabels.map(l => categoryColors[l] || '#94a3b8');
-    const textColor = getCssVar('--text-primary', '#ffffff');
-    const subBgColor = getCssVar('--card-sub-bg', '#334155');
-
-    const listContainer = document.getElementById(listContainerId);
-    if (listContainer) {
-        listContainer.innerHTML = '';
-        rawLabels.forEach((cat, i) => {
-            const amount = data[i];
-            const pct = total > 0 ? ((amount / total) * 100).toFixed(1) : '0';
-            listContainer.innerHTML += `
-                <div class="flex justify-between items-center text-xs py-0.5">
-                    <span class="flex items-center gap-1.5 font-medium theme-text-secondary">
-                        <span class="w-2.5 h-2.5 rounded-full flex-shrink-0" style="background-color: ${categoryColors[cat] || '#94a3b8'}"></span>
-                        ${cat}
-                    </span>
-                    <span class="font-bold theme-text-primary">$${amount.toFixed(2)} <span class="theme-text-muted font-normal">(${pct}%)</span></span>
-                </div>`;
-        });
-
-        if (rawLabels.length === 0) {
-            listContainer.innerHTML = `<p class="text-center theme-text-muted py-2">Sin gastos registrados.</p>`;
-        }
-    }
-
-    const canvasEl = document.getElementById(canvasId);
-    if (!canvasEl) return;
-    const ctx = canvasEl.getContext('2d');
-    if (chartInstanceVar) chartInstanceVar.destroy();
-
-    const newInstance = new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: rawLabels.length > 0 ? rawLabels : ['Sin datos'],
-            datasets: [{
-                label: 'Monto ($)',
-                data: data.length > 0 ? data : [0],
-                backgroundColor: data.length > 0 ? colors : [subBgColor],
-                borderRadius: 6
-            }]
-        },
-        options: {
-            indexAxis: 'y',
-            responsive: true,
-            maintainAspectRatio: false,
-            layout: { padding: { left: 0, right: 10 } },
-            plugins: { 
-                legend: { display: false },
-                tooltip: {
-                    callbacks: {
-                        label: function(context) {
-                            const val = context.raw || 0;
-                            const pct = total > 0 ? ((val / total) * 100).toFixed(1) : '0';
-                            return ` Total: $${val.toFixed(2)} (${pct}%)`;
-                        }
-                    }
-                }
-            },
-            scales: {
-                x: { grid: { display: false }, ticks: { font: { size: 10 }, color: textColor, callback: (value) => '$' + value } },
-                y: { grid: { display: false }, ticks: { display: false } }
-            }
-        }
-    });
-    setInstanceCallback(newInstance);
-}
-
 async function loadYTDData() {
     const q = query(
         collection(db, "gastos"), 
@@ -605,6 +621,9 @@ async function loadYTDData() {
             }
         });
 
+        ytdTotalSpentVal = totalYTD;
+        categoryYtdData = categoryYtdTotals;
+
         const ytdTot = document.getElementById('ytd-total-spent');
         const ytdF = document.getElementById('ytd-fijo');
         const ytdE = document.getElementById('ytd-extra');
@@ -613,6 +632,8 @@ async function loadYTDData() {
         if (ytdF) ytdF.textContent = `$${ytdFijo.toFixed(2)}`;
         if (ytdE) ytdE.textContent = `$${ytdExtra.toFixed(2)}`;
 
-        renderCategoryBarChart('categoryYtdBarChart', 'category-ytd-list', categoryYtdTotals, totalYTD, categoryYtdChartInstance, (inst) => categoryYtdChartInstance = inst);
+        if (categoryViewMode === 'ytd') {
+            renderConsolidatedCategories();
+        }
     });
 }
