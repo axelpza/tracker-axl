@@ -4,11 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Dashboard - Tracker Finanzas</title>
-    <!-- Script de inyección inmediata para evitar que se vea blanco al cargar -->
+    <!-- Script de Inyección Inmediata para forzar Tema Oscuro en la Carga Inicial -->
     <script>
         (function() {
-            var theme = localStorage.getItem('app_theme') || 'dark-crimson';
-            document.documentElement.setAttribute('data-theme', theme);
+            var valid = ['dark-crimson', 'dark-cyber', 'dust-vortex', 'neon-matrix', 'light-clean'];
+            var saved = localStorage.getItem('app_theme');
+            if (saved === 'crimson') saved = 'dark-crimson';
+            if (!saved || valid.indexOf(saved) === -1) {
+                saved = 'dark-crimson';
+                localStorage.setItem('app_theme', 'dark-crimson');
+            }
+            document.documentElement.setAttribute('data-theme', saved);
         })();
     </script>
     <script src="https://cdn.tailwindcss.com"></script>
@@ -102,11 +108,11 @@
                     <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-6 items-center">
                         <!-- Rueda de Colores (Donut Chart) -->
                         <div class="lg:col-span-5 flex flex-col items-center justify-center relative py-2 sm:py-0">
-                            <div class="relative w-44 h-44 sm:w-64 sm:h-64">
+                            <div class="relative w-56 h-56 sm:w-64 sm:h-64">
                                 <canvas id="categoryWheelChart"></canvas>
                                 <!-- Overlay central con total dinámico -->
                                 <div class="absolute inset-0 flex flex-col items-center justify-center text-center pointer-events-none p-2 sm:p-4">
-                                    <span id="wheel-center-amount" class="text-lg sm:text-2xl font-black theme-text-primary">$0.00</span>
+                                    <span id="wheel-center-amount" class="text-xl sm:text-2xl font-black theme-text-primary">$0.00</span>
                                     <span id="wheel-center-label" class="text-[10px] sm:text-[11px] font-semibold theme-text-muted mt-0.5">Total Gastado</span>
                                 </div>
                             </div>

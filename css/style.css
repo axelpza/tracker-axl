@@ -1,7 +1,39 @@
 /* VARIABLES GLOBALES Y SISTEMA DE TEMAS COMPLETO CON FONDOS SÓLIDOS */
 
+/* TEMA POR DEFECTO EN :root (CRIMSON MIDNIGHT) - PREVIENE FONDOS BLANCOS SI EL TEMA NO COINCIDE */
+:root {
+    --bg-body: #080c14;
+    --card-bg: #111827;
+    --card-sub-bg: #1f2937;
+    --card-border: #374151;
+    
+    --banner-bg: linear-gradient(135deg, #991b1b 0%, #7f1d1d 100%);
+    --banner-text: #ffffff;
+    --banner-subtext: #fca5a5;
+    
+    --text-primary: #f9fafb;
+    --text-secondary: #d1d5db;
+    --text-muted: #9ca3af;
+    
+    --accent-primary: #dc2626;
+    --accent-hover: #b91c1c;
+    --accent-text: #fca5a5;
+    --accent-badge-bg: #450a0a;
+    --accent-badge-border: #991b1b;
+    
+    --nav-bg: #111827;
+    --input-bg: #1f2937;
+    --input-border: #4b5563;
+    --input-text: #ffffff;
+    
+    --chart-q1: #38bdf8;
+    --chart-q2: #ef4444;
+    --btn-secondary-bg: #1f2937;
+    --btn-secondary-text: #f3f4f6;
+}
+
 /* 1. CRIMSON MIDNIGHT (PREDETERMINADO OSCURO) */
-html[data-theme="dark-crimson"], body[data-theme="dark-crimson"], :root {
+html[data-theme="dark-crimson"], body[data-theme="dark-crimson"], html[data-theme="crimson"], body[data-theme="crimson"] {
     --bg-body: #080c14;
     --card-bg: #111827;
     --card-sub-bg: #1f2937;
@@ -160,7 +192,7 @@ html[data-theme="light-clean"], body[data-theme="light-clean"] {
     --btn-secondary-text: #1e293b;
 }
 
-/* ESTILOS BASE Y FORZADO DE FONDO SÓLIDO */
+/* ESTILOS BASE Y FORZADO DE FONDO SÓLIDO EN TODO MOMENTO */
 html, body {
     background-color: var(--bg-body) !important;
     color: var(--text-primary) !important;
@@ -182,7 +214,7 @@ html, body {
     background-color: var(--card-bg) !important;
     border: 1px solid var(--card-border) !important;
     color: var(--text-primary) !important;
-    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
 }
 
 .theme-card-sub {
@@ -239,7 +271,7 @@ html, body {
     background-color: var(--input-bg) !important;
     border: 1px solid var(--input-border) !important;
     color: var(--input-text) !important;
-    font-size: 16px !important; /* Previene auto-zoom en iOS */
+    font-size: 16px !important;
 }
 @media (min-width: 640px) {
     .theme-input { font-size: 14px !important; }

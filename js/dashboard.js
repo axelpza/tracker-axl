@@ -2,6 +2,20 @@ import { auth, db } from './firebase-config.js';
 import { signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { doc, getDoc, setDoc, collection, addDoc, query, where, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
+// REGISTRAR POSICIONADOR PERSONALIZADO PARA TOOLTIPS FUERA DE LA RUEDA
+if (window.Chart && window.Chart.Tooltip) {
+    window.Chart.Tooltip.positioners.outside = function(items) {
+        if (!items || !items.length) return false;
+        const el = items[0].element;
+        const midAngle = (el.startAngle + el.endAngle) / 2;
+        const distance = el.outerRadius + 22; // Posiciona 22px fuera del borde externo
+        return {
+            x: el.x + Math.cos(midAngle) * distance,
+            y: el.y + Math.sin(midAngle) * distance
+        };
+    };
+}
+
 let currentUid = null;
 const meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
 let currentMes = meses[new Date().getMonth()];
@@ -547,7 +561,7 @@ function renderInteractiveCategoryWheel() {
             </div>`;
     });
 
-    // 2. Chart de Rueda (Donut)
+    // 2. Chart de Rueda (Donut) con Tooltip Posicionado Fuera
     const ctx = canvasEl.getContext('2d');
     if (categoryWheelChartInstance) categoryWheelChartInstance.destroy();
 
@@ -562,7 +576,7 @@ function renderInteractiveCategoryWheel() {
                 backgroundColor: colors,
                 borderWidth: 2,
                 borderColor: cardBgColor,
-                hoverOffset: 10
+                hoverOffset: 12
             }]
         },
         options: {
@@ -572,6 +586,16 @@ function renderInteractiveCategoryWheel() {
             plugins: {
                 legend: { display: false },
                 tooltip: {
+                    enabled: true,
+                    position: 'outside', // Posicionador personalizado fuera del anillo
+                    backgroundColor: 'rgba(15, 23, 42, 0.95)',
+                    titleColor: '#f8fafc',
+                    bodyColor: '#f8fafc',
+                    borderColor: 'rgba(255, 255, 255, 0.2)',
+                    borderWidth: 1,
+                    padding: 8,
+                    cornerRadius: 8,
+                    displayColors: true,
                     callbacks: {
                         label: function(context) {
                             const val = context.raw || 0;
