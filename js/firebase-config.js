@@ -4,12 +4,12 @@ import { getAuth } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-aut
 import { getFirestore } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig = {
-    apiKey: "AIzaSyDokleWa9zxrE5q-GIb5uUceo4BRY-UF58",
-    authDomain: "tracker-finanzas-b85ec.firebaseapp.com",
-    projectId: "tracker-finanzas-b85ec",
-    storageBucket: "tracker-finanzas-b85ec.firebasestorage.app",
-    messagingSenderId: "537685468596",
-    appId: "1:537685468596:web:c94e9005665e16be4ebee1"
+    apiKey: "AIzaSyCiqIxXzIWzcHi9IywB5tUYdP9vKX6SM9g",
+    authDomain: "tracker-finance-dc905.firebaseapp.com",
+    projectId: "tracker-finance-dc905",
+    storageBucket: "tracker-finance-dc905.firebasestorage.app",
+    messagingSenderId: "47567605364",
+    appId: "1:47567605364:web:32420cc90dc37812828b21"
 };
 
 const app = initializeApp(firebaseConfig);
