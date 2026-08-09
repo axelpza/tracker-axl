@@ -7,14 +7,21 @@ export const themes = [
 ];
 
 export function getSavedTheme() {
-    return localStorage.getItem('app_theme') || 'dark-cyber';
+    return localStorage.getItem('app_theme') || 'dark-crimson';
 }
 
 export function applyTheme(themeId) {
     document.documentElement.setAttribute('data-theme', themeId);
+    if (document.body) {
+        document.body.setAttribute('data-theme', themeId);
+    }
     localStorage.setItem('app_theme', themeId);
     window.dispatchEvent(new CustomEvent('themeChanged', { detail: { theme: themeId } }));
 }
 
-// Aplicación inmediata al cargar
+// Aplicación inmediata
 applyTheme(getSavedTheme());
+
+document.addEventListener('DOMContentLoaded', () => {
+    applyTheme(getSavedTheme());
+});

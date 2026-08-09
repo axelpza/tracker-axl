@@ -1,7 +1,7 @@
 /* VARIABLES GLOBALES Y SISTEMA DE TEMAS COMPLETO CON FONDOS SÓLIDOS */
 
 /* 1. CYBERPUNK OSCURO (Índigo Nocturno) */
-[data-theme="dark-cyber"], :root {
+html[data-theme="dark-cyber"], body[data-theme="dark-cyber"], :root {
     --bg-body: #070a12;
     --card-bg: #0f172a;
     --card-sub-bg: #1e293b;
@@ -32,8 +32,8 @@
     --btn-secondary-text: #e2e8f0;
 }
 
-/* 2. CRIMSON MIDNIGHT (NUEVO: Azul Marino & Rojo Carmesí Oscuro) */
-[data-theme="dark-crimson"] {
+/* 2. CRIMSON MIDNIGHT (Azul Marino & Rojo Carmesí Oscuro) */
+html[data-theme="dark-crimson"], body[data-theme="dark-crimson"] {
     --bg-body: #080c14;
     --card-bg: #111827;
     --card-sub-bg: #1f2937;
@@ -65,7 +65,7 @@
 }
 
 /* 3. VÓRTICE DE POLVO (Naranja Estelar Oscuro) */
-[data-theme="dust-vortex"] {
+html[data-theme="dust-vortex"], body[data-theme="dust-vortex"] {
     --bg-body: #020408;
     --card-bg: #0a101a;
     --card-sub-bg: #152033;
@@ -97,7 +97,7 @@
 }
 
 /* 4. MATRIZ ESMERALDA (Verde Cíber Oscuro) */
-[data-theme="neon-matrix"] {
+html[data-theme="neon-matrix"], body[data-theme="neon-matrix"] {
     --bg-body: #030f0c;
     --card-bg: #062017;
     --card-sub-bg: #0c3326;
@@ -128,8 +128,8 @@
     --btn-secondary-text: #e2e8f0;
 }
 
-/* 5. LUMINOSO MINIMALISTA (Tema Claro Pulido) */
-[data-theme="light-clean"] {
+/* 5. LUMINOSO MINIMALISTA (Tema Claro) */
+html[data-theme="light-clean"], body[data-theme="light-clean"] {
     --bg-body: #f1f5f9;
     --card-bg: #ffffff;
     --card-sub-bg: #f8fafc;
@@ -160,14 +160,14 @@
     --btn-secondary-text: #1e293b;
 }
 
-/* ESTILOS GLOBALES BASE */
+/* ESTILOS BASE Y FORZADO DE FONDO SÓLIDO */
 body {
-    background-color: var(--bg-body);
-    color: var(--text-primary);
+    background-color: var(--bg-body) !important;
+    color: var(--text-primary) !important;
     transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-/* BANNER SUPERIOR YTD Y RESUMEN */
+/* BANNER SUPERIOR */
 .theme-banner {
     background: var(--banner-bg) !important;
     color: var(--banner-text) !important;
@@ -176,12 +176,12 @@ body {
     color: var(--banner-subtext) !important;
 }
 
-/* TARJETAS CON FONDOS SÓLIDOS Y BORDES DEFINIDOS */
+/* TARJETAS CON FONDOS SÓLIDOS */
 .theme-card {
     background-color: var(--card-bg) !important;
     border: 1px solid var(--card-border) !important;
     color: var(--text-primary) !important;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4);
 }
 
 .theme-card-sub {
@@ -202,13 +202,13 @@ body {
     border-bottom: 2px solid var(--accent-primary) !important;
 }
 
-/* TEXTOS DINÁMICOS POR TEMA */
+/* TEXTOS DINÁMICOS */
 .theme-text-primary { color: var(--text-primary) !important; }
 .theme-text-secondary { color: var(--text-secondary) !important; }
 .theme-text-muted { color: var(--text-muted) !important; }
 .theme-accent-text { color: var(--accent-text) !important; }
 
-/* BOTONES DINÁMICOS POR TEMA */
+/* BOTONES DINÁMICOS */
 .theme-accent-btn {
     background-color: var(--accent-primary) !important;
     color: #ffffff !important;
@@ -240,7 +240,23 @@ body {
     color: var(--input-text) !important;
 }
 
-/* TOOLTIP PERSONALIZADO */
+/* TARJETAS DE CATEGORÍA INTERACTIVAS (HOVER SINCRONIZADO) */
+.cat-item-card {
+    transition: all 0.2s ease-in-out;
+    cursor: pointer;
+}
+.cat-item-card:hover, .cat-item-card.is-active {
+    border-color: var(--accent-primary) !important;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 14px rgba(0,0,0,0.4);
+    background-color: var(--card-sub-bg) !important;
+}
+.cat-item-card.is-dimmed {
+    opacity: 0.35;
+    filter: grayscale(30%);
+}
+
+/* TOOLTIP */
 .tooltip-container { position: relative; display: inline-flex; align-items: center; }
 .tooltip-text {
     visibility: hidden;

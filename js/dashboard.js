@@ -13,6 +13,7 @@ let categoryViewMode = 'month'; // 'month' o 'ytd'
 let typeChartInstance = null;
 let chartQ1 = null;
 let chartQ2 = null;
+let categoryWheelChartInstance = null;
 
 let categoryMonthData = {};
 let categoryYtdData = {};
@@ -108,18 +109,18 @@ function initCategoryToggle() {
     if (btnMonth) {
         btnMonth.onclick = () => {
             categoryViewMode = 'month';
-            btnMonth.className = "px-3 py-1.5 rounded-lg text-xs font-bold theme-accent-btn";
-            if (btnYtd) btnYtd.className = "px-3 py-1.5 rounded-lg text-xs font-bold theme-btn-secondary";
-            renderConsolidatedCategories();
+            btnMonth.className = "px-3.5 py-1.5 rounded-xl text-xs font-bold theme-accent-btn";
+            if (btnYtd) btnYtd.className = "px-3.5 py-1.5 rounded-xl text-xs font-bold theme-btn-secondary";
+            renderInteractiveCategoryWheel();
         };
     }
 
     if (btnYtd) {
         btnYtd.onclick = () => {
             categoryViewMode = 'ytd';
-            btnYtd.className = "px-3 py-1.5 rounded-lg text-xs font-bold theme-accent-btn";
-            if (btnMonth) btnMonth.className = "px-3 py-1.5 rounded-lg text-xs font-bold theme-btn-secondary";
-            renderConsolidatedCategories();
+            btnYtd.className = "px-3.5 py-1.5 rounded-xl text-xs font-bold theme-accent-btn";
+            if (btnMonth) btnMonth.className = "px-3.5 py-1.5 rounded-xl text-xs font-bold theme-btn-secondary";
+            renderInteractiveCategoryWheel();
         };
     }
 }
@@ -456,7 +457,7 @@ async function loadMonthData() {
         renderFortnightCategories('q2-categories-list', catQ2, spentQ2);
 
         renderTypeChart(fixedSpent, extraSpent);
-        renderConsolidatedCategories();
+        renderInteractiveCategoryWheel();
     });
 }
 
@@ -465,7 +466,7 @@ function renderFortnightCategories(containerId, catObj, totalFortnightSpent) {
     if (!container) return;
     container.innerHTML = '';
 
-    const entries = Object.entries(catObj).sort((a, b) => b[1] - a[1]).slice(0, 3); // Top 3
+    const entries = Object.entries(catObj).sort((a, b) => b[1] - a[1]).slice(0, 3);
 
     if (entries.length === 0) {
         container.innerHTML = `<p class="theme-text-muted text-[11px] py-1">Sin consumos en esta quincena.</p>`;
@@ -486,10 +487,14 @@ function renderFortnightCategories(containerId, catObj, totalFortnightSpent) {
     });
 }
 
-function renderConsolidatedCategories() {
-    const container = document.getElementById('consolidated-category-list');
-    if (!container) return;
-    container.innerHTML = '';
+// --- RENDERING DE LA RUEDA CIRCULAR Y LISTADO CON HOVER SINCRONIZADO ---
+function renderInteractiveCategoryWheel() {
+    const gridContainer = document.getElementById('category-interactive-grid');
+    const canvasEl = document.getElementById('categoryWheelChart');
+    const wheelCenterAmount = document.getElementById('wheel-center-amount');
+    const wheelCenterLabel = document.getElementById('wheel-center-label');
+
+    if (!gridContainer || !canvasEl) return;
 
     const isMonth = categoryViewMode === 'month';
     const activeData = isMonth ? categoryMonthData : categoryYtdData;
@@ -497,29 +502,137 @@ function renderConsolidatedCategories() {
 
     const entries = Object.entries(activeData).sort((a, b) => b[1] - a[1]);
 
+    // Reset overlay central
+    if (wheelCenterAmount) wheelCenterAmount.textContent = `$${activeTotal.toFixed(2)}`;
+    if (wheelCenterLabel) wheelCenterLabel.textContent = isMonth ? `Total Gastado (${currentMes})` : 'Total Gastado (YTD Anual)';
+
     if (entries.length === 0) {
-        container.innerHTML = `<p class="col-span-2 text-center theme-text-muted py-6 text-xs">Sin registros de gastos para este período.</p>`;
+        gridContainer.innerHTML = `<p class="col-span-2 text-center theme-text-muted py-6 text-xs">Sin registros de gastos en este período.</p>`;
+        if (categoryWheelChartInstance) categoryWheelChartInstance.destroy();
         return;
     }
 
-    entries.forEach(([cat, amount]) => {
+    const labels = entries.map(e => e[0]);
+    const values = entries.map(e => e[1]);
+    const colors = labels.map(l => categoryColors[l] || '#94a3b8');
+
+    // 1. Construir Tarjetas Interactivas
+    gridContainer.innerHTML = '';
+    entries.forEach(([cat, amount], index) => {
         const pct = activeTotal > 0 ? ((amount / activeTotal) * 100).toFixed(1) : '0';
-        const barPct = activeTotal > 0 ? Math.min(100, Math.max(5, (amount / activeTotal) * 100)) : 0;
         const color = categoryColors[cat] || '#94a3b8';
 
-        container.innerHTML += `
-            <div class="theme-card-sub p-3 rounded-xl border space-y-1.5">
-                <div class="flex justify-between items-center text-xs">
-                    <span class="flex items-center gap-2 font-bold theme-text-primary">
-                        <span class="w-2.5 h-2.5 rounded-full flex-shrink-0" style="background-color: ${color}"></span>
-                        ${cat}
-                    </span>
-                    <span class="font-extrabold theme-text-primary">$${amount.toFixed(2)} <span class="theme-text-muted font-normal text-[11px]">(${pct}%)</span></span>
+        gridContainer.innerHTML += `
+            <div class="cat-item-card theme-card-sub p-3 rounded-xl border flex justify-between items-center text-xs" data-cat-index="${index}">
+                <div class="flex items-center gap-2 font-bold theme-text-primary">
+                    <span class="w-3 h-3 rounded-full flex-shrink-0 shadow-sm" style="background-color: ${color}"></span>
+                    <span class="truncate max-w-[120px] sm:max-w-[140px]">${cat}</span>
                 </div>
-                <div class="w-full bg-slate-700/40 rounded-full h-2 overflow-hidden">
-                    <div class="h-2 rounded-full transition-all duration-500" style="width: ${barPct}%; background-color: ${color}"></div>
+                <div class="text-right">
+                    <span class="font-black theme-text-primary">$${amount.toFixed(2)}</span>
+                    <span class="block text-[10px] theme-text-muted font-normal">(${pct}%)</span>
                 </div>
             </div>`;
+    });
+
+    // 2. Destruir y Crear Chart de Rueda (Donut)
+    const ctx = canvasEl.getContext('2d');
+    if (categoryWheelChartInstance) categoryWheelChartInstance.destroy();
+
+    categoryWheelChartInstance = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: labels,
+            datasets: [{
+                data: values,
+                backgroundColor: colors,
+                borderWidth: 2,
+                borderColor: getCssVar('--card-bg', '#0f172a'),
+                hoverOffset: 12
+            }]
+        },
+        options: {
+            cutout: '72%',
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            const val = context.raw || 0;
+                            const pct = activeTotal > 0 ? ((val / activeTotal) * 100).toFixed(1) : '0';
+                            return ` $${val.toFixed(2)} (${pct}%)`;
+                        }
+                    }
+                }
+            },
+            onHover: (event, activeElements) => {
+                const cards = document.querySelectorAll('.cat-item-card');
+                if (activeElements && activeElements.length > 0) {
+                    const hoveredIndex = activeElements[0].index;
+                    const catName = labels[hoveredIndex];
+                    const catAmount = values[hoveredIndex];
+                    const catPct = activeTotal > 0 ? ((catAmount / activeTotal) * 100).toFixed(1) : '0';
+
+                    if (wheelCenterAmount) wheelCenterAmount.textContent = `$${catAmount.toFixed(2)}`;
+                    if (wheelCenterLabel) wheelCenterLabel.textContent = `${catName} (${catPct}%)`;
+
+                    cards.forEach((card, idx) => {
+                        if (idx === hoveredIndex) {
+                            card.classList.add('is-active');
+                            card.classList.remove('is-dimmed');
+                        } else {
+                            card.classList.remove('is-active');
+                            card.classList.add('is-dimmed');
+                        }
+                    });
+                } else {
+                    if (wheelCenterAmount) wheelCenterAmount.textContent = `$${activeTotal.toFixed(2)}`;
+                    if (wheelCenterLabel) wheelCenterLabel.textContent = isMonth ? `Total Gastado (${currentMes})` : 'Total Gastado (YTD Anual)';
+                    cards.forEach(card => card.classList.remove('is-active', 'is-dimmed'));
+                }
+            }
+        }
+    });
+
+    // 3. Eventos Mouse/Touch en las Tarjetas para Activar la Rueda
+    document.querySelectorAll('.cat-item-card').forEach(card => {
+        const idx = parseInt(card.getAttribute('data-cat-index'));
+
+        card.addEventListener('mouseenter', () => {
+            if (!categoryWheelChartInstance) return;
+
+            // Resaltar en rueda
+            categoryWheelChartInstance.setActiveElements([{ datasetIndex: 0, index: idx }]);
+            categoryWheelChartInstance.tooltip.setActiveElements([{ datasetIndex: 0, index: idx }]);
+            categoryWheelChartInstance.update();
+
+            // Texto central
+            const catName = labels[idx];
+            const catAmount = values[idx];
+            const catPct = activeTotal > 0 ? ((catAmount / activeTotal) * 100).toFixed(1) : '0';
+            if (wheelCenterAmount) wheelCenterAmount.textContent = `$${catAmount.toFixed(2)}`;
+            if (wheelCenterLabel) wheelCenterLabel.textContent = `${catName} (${catPct}%)`;
+
+            // Dim de otras tarjetas
+            document.querySelectorAll('.cat-item-card').forEach((c, i) => {
+                if (i === idx) { c.classList.add('is-active'); c.classList.remove('is-dimmed'); }
+                else { c.classList.remove('is-active'); c.classList.add('is-dimmed'); }
+            });
+        });
+
+        card.addEventListener('mouseleave', () => {
+            if (!categoryWheelChartInstance) return;
+
+            categoryWheelChartInstance.setActiveElements([]);
+            categoryWheelChartInstance.tooltip.setActiveElements([]);
+            categoryWheelChartInstance.update();
+
+            if (wheelCenterAmount) wheelCenterAmount.textContent = `$${activeTotal.toFixed(2)}`;
+            if (wheelCenterLabel) wheelCenterLabel.textContent = isMonth ? `Total Gastado (${currentMes})` : 'Total Gastado (YTD Anual)';
+            document.querySelectorAll('.cat-item-card').forEach(c => c.classList.remove('is-active', 'is-dimmed'));
+        });
     });
 }
 
@@ -633,7 +746,7 @@ async function loadYTDData() {
         if (ytdE) ytdE.textContent = `$${ytdExtra.toFixed(2)}`;
 
         if (categoryViewMode === 'ytd') {
-            renderConsolidatedCategories();
+            renderInteractiveCategoryWheel();
         }
     });
 }

@@ -50,7 +50,7 @@
                         </div>
                     </div>
 
-                    <div class="bg-black/20 p-3.5 rounded-xl flex items-center justify-between border border-white/10">
+                    <div class="bg-black/25 p-3.5 rounded-xl flex items-center justify-between border border-white/10">
                         <div>
                             <p class="text-[11px] font-bold uppercase theme-banner-subtext">Distribución Gasto</p>
                             <p class="text-xs text-white/90 font-semibold mt-1">Fijo vs Extraordinario</p>
@@ -61,21 +61,38 @@
                     </div>
                 </div>
 
-                <!-- Desglose por Categorías Consolidado en el Mismo Panel -->
-                <div class="p-5 sm:p-6 space-y-4">
-                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-slate-700/50 pb-3">
+                <!-- Desglose por Categorías con Rueda Interactiva -->
+                <div class="p-5 sm:p-6 space-y-6">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-b border-slate-700/50 pb-3">
                         <h3 class="font-bold text-sm uppercase tracking-wider theme-text-primary flex items-center gap-2">
-                            <span>📊</span> Desglose Consolidado por Categorías
+                            <span>🎨</span> Desglose Interactivo por Categorías
                         </h3>
                         <div class="flex gap-2">
-                            <button id="btn-cat-view-month" class="px-3 py-1.5 rounded-lg text-xs font-bold theme-accent-btn">Ver Mes (<span id="lbl-cat-toggle-month">Mes</span>)</button>
-                            <button id="btn-cat-view-ytd" class="px-3 py-1.5 rounded-lg text-xs font-bold theme-btn-secondary">Ver Anual (YTD)</button>
+                            <button id="btn-cat-view-month" class="px-3.5 py-1.5 rounded-xl text-xs font-bold theme-accent-btn">Ver Mes (<span id="lbl-cat-toggle-month">Mes</span>)</button>
+                            <button id="btn-cat-view-ytd" class="px-3.5 py-1.5 rounded-xl text-xs font-bold theme-btn-secondary">Ver Anual (YTD)</button>
                         </div>
                     </div>
 
-                    <!-- Lista con Barras de Progreso de Categorías -->
-                    <div id="consolidated-category-list" class="grid grid-cols-1 md:grid-cols-2 gap-3 pt-1">
-                        <!-- Generado Dinámicamente por JS -->
+                    <!-- RUEDA CIRCULAR Y MESH INTERACTIVO DE CATEGORÍAS -->
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+                        <!-- Rueda de Colores (Donut Chart) -->
+                        <div class="lg:col-span-5 flex flex-col items-center justify-center relative">
+                            <div class="relative w-56 h-56 sm:w-64 sm:h-64">
+                                <canvas id="categoryWheelChart"></canvas>
+                                <!-- Overlay central con total dinámico -->
+                                <div class="absolute inset-0 flex flex-col items-center justify-center text-center pointer-events-none p-4">
+                                    <span id="wheel-center-amount" class="text-xl sm:text-2xl font-black theme-text-primary">$0.00</span>
+                                    <span id="wheel-center-label" class="text-[11px] font-semibold theme-text-muted mt-0.5">Total Gastado</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Grid de Categorías con Hover Sincronizado -->
+                        <div class="lg:col-span-7">
+                            <div id="category-interactive-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 max-h-80 overflow-y-auto pr-1">
+                                <!-- Generado dinámicamente por JS -->
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -277,12 +294,9 @@
                                         <div class="theme-text-secondary">Disponible: <strong id="q1-avail" class="text-emerald-500 font-bold">$0.00</strong></div>
                                     </div>
                                 </div>
-                                <!-- Categorías Principales Q1 -->
                                 <div class="pt-2 border-t border-slate-700/40">
                                     <p class="text-[10px] font-bold uppercase theme-text-muted mb-1.5">Top Gastos Q1:</p>
-                                    <div id="q1-categories-list" class="space-y-1 text-xs">
-                                        <!-- Inyectado por JS -->
-                                    </div>
+                                    <div id="q1-categories-list" class="space-y-1 text-xs"></div>
                                 </div>
                             </div>
 
@@ -301,12 +315,9 @@
                                         <div class="theme-text-secondary">Disponible: <strong id="q2-avail" class="text-emerald-500 font-bold">$0.00</strong></div>
                                     </div>
                                 </div>
-                                <!-- Categorías Principales Q2 -->
                                 <div class="pt-2 border-t border-slate-700/40">
                                     <p class="text-[10px] font-bold uppercase theme-text-muted mb-1.5">Top Gastos Q2:</p>
-                                    <div id="q2-categories-list" class="space-y-1 text-xs">
-                                        <!-- Inyectado por JS -->
-                                    </div>
+                                    <div id="q2-categories-list" class="space-y-1 text-xs"></div>
                                 </div>
                             </div>
                         </div>
