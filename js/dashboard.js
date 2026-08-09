@@ -1,4 +1,4 @@
-import { auth, db } from '../firebase-config.js'; // Cambia a './firebase-config.js' si tu archivo está en /js
+import { auth, db } from './firebase-config.js';
 import { signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { doc, getDoc, setDoc, collection, addDoc, query, where, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
@@ -43,8 +43,10 @@ async function initDashboard() {
         const userSnap = await getDoc(doc(db, "users", user.uid));
         if (userSnap.exists()) {
             const data = userSnap.data();
-            document.getElementById('nav-name').textContent = data.name || "Usuario";
-            document.getElementById('nav-avatar').textContent = data.avatar || "👨‍💻";
+            const navName = document.getElementById('nav-name');
+            const navAvatar = document.getElementById('nav-avatar');
+            if (navName) navName.textContent = data.name || "Usuario";
+            if (navAvatar) navAvatar.textContent = data.avatar || "👨‍💻";
         }
     } catch (err) {
         console.error("Error al cargar usuario:", err);
@@ -58,16 +60,21 @@ async function initDashboard() {
 
 initDashboard();
 
-document.getElementById('btn-logout').onclick = () => signOut(auth).then(() => window.location.href = "index.html");
+const btnLogout = document.getElementById('btn-logout');
+if (btnLogout) btnLogout.onclick = () => signOut(auth).then(() => window.location.href = "index.html");
 
 function initMonthTabs() {
     const container = document.getElementById('month-tabs');
     if (!container) return;
     container.innerHTML = '';
     
-    document.getElementById('lbl-current-mes').textContent = currentMes;
-    document.getElementById('lbl-cat-month').textContent = currentMes;
-    document.getElementById('view-mes-title').textContent = currentMes;
+    const lblMes = document.getElementById('lbl-current-mes');
+    const lblCatMes = document.getElementById('lbl-cat-month');
+    const lblViewMes = document.getElementById('view-mes-title');
+
+    if (lblMes) lblMes.textContent = currentMes;
+    if (lblCatMes) lblCatMes.textContent = currentMes;
+    if (lblViewMes) lblViewMes.textContent = currentMes;
 
     meses.forEach(m => {
         const btn = document.createElement('button');
@@ -89,9 +96,9 @@ function initDashFilterButtons() {
 
     const setFilterState = (mode) => {
         dashboardFilter = mode;
-        btnQ1.className = `px-4 py-2 rounded-xl text-xs font-bold transition ${mode === 'q1' ? 'bg-indigo-600 text-white shadow-sm' : 'theme-card'}`;
-        btnQ2.className = `px-4 py-2 rounded-xl text-xs font-bold transition ${mode === 'q2' ? 'bg-indigo-600 text-white shadow-sm' : 'theme-card'}`;
-        btnMes.className = `px-4 py-2 rounded-xl text-xs font-bold transition ${mode === 'mes' ? 'bg-indigo-600 text-white shadow-sm' : 'theme-card'}`;
+        if (btnQ1) btnQ1.className = `px-4 py-2 rounded-xl text-xs font-bold transition ${mode === 'q1' ? 'bg-indigo-600 text-white shadow-sm' : 'theme-card'}`;
+        if (btnQ2) btnQ2.className = `px-4 py-2 rounded-xl text-xs font-bold transition ${mode === 'q2' ? 'bg-indigo-600 text-white shadow-sm' : 'theme-card'}`;
+        if (btnMes) btnMes.className = `px-4 py-2 rounded-xl text-xs font-bold transition ${mode === 'mes' ? 'bg-indigo-600 text-white shadow-sm' : 'theme-card'}`;
         loadMonthData();
     };
 
@@ -100,33 +107,39 @@ function initDashFilterButtons() {
     if (btnMes) btnMes.onclick = () => setFilterState('mes');
 }
 
-document.getElementById('in-salario-mensual').oninput = (e) => {
-    const mensual = parseFloat(e.target.value) || 0;
-    const quincenal = mensual / 2;
-    document.getElementById('q1-salario').value = quincenal ? quincenal.toFixed(2) : '';
-    document.getElementById('q2-salario').value = quincenal ? quincenal.toFixed(2) : '';
-    calcularNetoQuincenal();
-};
+const inputSalarioMensual = document.getElementById('in-salario-mensual');
+if (inputSalarioMensual) {
+    inputSalarioMensual.oninput = (e) => {
+        const mensual = parseFloat(e.target.value) || 0;
+        const quincenal = mensual / 2;
+        const q1Sal = document.getElementById('q1-salario');
+        const q2Sal = document.getElementById('q2-salario');
+        if (q1Sal) q1Sal.value = quincenal ? quincenal.toFixed(2) : '';
+        if (q2Sal) q2Sal.value = quincenal ? quincenal.toFixed(2) : '';
+        calcularNetoQuincenal();
+    };
+}
 
 function calcularNetoQuincenal() {
-    const aplicaLeySalario = document.getElementById('in-ley-salario').checked;
+    const elLey = document.getElementById('in-ley-salario');
+    const aplicaLeySalario = elLey ? elLey.checked : true;
 
-    const q1Salario = parseFloat(document.getElementById('q1-salario').value) || 0;
-    const q1Ing2 = parseFloat(document.getElementById('q1-ingreso2').value) || 0;
-    const q1Ing2Ley = document.getElementById('q1-ing2-ley').checked;
-    const q1Ing3 = parseFloat(document.getElementById('q1-ingreso3').value) || 0;
-    const q1Ing3Ley = document.getElementById('q1-ing3-ley').checked;
-    const q1Acreedores = parseFloat(document.getElementById('q1-acreedores').value) || 0;
-    const q1Isr = parseFloat(document.getElementById('q1-isr').value) || 0;
-    const incluyeDecimo = document.getElementById('in-decimo').checked;
+    const q1Salario = parseFloat(document.getElementById('q1-salario')?.value) || 0;
+    const q1Ing2 = parseFloat(document.getElementById('q1-ingreso2')?.value) || 0;
+    const q1Ing2Ley = document.getElementById('q1-ing2-ley')?.checked || false;
+    const q1Ing3 = parseFloat(document.getElementById('q1-ingreso3')?.value) || 0;
+    const q1Ing3Ley = document.getElementById('q1-ing3-ley')?.checked || false;
+    const q1Acreedores = parseFloat(document.getElementById('q1-acreedores')?.value) || 0;
+    const q1Isr = parseFloat(document.getElementById('q1-isr')?.value) || 0;
+    const incluyeDecimo = document.getElementById('in-decimo')?.checked || false;
 
-    const q2Salario = parseFloat(document.getElementById('q2-salario').value) || 0;
-    const q2Ing2 = parseFloat(document.getElementById('q2-ingreso2').value) || 0;
-    const q2Ing2Ley = document.getElementById('q2-ing2-ley').checked;
-    const q2Ing3 = parseFloat(document.getElementById('q2-ingreso3').value) || 0;
-    const q2Ing3Ley = document.getElementById('q2-ing3-ley').checked;
-    const q2Acreedores = parseFloat(document.getElementById('q2-acreedores').value) || 0;
-    const q2Isr = parseFloat(document.getElementById('q2-isr').value) || 0;
+    const q2Salario = parseFloat(document.getElementById('q2-salario')?.value) || 0;
+    const q2Ing2 = parseFloat(document.getElementById('q2-ingreso2')?.value) || 0;
+    const q2Ing2Ley = document.getElementById('q2-ing2-ley')?.checked || false;
+    const q2Ing3 = parseFloat(document.getElementById('q2-ingreso3')?.value) || 0;
+    const q2Ing3Ley = document.getElementById('q2-ing3-ley')?.checked || false;
+    const q2Acreedores = parseFloat(document.getElementById('q2-acreedores')?.value) || 0;
+    const q2Isr = parseFloat(document.getElementById('q2-isr')?.value) || 0;
 
     const q1BrutoSubject = (aplicaLeySalario ? q1Salario : 0) + (q1Ing2Ley ? q1Ing2 : 0) + (q1Ing3Ley ? q1Ing3 : 0);
     const q1BrutoTotal = q1Salario + q1Ing2 + q1Ing3;
@@ -135,14 +148,11 @@ function calcularNetoQuincenal() {
     const q1SeRegular = q1BrutoSubject * 0.0125;
     const netoQ1Regular = q1BrutoTotal - (q1SsRegular + q1SeRegular + q1Isr + q1Acreedores);
 
-    let decimoBruto = 0;
-    let decimoCss = 0;
-    let decimoNeto = 0;
-
+    let decimoBruto = 0, decimoCss = 0, decimoNeto = 0;
     const boxDecimoEdit = document.getElementById('decimo-breakdown-edit');
 
     if (incluyeDecimo) {
-        boxDecimoEdit.classList.remove('hidden');
+        if (boxDecimoEdit) boxDecimoEdit.classList.remove('hidden');
         const salarioMensual = q1Salario * 2;
         decimoBruto = salarioMensual / 3; 
         decimoCss = aplicaLeySalario ? (decimoBruto * 0.0725) : 0; 
@@ -152,7 +162,7 @@ function calcularNetoQuincenal() {
         document.getElementById('e-decimo-css').textContent = `-$${decimoCss.toFixed(2)}`;
         document.getElementById('e-decimo-neto').textContent = `$${decimoNeto.toFixed(2)}`;
     } else {
-        boxDecimoEdit.classList.add('hidden');
+        if (boxDecimoEdit) boxDecimoEdit.classList.add('hidden');
     }
 
     const netoQ1Total = netoQ1Regular + decimoNeto;
@@ -166,9 +176,13 @@ function calcularNetoQuincenal() {
 
     const netoTotalMensual = netoQ1Total + netoQ2;
 
-    document.getElementById('neto-q1').textContent = `$${netoQ1Total.toFixed(2)}`;
-    document.getElementById('neto-q2').textContent = `$${netoQ2.toFixed(2)}`;
-    document.getElementById('calc-neto').textContent = `$${netoTotalMensual.toFixed(2)}`;
+    const nQ1 = document.getElementById('neto-q1');
+    const nQ2 = document.getElementById('neto-q2');
+    const cNeto = document.getElementById('calc-neto');
+
+    if (nQ1) nQ1.textContent = `$${netoQ1Total.toFixed(2)}`;
+    if (nQ2) nQ2.textContent = `$${netoQ2.toFixed(2)}`;
+    if (cNeto) cNeto.textContent = `$${netoTotalMensual.toFixed(2)}`;
 
     return {
         netoTotal: netoTotalMensual,
@@ -178,46 +192,53 @@ function calcularNetoQuincenal() {
     };
 }
 
-document.querySelectorAll('#q1-salario, #q1-ingreso2, #q1-ingreso3, #q1-ing2-ley, #q1-ing3-ley, #q1-acreedores, #q1-isr, #q2-salario, #q2-ingreso2, #q2-ingreso3, #q2-ing2-ley, #q2-ing3-ley, #q2-acreedores, #q2-isr, #in-decimo, #in-ley-salario').forEach(el => {
+document.querySelectorAll('#q1-salario, #q1-ingreso2, #q1-ingreso3, #q1-ing2-ley, #q1-ing3-ley, #q1-acreedores, #q1-isr, #q2-salario, #q2-ingreso2, #q2-ing2-ley, #q2-ingreso3, #q2-ing3-ley, #q2-acreedores, #q2-isr, #in-decimo, #in-ley-salario').forEach(el => {
     el.oninput = calcularNetoQuincenal;
     el.onchange = calcularNetoQuincenal;
 });
 
 function setBudgetMode(isEdit) {
-    document.getElementById('budget-edit-mode').classList.toggle('hidden', !isEdit);
-    document.getElementById('budget-view-mode').classList.toggle('hidden', isEdit);
+    const editMode = document.getElementById('budget-edit-mode');
+    const viewMode = document.getElementById('budget-view-mode');
+    if (editMode) editMode.classList.toggle('hidden', !isEdit);
+    if (viewMode) viewMode.classList.toggle('hidden', isEdit);
 }
 
-document.getElementById('btn-edit-budget').onclick = () => setBudgetMode(true);
+const btnEditBudget = document.getElementById('btn-edit-budget');
+if (btnEditBudget) btnEditBudget.onclick = () => setBudgetMode(true);
 
-document.getElementById('save-budget').onclick = async () => {
-    const calculo = calcularNetoQuincenal();
-    const mensualVal = parseFloat(document.getElementById('in-salario-mensual').value) || 0;
+const saveBudgetBtn = document.getElementById('save-budget');
+if (saveBudgetBtn) {
+    saveBudgetBtn.onclick = async () => {
+        const calculo = calcularNetoQuincenal();
+        const mensualVal = parseFloat(document.getElementById('in-salario-mensual')?.value) || 0;
 
-    await setDoc(doc(db, "presupuestos", `${currentUid}_${currentMes}`), { 
-        monto: calculo.netoTotal, 
-        salarioMensual: mensualVal,
-        aplicaLeySalario: calculo.aplicaLeySalario,
-        q1: calculo.q1Data,
-        q2: calculo.q2Data,
-        mes: currentMes, 
-        year: currentYear,
-        userId: currentUid 
-    });
+        await setDoc(doc(db, "presupuestos", `${currentUid}_${currentMes}`), { 
+            monto: calculo.netoTotal, 
+            salarioMensual: mensualVal,
+            aplicaLeySalario: calculo.aplicaLeySalario,
+            q1: calculo.q1Data,
+            q2: calculo.q2Data,
+            mes: currentMes, 
+            year: currentYear,
+            userId: currentUid 
+        });
 
-    alert(`Planilla de ${currentMes} guardada con éxito.`);
-    loadMonthData();
-};
+        alert(`Planilla de ${currentMes} guardada con éxito.`);
+        loadMonthData();
+    };
+}
 
 async function loadMonthData() {
-    document.getElementById('lbl-current-mes').textContent = currentMes;
-    document.getElementById('lbl-cat-month').textContent = currentMes;
-    document.getElementById('view-mes-title').textContent = currentMes;
+    const lblMes = document.getElementById('lbl-current-mes');
+    const lblCatMes = document.getElementById('lbl-cat-month');
+    const lblViewMes = document.getElementById('view-mes-title');
+    if (lblMes) lblMes.textContent = currentMes;
+    if (lblCatMes) lblCatMes.textContent = currentMes;
+    if (lblViewMes) lblViewMes.textContent = currentMes;
 
     const bDoc = await getDoc(doc(db, "presupuestos", `${currentUid}_${currentMes}`));
-    let budgetQ1 = 0;
-    let budgetQ2 = 0;
-    let budgetTotal = 0;
+    let budgetQ1 = 0, budgetQ2 = 0, budgetTotal = 0;
 
     if (bDoc.exists()) {
         const bData = bDoc.data();
@@ -253,15 +274,15 @@ async function loadMonthData() {
             
             const boxIng2Q1 = document.getElementById('v-q1-ing2-box');
             if (bData.q1.ing2 > 0) {
-                boxIng2Q1.classList.remove('hidden');
+                if (boxIng2Q1) boxIng2Q1.classList.remove('hidden');
                 document.getElementById('v-q1-ing2').textContent = `+$${bData.q1.ing2.toFixed(2)}`;
-            } else { boxIng2Q1.classList.add('hidden'); }
+            } else if (boxIng2Q1) boxIng2Q1.classList.add('hidden');
 
             const boxIng3Q1 = document.getElementById('v-q1-ing3-box');
             if (bData.q1.ing3 > 0) {
-                boxIng3Q1.classList.remove('hidden');
+                if (boxIng3Q1) boxIng3Q1.classList.remove('hidden');
                 document.getElementById('v-q1-ing3').textContent = `+$${bData.q1.ing3.toFixed(2)}`;
-            } else { boxIng3Q1.classList.add('hidden'); }
+            } else if (boxIng3Q1) boxIng3Q1.classList.add('hidden');
 
             document.getElementById('v-q1-ss').textContent = `-$${(bData.q1.ss || 0).toFixed(2)}`;
             document.getElementById('v-q1-se').textContent = `-$${(bData.q1.se || 0).toFixed(2)}`;
@@ -271,11 +292,11 @@ async function loadMonthData() {
 
             const vDecimoBox = document.getElementById('v-container-decimo');
             if (bData.q1.incluyeDecimo) {
-                vDecimoBox.classList.remove('hidden');
+                if (vDecimoBox) vDecimoBox.classList.remove('hidden');
                 document.getElementById('v-q1-decimo-bruto').textContent = `$${(bData.q1.decimoBruto || 0).toFixed(2)}`;
                 document.getElementById('v-q1-decimo-css').textContent = `-$${(bData.q1.decimoCss || 0).toFixed(2)}`;
                 document.getElementById('v-q1-decimo-neto').textContent = `$${(bData.q1.decimoNeto || 0).toFixed(2)}`;
-            } else {
+            } else if (vDecimoBox) {
                 vDecimoBox.classList.add('hidden');
             }
 
@@ -283,15 +304,15 @@ async function loadMonthData() {
             
             const boxIng2Q2 = document.getElementById('v-q2-ing2-box');
             if (bData.q2.ing2 > 0) {
-                boxIng2Q2.classList.remove('hidden');
+                if (boxIng2Q2) boxIng2Q2.classList.remove('hidden');
                 document.getElementById('v-q2-ing2').textContent = `+$${bData.q2.ing2.toFixed(2)}`;
-            } else { boxIng2Q2.classList.add('hidden'); }
+            } else if (boxIng2Q2) boxIng2Q2.classList.add('hidden');
 
             const boxIng3Q2 = document.getElementById('v-q2-ing3-box');
             if (bData.q2.ing3 > 0) {
-                boxIng3Q2.classList.remove('hidden');
+                if (boxIng3Q2) boxIng3Q2.classList.remove('hidden');
                 document.getElementById('v-q2-ing3').textContent = `+$${bData.q2.ing3.toFixed(2)}`;
-            } else { boxIng3Q2.classList.add('hidden'); }
+            } else if (boxIng3Q2) boxIng3Q2.classList.add('hidden');
 
             document.getElementById('v-q2-ss').textContent = `-$${(bData.q2.ss || 0).toFixed(2)}`;
             document.getElementById('v-q2-se').textContent = `-$${(bData.q2.se || 0).toFixed(2)}`;
@@ -304,26 +325,6 @@ async function loadMonthData() {
 
         setBudgetMode(false);
     } else {
-        document.getElementById('in-salario-mensual').value = '';
-        document.getElementById('in-ley-salario').checked = true;
-        document.getElementById('q1-salario').value = '';
-        document.getElementById('q1-ingreso2').value = '';
-        document.getElementById('q1-ing2-ley').checked = false;
-        document.getElementById('q1-ingreso3').value = '';
-        document.getElementById('q1-ing3-ley').checked = false;
-        document.getElementById('q1-acreedores').value = '';
-        document.getElementById('q1-isr').value = '';
-        document.getElementById('in-decimo').checked = false;
-
-        document.getElementById('q2-salario').value = '';
-        document.getElementById('q2-ingreso2').value = '';
-        document.getElementById('q2-ing2-ley').checked = false;
-        document.getElementById('q2-ingreso3').value = '';
-        document.getElementById('q2-ing3-ley').checked = false;
-        document.getElementById('q2-acreedores').value = '';
-        document.getElementById('q2-isr').value = '';
-
-        calcularNetoQuincenal();
         setBudgetMode(true);
     }
 
@@ -337,11 +338,7 @@ async function loadMonthData() {
     );
     
     onSnapshot(q, (snapshot) => {
-        let totalSpent = 0;
-        let spentQ1 = 0;
-        let spentQ2 = 0;
-        let fixedSpent = 0;
-        let extraSpent = 0;
+        let totalSpent = 0, spentQ1 = 0, spentQ2 = 0, fixedSpent = 0, extraSpent = 0;
         const categoryTotals = {};
 
         snapshot.forEach(d => {
@@ -366,16 +363,15 @@ async function loadMonthData() {
         document.getElementById('m-fijo').textContent = `$${fixedSpent.toFixed(2)}`;
         document.getElementById('m-extra').textContent = `$${extraSpent.toFixed(2)}`;
 
-        renderGauge('gaugeQ1', 'q1-pct', 'q1-spent', 'q1-avail', spentQ1, budgetQ1, chartQ1, (inst) => chartQ1 = inst, ['#3b82f6', '#1e293b']);
-        renderGauge('gaugeQ2', 'q2-pct', 'q2-spent', 'q2-avail', spentQ2, budgetQ2, chartQ2, (inst) => chartQ2 = inst, ['#a855f7', '#1e293b']);
-        renderGauge('gaugeTotal', 'total-pct', 'total-spent', 'total-avail', totalSpent, budgetTotal, chartTotal, (inst) => chartTotal = inst, ['#6366f1', '#1e293b']);
+        renderGauge('gaugeQ1', 'q1-pct', 'q1-spent', 'q1-avail', spentQ1, budgetQ1, chartQ1, (inst) => chartQ1 = inst, ['#3b82f6', '#334155']);
+        renderGauge('gaugeQ2', 'q2-pct', 'q2-spent', 'q2-avail', spentQ2, budgetQ2, chartQ2, (inst) => chartQ2 = inst, ['#a855f7', '#334155']);
+        renderGauge('gaugeTotal', 'total-pct', 'total-spent', 'total-avail', totalSpent, budgetTotal, chartTotal, (inst) => chartTotal = inst, ['#6366f1', '#334155']);
 
         renderTypeChart(fixedSpent, extraSpent);
         renderCategoryBarChart('categoryMonthBarChart', 'category-month-list', categoryTotals, totalSpent, categoryMonthChartInstance, (inst) => categoryMonthChartInstance = inst);
     });
 }
 
-// CONTROL DEL MODAL DE AGREGAR GASTO
 const addModal = document.getElementById('add-expense-modal');
 const btnOpenAddModal = document.getElementById('btn-open-add-modal');
 const btnCloseAddModal = document.getElementById('btn-close-add-modal');
@@ -505,14 +501,8 @@ function renderCategoryBarChart(canvasId, listContainerId, categoriesObj, totalS
                 }
             },
             scales: {
-                x: { 
-                    grid: { display: false }, 
-                    ticks: { font: { size: 10 }, color: '#94a3b8', callback: function(value) { return '$' + value; } } 
-                },
-                y: { 
-                    grid: { display: false }, 
-                    ticks: { display: false } 
-                }
+                x: { grid: { display: false }, ticks: { font: { size: 10 }, color: '#94a3b8', callback: (value) => '$' + value } },
+                y: { grid: { display: false }, ticks: { display: false } }
             }
         }
     });
@@ -527,11 +517,8 @@ async function loadYTDData() {
     );
     
     onSnapshot(q, (snap) => {
-        let totalYTD = 0;
-        let ytdFijo = 0;
-        let ytdExtra = 0;
+        let totalYTD = 0, ytdFijo = 0, ytdExtra = 0;
         const categoryYtdTotals = {};
-        
         const validMonths = meses.slice(0, currentMonthIndex + 1);
 
         snap.forEach(d => {

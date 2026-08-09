@@ -1,4 +1,4 @@
-import { auth, db } from '../firebase-config.js'; // Cambia a './firebase-config.js' si tu archivo está dentro de la carpeta /js
+import { auth, db } from './firebase-config.js';
 import { signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { doc, getDoc, updateDoc, collection, addDoc, query, where, onSnapshot, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
@@ -6,6 +6,9 @@ let currentUid = null;
 const meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
 let currentMes = meses[new Date().getMonth()];
 const currentYear = new Date().getFullYear();
+
+// Cache en memoria para evitar errores de escape de JSON en atributos HTML
+const gastosCache = new Map();
 
 async function initGastosPage() {
     await auth.authStateReady();
@@ -30,7 +33,8 @@ async function initGastosPage() {
 
 initGastosPage();
 
-document.getElementById('btn-logout').onclick = () => signOut(auth).then(() => window.location.href = "index.html");
+const btnLogout = document.getElementById('btn-logout');
+if (btnLogout) btnLogout.onclick = () => signOut(auth).then(() => window.location.href = "index.html");
 
 function initMonthTabs() {
     const container = document.getElementById('month-tabs');
@@ -57,20 +61,19 @@ const wrapQ1 = document.getElementById('wrapper-q1');
 const wrapQ2 = document.getElementById('wrapper-q2');
 
 function setQuincenaView(viewMode) {
-    if (!btnQ1 || !btnQ2 || !btnMes) return;
-    btnQ1.className = `px-4 py-2 rounded-xl text-xs font-bold transition ${viewMode === 'q1' ? 'bg-indigo-600 text-white shadow-sm' : 'theme-card'}`;
-    btnQ2.className = `px-4 py-2 rounded-xl text-xs font-bold transition ${viewMode === 'q2' ? 'bg-indigo-600 text-white shadow-sm' : 'theme-card'}`;
-    btnMes.className = `px-4 py-2 rounded-xl text-xs font-bold transition ${viewMode === 'mes' ? 'bg-indigo-600 text-white shadow-sm' : 'theme-card'}`;
+    if (btnQ1) btnQ1.className = `px-4 py-2 rounded-xl text-xs font-bold transition ${viewMode === 'q1' ? 'bg-indigo-600 text-white shadow-sm' : 'theme-card'}`;
+    if (btnQ2) btnQ2.className = `px-4 py-2 rounded-xl text-xs font-bold transition ${viewMode === 'q2' ? 'bg-indigo-600 text-white shadow-sm' : 'theme-card'}`;
+    if (btnMes) btnMes.className = `px-4 py-2 rounded-xl text-xs font-bold transition ${viewMode === 'mes' ? 'bg-indigo-600 text-white shadow-sm' : 'theme-card'}`;
 
     if (viewMode === 'q1') {
-        wrapQ1.classList.remove('hidden');
-        wrapQ2.classList.add('hidden');
+        if (wrapQ1) wrapQ1.classList.remove('hidden');
+        if (wrapQ2) wrapQ2.classList.add('hidden');
     } else if (viewMode === 'q2') {
-        wrapQ1.classList.add('hidden');
-        wrapQ2.classList.remove('hidden');
+        if (wrapQ1) wrapQ1.classList.add('hidden');
+        if (wrapQ2) wrapQ2.classList.remove('hidden');
     } else {
-        wrapQ1.classList.remove('hidden');
-        wrapQ2.classList.remove('hidden');
+        if (wrapQ1) wrapQ1.classList.remove('hidden');
+        if (wrapQ2) wrapQ2.classList.remove('hidden');
     }
 }
 
@@ -93,14 +96,14 @@ function loadGastosData() {
 
         listQ1.innerHTML = '';
         listQ2.innerHTML = '';
+        gastosCache.clear();
 
-        let totalSpent = 0;
-        let spentQ1 = 0;
-        let spentQ2 = 0;
+        let totalSpent = 0, spentQ1 = 0, spentQ2 = 0;
 
         snapshot.forEach(d => {
             const data = d.data();
             const itemData = { id: d.id, ...data };
+            gastosCache.set(d.id, itemData);
             totalSpent += data.monto;
 
             const prioColor = data.prioridad === 'Alta' ? 'bg-red-500/20 text-red-300 border border-red-500/30' : (data.prioridad === 'Baja' ? 'bg-slate-700/50 text-slate-400 border border-slate-600/30' : 'bg-amber-500/20 text-amber-300 border border-amber-500/30');
@@ -120,7 +123,7 @@ function loadGastosData() {
                     </div>
                     <div class="flex items-center gap-3">
                         <span class="font-bold text-sm text-slate-100">$${data.monto.toFixed(2)}</span>
-                        <button onclick='openEditModal(${JSON.stringify(itemData).replace(/'/g, "&apos;")})' class="p-2 rounded-lg theme-card border hover:bg-indigo-500/20 text-indigo-400 transition" title="Editar Gasto">
+                        <button onclick="openEditModal('${d.id}')" class="p-2 rounded-lg theme-card border hover:bg-indigo-500/20 text-indigo-400 transition" title="Editar Gasto">
                             ✏️
                         </button>
                     </div>
@@ -144,7 +147,22 @@ function loadGastosData() {
     });
 }
 
-// MODAL PARA REGISTRAR NUEVO GASTO
+// Registro global seguro en window
+window.openEditModal = (id) => {
+    const item = gastosCache.get(id);
+    if (!item) return;
+
+    document.getElementById('modal-expense-id').value = item.id;
+    document.getElementById('m-desc').value = item.descripcion || '';
+    document.getElementById('m-monto').value = item.monto || '';
+    document.getElementById('m-quincena').value = item.quincena || '1ra Quincena';
+    document.getElementById('m-tipo').value = item.tipo || 'fijo';
+    document.getElementById('m-categoria').value = item.categoria || 'Otros';
+    document.getElementById('m-prioridad').value = item.prioridad || 'Media';
+    
+    document.getElementById('edit-expense-modal')?.classList.remove('hidden');
+};
+
 const addModal = document.getElementById('add-expense-modal');
 const btnOpenAdd = document.getElementById('btn-open-add-modal');
 const btnCloseAdd = document.getElementById('btn-close-add-modal');
@@ -175,21 +193,8 @@ if (addExpenseForm) {
     };
 }
 
-// MODAL PARA EDITAR GASTO
 const editModal = document.getElementById('edit-expense-modal');
 const btnCloseModal = document.getElementById('btn-close-modal');
-
-window.openEditModal = (item) => {
-    document.getElementById('modal-expense-id').value = item.id;
-    document.getElementById('m-desc').value = item.descripcion || '';
-    document.getElementById('m-monto').value = item.monto || '';
-    document.getElementById('m-quincena').value = item.quincena || '1ra Quincena';
-    document.getElementById('m-tipo').value = item.tipo || 'fijo';
-    document.getElementById('m-categoria').value = item.categoria || 'Otros';
-    document.getElementById('m-prioridad').value = item.prioridad || 'Media';
-    editModal.classList.remove('hidden');
-};
-
 if (btnCloseModal) btnCloseModal.onclick = () => editModal.classList.add('hidden');
 
 const editExpenseForm = document.getElementById('edit-expense-form');

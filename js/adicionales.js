@@ -1,4 +1,4 @@
-import { auth, db } from '../firebase-config.js'; // Cambia a './firebase-config.js' si tu archivo está dentro de /js
+import { auth, db } from './firebase-config.js';
 import { signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { doc, getDoc, collection, addDoc, query, where, onSnapshot, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
@@ -8,8 +8,8 @@ const currentYear = new Date().getFullYear();
 const currentMonthIndex = new Date().getMonth();
 
 const mesesVisibles = meses.slice(currentMonthIndex);
-
 let cacheAnual = { presupuestos: {}, gastosPorMes: {} };
+const wishlistCache = new Map();
 
 async function initAdicionales() {
     try {
@@ -20,8 +20,10 @@ async function initAdicionales() {
         
         const userSnap = await getDoc(doc(db, "users", user.uid));
         if (userSnap.exists()) {
-            document.getElementById('nav-name').textContent = userSnap.data().name || "Usuario";
-            document.getElementById('nav-avatar').textContent = userSnap.data().avatar || "👨‍💻";
+            const navName = document.getElementById('nav-name');
+            const navAvatar = document.getElementById('nav-avatar');
+            if (navName) navName.textContent = userSnap.data().name || "Usuario";
+            if (navAvatar) navAvatar.textContent = userSnap.data().avatar || "👨‍💻";
         }
 
         await cargarDatosAnualesYListar();
@@ -32,7 +34,8 @@ async function initAdicionales() {
 
 initAdicionales();
 
-document.getElementById('btn-logout').onclick = () => signOut(auth).then(() => window.location.href = "index.html");
+const btnLogout = document.getElementById('btn-logout');
+if (btnLogout) btnLogout.onclick = () => signOut(auth).then(() => window.location.href = "index.html");
 
 const itemForm = document.getElementById('item-form');
 if (itemForm) {
@@ -86,6 +89,7 @@ function renderWishlist(snapshot) {
     const container = document.getElementById('wishlist-container');
     if (!container) return;
     container.innerHTML = '';
+    wishlistCache.clear();
 
     if (snapshot.empty) {
         container.innerHTML = `<p class="text-xs text-slate-500 text-center py-6">No tienes artículos en tu mapa de deseos.</p>`;
@@ -95,6 +99,7 @@ function renderWishlist(snapshot) {
     snapshot.forEach(d => {
         const item = d.data();
         const itemId = d.id;
+        wishlistCache.set(itemId, item);
 
         let mesesHtml = '';
 
@@ -112,7 +117,7 @@ function renderWishlist(snapshot) {
                 <div class="border rounded-xl p-2 text-center flex flex-col justify-between ${bgColor}">
                     <span class="text-[11px] font-bold uppercase">${mes.substring(0,3)}</span>
                     <span class="text-[9px] my-1 font-semibold">${badgeText}</span>
-                    <button onclick='openAssignModal("${item.articulo}", ${item.monto}, "${item.prioridad}", "${mes}")' 
+                    <button onclick="openAssignModal('${itemId}', '${mes}')" 
                         class="text-[10px] font-bold py-1 px-1 rounded-lg transition ${esViable ? 'bg-emerald-600 text-white hover:bg-emerald-700 shadow-sm' : 'bg-slate-700 text-slate-500 cursor-not-allowed'}"
                         ${!esViable ? 'disabled' : ''}>
                         Asignar
@@ -148,22 +153,24 @@ function renderWishlist(snapshot) {
     });
 }
 
-const assignModal = document.getElementById('assign-modal');
-const btnCloseAssignModal = document.getElementById('btn-close-assign-modal');
+window.openAssignModal = (itemId, mesDestino) => {
+    const item = wishlistCache.get(itemId);
+    if (!item) return;
 
-window.openAssignModal = (articulo, monto, prioridad, mesDestino) => {
     document.getElementById('a-target-mes').value = mesDestino;
     document.getElementById('m-assign-mes-title').textContent = `Mes Destino: ${mesDestino}`;
-    document.getElementById('a-desc').value = `[Deseo] ${articulo}`;
-    document.getElementById('a-monto').value = monto;
-    document.getElementById('a-prioridad').value = prioridad || 'Media';
+    document.getElementById('a-desc').value = `[Deseo] ${item.articulo}`;
+    document.getElementById('a-monto').value = item.monto;
+    document.getElementById('a-prioridad').value = item.prioridad || 'Media';
     document.getElementById('a-quincena').value = '1ra Quincena';
     document.getElementById('a-tipo').value = 'extra';
     document.getElementById('a-categoria').value = 'Chucherías/Compras';
     
-    assignModal.classList.remove('hidden');
+    document.getElementById('assign-modal')?.classList.remove('hidden');
 };
 
+const assignModal = document.getElementById('assign-modal');
+const btnCloseAssignModal = document.getElementById('btn-close-assign-modal');
 if (btnCloseAssignModal) btnCloseAssignModal.onclick = () => assignModal.classList.add('hidden');
 
 const assignExpenseForm = document.getElementById('assign-expense-form');
