@@ -1,116 +1,150 @@
-/* VARIABLES DE TEMA CON ALTO CONTRASTE */
-:root {
-    --bg-body: #070a12;
-    --card-bg: rgba(15, 23, 42, 0.92);
-    --card-sub-bg: rgba(30, 41, 59, 0.75);
-    --card-border: rgba(99, 102, 241, 0.35);
-    --text-primary: #ffffff;
-    --text-secondary: #cbd5e1;
-    --text-muted: #94a3b8;
-    --accent-primary: #6366f1;
-    --accent-hover: #4f46e5;
-    --nav-bg: rgba(15, 23, 42, 0.95);
-    --input-bg: #1e293b;
-    --input-border: #475569;
-    --input-text: #ffffff;
-    --badge-bg: rgba(99, 102, 241, 0.25);
-    --badge-text: #a5b4fc;
-    --btn-secondary-bg: #1e293b;
-    --btn-secondary-text: #cbd5e1;
-}
+/* VARIABLES GLOBALES Y SISTEMA DE TEMAS COMPLETO */
 
-/* TEMA 1: CYBERPUNK OSCURO */
-[data-theme="dark-cyber"] {
+/* 1. CYBERPUNK OSCURO (Púrpura / Índigo) */
+[data-theme="dark-cyber"], :root {
     --bg-body: #070a12;
     --card-bg: rgba(15, 23, 42, 0.92);
     --card-sub-bg: rgba(30, 41, 59, 0.8);
     --card-border: rgba(99, 102, 241, 0.35);
+    
+    --banner-bg: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+    --banner-text: #ffffff;
+    --banner-subtext: #c7d2fe;
+    
     --text-primary: #ffffff;
     --text-secondary: #cbd5e1;
     --text-muted: #94a3b8;
+    
     --accent-primary: #6366f1;
     --accent-hover: #4f46e5;
+    --accent-text: #a5b4fc;
+    --accent-badge-bg: rgba(99, 102, 241, 0.2);
+    --accent-badge-border: rgba(99, 102, 241, 0.35);
+    
     --nav-bg: rgba(15, 23, 42, 0.95);
     --input-bg: #1e293b;
     --input-border: #475569;
     --input-text: #ffffff;
-    --badge-bg: rgba(99, 102, 241, 0.25);
-    --badge-text: #a5b4fc;
+    
+    --chart-q1: #3b82f6;
+    --chart-q2: #a855f7;
     --btn-secondary-bg: #1e293b;
     --btn-secondary-text: #e2e8f0;
 }
 
-/* TEMA 2: VÓRTICE DE POLVO (Partículas Azul/Coral) */
+/* 2. VÓRTICE DE POLVO (Naranja / Coral Estelar) */
 [data-theme="dust-vortex"] {
     --bg-body: #020408;
     --card-bg: rgba(10, 16, 26, 0.94);
     --card-sub-bg: rgba(21, 32, 51, 0.85);
     --card-border: rgba(249, 115, 22, 0.35);
+    
+    --banner-bg: linear-gradient(135deg, #c2410c 0%, #ea580c 100%);
+    --banner-text: #ffffff;
+    --banner-subtext: #ffedd5;
+    
     --text-primary: #ffffff;
     --text-secondary: #cbd5e1;
     --text-muted: #94a3b8;
+    
     --accent-primary: #f97316;
     --accent-hover: #ea580c;
+    --accent-text: #fdba74;
+    --accent-badge-bg: rgba(249, 115, 22, 0.2);
+    --accent-badge-border: rgba(249, 115, 22, 0.35);
+    
     --nav-bg: rgba(8, 12, 20, 0.95);
     --input-bg: #0f172a;
     --input-border: #334155;
     --input-text: #ffffff;
-    --badge-bg: rgba(249, 115, 22, 0.25);
-    --badge-text: #fdba74;
+    
+    --chart-q1: #06b6d4;
+    --chart-q2: #f97316;
     --btn-secondary-bg: #1e293b;
     --btn-secondary-text: #e2e8f0;
 }
 
-/* TEMA 3: MATRIZ ESMERALDA */
+/* 3. MATRIZ ESMERALDA (Verde Cíber) */
 [data-theme="neon-matrix"] {
     --bg-body: #030f0c;
     --card-bg: rgba(6, 30, 22, 0.92);
     --card-sub-bg: rgba(12, 48, 36, 0.85);
     --card-border: rgba(16, 185, 129, 0.35);
+    
+    --banner-bg: linear-gradient(135deg, #047857 0%, #059669 100%);
+    --banner-text: #ffffff;
+    --banner-subtext: #a7f3d0;
+    
     --text-primary: #ffffff;
     --text-secondary: #a7f3d0;
     --text-muted: #6ee7b7;
+    
     --accent-primary: #10b981;
     --accent-hover: #059669;
+    --accent-text: #6ee7b7;
+    --accent-badge-bg: rgba(16, 185, 129, 0.2);
+    --accent-badge-border: rgba(16, 185, 129, 0.35);
+    
     --nav-bg: rgba(6, 26, 20, 0.95);
     --input-bg: #062e22;
     --input-border: #047857;
     --input-text: #ffffff;
-    --badge-bg: rgba(16, 185, 129, 0.25);
-    --badge-text: #6ee7b7;
+    
+    --chart-q1: #14b8a6;
+    --chart-q2: #10b981;
     --btn-secondary-bg: #062e22;
     --btn-secondary-text: #e2e8f0;
 }
 
-/* TEMA 4: LUMINOSO MINIMALISTA (Alta Legibilidad en Modo Claro) */
+/* 4. LUMINOSO MINIMALISTA (Tema Claro de Alto Contraste) */
 [data-theme="light-clean"] {
-    --bg-body: #f8fafc;
+    --bg-body: #f1f5f9;
     --card-bg: #ffffff;
-    --card-sub-bg: #f1f5f9;
+    --card-sub-bg: #f8fafc;
     --card-border: #cbd5e1;
-    --text-primary: #0f172a;      /* Negro / Azul Oscuro Intenso */
-    --text-secondary: #334155;    /* Gris Oscuro legible */
-    --text-muted: #475569;       /* Gris medio legible */
-    --accent-primary: #4f46e5;
-    --accent-hover: #4338ca;
+    
+    --banner-bg: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+    --banner-text: #ffffff;
+    --banner-subtext: #e2e8f0;
+    
+    --text-primary: #0f172a;      /* Negro azulado nítido */
+    --text-secondary: #334155;    /* Gris oscuro legible */
+    --text-muted: #64748b;       /* Gris medio legible */
+    
+    --accent-primary: #2563eb;
+    --accent-hover: #1d4ed8;
+    --accent-text: #1d4ed8;
+    --accent-badge-bg: #dbeafe;
+    --accent-badge-border: #bfdbfe;
+    
     --nav-bg: #ffffff;
     --input-bg: #ffffff;
     --input-border: #94a3b8;
     --input-text: #0f172a;
-    --badge-bg: #e0e7ff;
-    --badge-text: #3730a3;
+    
+    --chart-q1: #0284c7;
+    --chart-q2: #2563eb;
     --btn-secondary-bg: #e2e8f0;
     --btn-secondary-text: #1e293b;
 }
 
-/* APLICACIÓN GLOBAL DE ESTILOS UNIVERSALES */
+/* ESTILOS GLOBALES BASE */
 body {
     background-color: var(--bg-body);
     color: var(--text-primary);
     transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-/* TARJETAS PRINCIPALES */
+/* BANNER SUPERIOR YTD */
+.theme-banner {
+    background: var(--banner-bg) !important;
+    color: var(--banner-text) !important;
+}
+.theme-banner-subtext {
+    color: var(--banner-subtext) !important;
+}
+
+/* TARJETAS Y SECCIONES */
 .theme-card {
     background-color: var(--card-bg) !important;
     border-color: var(--card-border) !important;
@@ -118,31 +152,53 @@ body {
     backdrop-filter: blur(12px);
 }
 
-/* SUB-TARJETAS Y CONTENEDORES INTERNOS */
 .theme-card-sub {
     background-color: var(--card-sub-bg) !important;
     border-color: var(--card-border) !important;
     color: var(--text-primary) !important;
 }
 
-/* NAVEGACIÓN Y CABECERA */
+/* NAVEGACIÓN Y ENLACES */
 .theme-nav {
     background-color: var(--nav-bg) !important;
     border-color: var(--card-border) !important;
     color: var(--text-primary) !important;
 }
 
-/* CLASES DE TEXTO DINÁMICAS */
-.theme-text-primary {
-    color: var(--text-primary) !important;
+.theme-nav-link-active {
+    color: var(--accent-primary) !important;
+    border-bottom: 2px solid var(--accent-primary) !important;
 }
 
-.theme-text-secondary {
-    color: var(--text-secondary) !important;
+/* TEXTOS DINÁMICOS POR TEMA */
+.theme-text-primary { color: var(--text-primary) !important; }
+.theme-text-secondary { color: var(--text-secondary) !important; }
+.theme-text-muted { color: var(--text-muted) !important; }
+.theme-accent-text { color: var(--accent-text) !important; }
+
+/* BOTONES DINÁMICOS POR TEMA */
+.theme-accent-btn {
+    background-color: var(--accent-primary) !important;
+    color: #ffffff !important;
+}
+.theme-accent-btn:hover {
+    background-color: var(--accent-hover) !important;
 }
 
-.theme-text-muted {
-    color: var(--text-muted) !important;
+.theme-btn-secondary {
+    background-color: var(--btn-secondary-bg) !important;
+    color: var(--btn-secondary-text) !important;
+    border: 1px solid var(--card-border) !important;
+}
+.theme-btn-secondary:hover {
+    filter: brightness(1.1);
+}
+
+/* BADGES Y CONTENEDORES DESTACADOS */
+.theme-badge-accent {
+    background-color: var(--accent-badge-bg) !important;
+    border: 1px solid var(--accent-badge-border) !important;
+    color: var(--accent-text) !important;
 }
 
 /* INPUTS Y SELECTS */
@@ -150,23 +206,6 @@ body {
     background-color: var(--input-bg) !important;
     border-color: var(--input-border) !important;
     color: var(--input-text) !important;
-}
-
-/* BOTONES SECUNDARIOS Y PESTAÑAS NO SELECCIONADAS */
-.theme-btn-secondary {
-    background-color: var(--btn-secondary-bg) !important;
-    color: var(--btn-secondary-text) !important;
-    border: 1px solid var(--card-border) !important;
-}
-
-.theme-btn-secondary:hover {
-    filter: brightness(1.1);
-}
-
-/* BADGES DE ESTADO */
-.theme-badge {
-    background-color: var(--badge-bg) !important;
-    color: var(--badge-text) !important;
 }
 
 /* TOOLTIP PERSONALIZADO */

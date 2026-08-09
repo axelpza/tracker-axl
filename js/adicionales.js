@@ -92,7 +92,7 @@ function renderWishlist(snapshot) {
     wishlistCache.clear();
 
     if (snapshot.empty) {
-        container.innerHTML = `<p class="text-xs text-slate-500 text-center py-6">No tienes artículos en tu mapa de deseos.</p>`;
+        container.innerHTML = `<p class="text-xs theme-text-muted text-center py-6">No tienes artículos en tu mapa de deseos.</p>`;
         return;
     }
 
@@ -110,41 +110,45 @@ function renderWishlist(snapshot) {
 
             const esViable = disponible >= (item.monto + 50);
 
-            const bgColor = esViable ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-300' : 'bg-slate-800/40 border-slate-700/30 text-slate-500 opacity-60';
+            const bgColor = esViable 
+                ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-500' 
+                : 'theme-card-sub border-slate-700/30 opacity-60';
             const badgeText = esViable ? `$${disponible.toFixed(0)} libre` : 'Sin margen';
 
             mesesHtml += `
                 <div class="border rounded-xl p-2 text-center flex flex-col justify-between ${bgColor}">
-                    <span class="text-[11px] font-bold uppercase">${mes.substring(0,3)}</span>
-                    <span class="text-[9px] my-1 font-semibold">${badgeText}</span>
+                    <span class="text-[11px] font-bold uppercase theme-text-primary">${mes.substring(0,3)}</span>
+                    <span class="text-[9px] my-1 font-semibold ${esViable ? 'text-emerald-500 font-bold' : 'theme-text-muted'}">${badgeText}</span>
                     <button onclick="openAssignModal('${itemId}', '${mes}')" 
-                        class="text-[10px] font-bold py-1 px-1 rounded-lg transition ${esViable ? 'bg-emerald-600 text-white hover:bg-emerald-700 shadow-sm' : 'bg-slate-700 text-slate-500 cursor-not-allowed'}"
+                        class="text-[10px] font-bold py-1 px-1 rounded-lg transition ${esViable ? 'bg-emerald-600 text-white hover:bg-emerald-700 shadow-sm' : 'theme-btn-secondary text-slate-400 cursor-not-allowed'}"
                         ${!esViable ? 'disabled' : ''}>
                         Asignar
                     </button>
                 </div>`;
         });
 
-        const prioBadgeColor = item.prioridad === 'Alta' ? 'bg-red-500/20 text-red-300 border border-red-500/30' : (item.prioridad === 'Baja' ? 'bg-slate-700/50 text-slate-400 border border-slate-600/30' : 'bg-amber-500/20 text-amber-300 border border-amber-500/30');
+        const prioBadgeColor = item.prioridad === 'Alta' 
+            ? 'bg-red-500/20 text-red-500 border border-red-500/30' 
+            : (item.prioridad === 'Baja' ? 'bg-slate-500/20 theme-text-muted border border-slate-500/30' : 'bg-amber-500/20 text-amber-500 border border-amber-500/30');
 
         container.innerHTML += `
             <div class="theme-card border rounded-2xl p-4 sm:p-5 shadow-sm space-y-4">
                 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
                     <div>
                         <div class="flex items-center gap-2">
-                            <h4 class="font-bold text-base text-slate-100">${item.articulo}</h4>
+                            <h4 class="font-bold text-base theme-text-primary">${item.articulo}</h4>
                             <span class="px-2 py-0.5 rounded-md text-[10px] font-bold ${prioBadgeColor}">${item.prioridad || 'Media'}</span>
                             ${item.url ? `<a href="${item.url}" target="_blank" class="text-indigo-400 text-xs font-semibold hover:underline">[Ver Enlace]</a>` : ''}
                         </div>
                     </div>
                     <div class="flex items-center gap-4">
-                        <span class="text-xl font-bold text-slate-100">$${item.monto.toFixed(2)}</span>
+                        <span class="text-xl font-bold theme-text-primary">$${item.monto.toFixed(2)}</span>
                         <button onclick="deleteItem('${itemId}')" class="text-red-400 hover:text-red-300 text-xs font-semibold">Eliminar</button>
                     </div>
                 </div>
 
                 <div>
-                    <p class="text-xs font-bold text-slate-400 mb-2">Análisis de Viabilidad (${mesesVisibles[0]} a Diciembre):</p>
+                    <p class="text-xs font-bold theme-text-muted mb-2">Análisis de Viabilidad (${mesesVisibles[0]} a Diciembre):</p>
                     <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 lg:grid-cols-12 gap-2">
                         ${mesesHtml}
                     </div>

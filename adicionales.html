@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gastos Adicionales y Viabilidad - Tracker Finanzas</title>
+    <title>Gastos Adicionales - Tracker Finanzas</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="css/styles.css">
 </head>
@@ -16,10 +16,10 @@
             <h1 class="font-bold text-lg text-indigo-400">Hola, <span id="nav-name">Usuario</span></h1>
         </div>
         <div class="flex flex-wrap justify-center gap-3 sm:gap-4 items-center text-sm font-semibold">
-            <a href="dashboard.html" class="text-slate-400 hover:text-indigo-400">Budget</a>
-            <a href="gastos.html" class="text-slate-400 hover:text-indigo-400">Gastos</a>
+            <a href="dashboard.html" class="theme-text-secondary hover:text-indigo-400">Budget</a>
+            <a href="gastos.html" class="theme-text-secondary hover:text-indigo-400">Gastos</a>
             <a href="adicionales.html" class="text-indigo-400 border-b-2 border-indigo-400 pb-1">Gastos Adicionales</a>
-            <a href="perfil.html" class="text-slate-400 hover:text-indigo-400">Mi Perfil</a>
+            <a href="perfil.html" class="theme-text-secondary hover:text-indigo-400">Mi Perfil</a>
             <button id="btn-logout" class="bg-red-500/10 text-red-400 px-3 py-1.5 rounded-lg hover:bg-red-500/20 transition">Salir</button>
         </div>
     </nav>
@@ -28,8 +28,8 @@
         
         <!-- Formulario para Agregar Deseo -->
         <div class="theme-card p-5 sm:p-6 rounded-2xl shadow-sm border">
-            <h2 class="text-xl font-bold mb-1">Mapa de Deseos y Viabilidad Futura</h2>
-            <p class="text-xs text-slate-400 mb-5">Ingresa un artículo o servicio deseado. El sistema evaluará automáticamente tu margen disponible desde el mes actual en adelante (requiere un colchón de $50.00 libres).</p>
+            <h2 class="text-xl font-bold mb-1 theme-text-primary">Mapa de Deseos y Viabilidad Futura</h2>
+            <p class="text-xs theme-text-secondary mb-5">Ingresa un artículo o servicio deseado. El sistema evaluará automáticamente tu margen disponible desde el mes actual en adelante (requiere un colchón de $50.00 libres).</p>
             
             <form id="item-form" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
                 <input type="text" id="i-articulo" placeholder="Artículo / Servicio" class="theme-input p-2.5 border rounded-xl outline-none text-sm" required>
@@ -50,7 +50,7 @@
 
         <!-- Lista de Deseos y Viabilidad -->
         <div class="theme-card p-5 sm:p-6 rounded-2xl shadow-sm border">
-            <h3 class="font-bold mb-4">Tus Deseos y Análisis por Meses Restantes del Año</h3>
+            <h3 class="font-bold mb-4 theme-text-primary">Tus Deseos y Análisis por Meses Restantes del Año</h3>
             <div id="wishlist-container" class="space-y-4"></div>
         </div>
     </main>
@@ -58,29 +58,29 @@
     <!-- MODAL POPUP PARA ASIGNAR DESEO A LA PLANILLA DE GASTOS -->
     <div id="assign-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
         <div class="theme-card w-full max-w-md rounded-2xl p-6 shadow-xl space-y-4 relative border">
-            <div class="flex justify-between items-center border-b border-slate-700 pb-3">
+            <div class="flex justify-between items-center border-b border-slate-700/50 pb-3">
                 <div>
-                    <h3 class="font-bold text-base">Asignar Gasto a Planilla</h3>
+                    <h3 class="font-bold text-base theme-text-primary">Asignar Gasto a Planilla</h3>
                     <p class="text-xs text-indigo-400 font-semibold" id="m-assign-mes-title">Mes Destino: -</p>
                 </div>
-                <button id="btn-close-assign-modal" class="text-slate-400 hover:text-slate-200 text-xl font-bold">&times;</button>
+                <button id="btn-close-assign-modal" class="theme-text-muted hover:theme-text-primary text-xl font-bold">&times;</button>
             </div>
 
             <form id="assign-expense-form" class="space-y-3 text-xs">
                 <input type="hidden" id="a-target-mes">
 
                 <div>
-                    <label class="block font-semibold text-slate-300 mb-1">Descripción</label>
+                    <label class="block font-semibold theme-text-secondary mb-1">Descripción</label>
                     <input type="text" id="a-desc" class="theme-input w-full p-2.5 border rounded-xl outline-none text-sm" required>
                 </div>
 
                 <div class="grid grid-cols-2 gap-3">
                     <div>
-                        <label class="block font-semibold text-slate-300 mb-1">Monto ($)</label>
+                        <label class="block font-semibold theme-text-secondary mb-1">Monto ($)</label>
                         <input type="number" step="0.01" id="a-monto" class="theme-input w-full p-2.5 border rounded-xl outline-none text-sm" required>
                     </div>
                     <div>
-                        <label class="block font-semibold text-slate-300 mb-1">Quincena Destino</label>
+                        <label class="block font-semibold theme-text-secondary mb-1">Quincena Destino</label>
                         <select id="a-quincena" class="theme-input w-full p-2.5 border rounded-xl outline-none text-sm">
                             <option value="1ra Quincena">1ra Quincena (1-15)</option>
                             <option value="2da Quincena">2da Quincena (16-31)</option>
@@ -90,14 +90,14 @@
 
                 <div class="grid grid-cols-2 gap-3">
                     <div>
-                        <label class="block font-semibold text-slate-300 mb-1">Tipo de Gasto</label>
+                        <label class="block font-semibold theme-text-secondary mb-1">Tipo de Gasto</label>
                         <select id="a-tipo" class="theme-input w-full p-2.5 border rounded-xl outline-none text-sm">
                             <option value="extra" selected>Extraordinario</option>
                             <option value="fijo">Fijo</option>
                         </select>
                     </div>
                     <div>
-                        <label class="block font-semibold text-slate-300 mb-1">Categoría</label>
+                        <label class="block font-semibold theme-text-secondary mb-1">Categoría</label>
                         <select id="a-categoria" class="theme-input w-full p-2.5 border rounded-xl outline-none text-sm">
                             <option value="Restaurante">Restaurante</option>
                             <option value="Supermercado">Supermercado</option>
@@ -117,7 +117,7 @@
                 </div>
 
                 <div>
-                    <label class="block font-semibold text-slate-300 mb-1">Prioridad</label>
+                    <label class="block font-semibold theme-text-secondary mb-1">Prioridad</label>
                     <select id="a-prioridad" class="theme-input w-full p-2.5 border rounded-xl outline-none text-sm">
                         <option value="Alta">Alta</option>
                         <option value="Media" selected>Media</option>
