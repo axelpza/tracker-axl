@@ -137,6 +137,28 @@
                     </div>
                 </div>
 
+                <!-- NUEVOS CAMPOS: Método de Pago y Estado -->
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block font-semibold theme-text-secondary mb-1">Método de Pago</label>
+                        <select id="add-e-metodo" class="theme-input w-full p-2.5 border rounded-xl outline-none text-sm">
+                            <option value="Yappy" selected>Yappy</option>
+                            <option value="ACH / Transf.">ACH / Transferencia</option>
+                            <option value="Tarjeta de Crédito">Tarjeta de Crédito</option>
+                            <option value="Clave / Débito">Clave / Débito</option>
+                            <option value="Efectivo">Efectivo</option>
+                            <option value="Otro">Otro</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block font-semibold theme-text-secondary mb-1">Estado</label>
+                        <select id="add-e-estado" class="theme-input w-full p-2.5 border rounded-xl outline-none text-sm">
+                            <option value="Pendiente" selected>Pendiente por Pagar</option>
+                            <option value="Pagado">Pagado</option>
+                        </select>
+                    </div>
+                </div>
+
                 <div>
                     <label class="block font-semibold theme-text-secondary mb-1">Prioridad</label>
                     <select id="add-e-prioridad" class="theme-input w-full p-2.5 border rounded-xl outline-none text-sm">
@@ -209,6 +231,28 @@
                             <option value="Ropa">Ropa</option>
                             <option value="Gastos Médicos">Gastos Médicos</option>
                             <option value="Otros">Otros</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- NUEVOS CAMPOS EN EDICIÓN: Método de Pago y Estado -->
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block font-semibold theme-text-secondary mb-1">Método de Pago</label>
+                        <select id="m-metodo" class="theme-input w-full p-2.5 border rounded-xl outline-none text-sm">
+                            <option value="Yappy">Yappy</option>
+                            <option value="ACH / Transf.">ACH / Transferencia</option>
+                            <option value="Tarjeta de Crédito">Tarjeta de Crédito</option>
+                            <option value="Clave / Débito">Clave / Débito</option>
+                            <option value="Efectivo">Efectivo</option>
+                            <option value="Otro">Otro</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block font-semibold theme-text-secondary mb-1">Estado</label>
+                        <select id="m-estado" class="theme-input w-full p-2.5 border rounded-xl outline-none text-sm">
+                            <option value="Pendiente">Pendiente por Pagar</option>
+                            <option value="Pagado">Pagado</option>
                         </select>
                     </div>
                 </div>

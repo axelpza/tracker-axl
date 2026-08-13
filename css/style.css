@@ -321,3 +321,24 @@ html, body {
     border: 1px solid var(--card-border);
 }
 .tooltip-container:hover .tooltip-text { visibility: visible; opacity: 1; }
+
+/* BADGES DE ESTADO CON EFECTO GLOW Y MÉTODO DE PAGO */
+.badge-status-pending {
+    background-color: rgba(249, 115, 22, 0.15) !important;
+    color: #fb923c !important;
+    border: 1px solid rgba(249, 115, 22, 0.5) !important;
+    box-shadow: 0 0 10px rgba(249, 115, 22, 0.35);
+}
+
+.badge-status-paid {
+    background-color: rgba(16, 185, 129, 0.15) !important;
+    color: #34d399 !important;
+    border: 1px solid rgba(16, 185, 129, 0.5) !important;
+    box-shadow: 0 0 10px rgba(16, 185, 129, 0.35);
+}
+
+.badge-payment-method {
+    background-color: var(--card-sub-bg) !important;
+    color: var(--text-secondary) !important;
+    border: 1px solid var(--card-border) !important;
+}

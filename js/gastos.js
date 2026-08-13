@@ -111,8 +111,16 @@ function loadGastosData() {
                 ? 'bg-red-500/20 text-red-500 border border-red-500/30' 
                 : (data.prioridad === 'Baja' ? 'bg-slate-500/20 theme-text-muted border border-slate-500/30' : 'bg-amber-500/20 text-amber-500 border border-amber-500/30');
 
+            // Método de Pago y Estado con fallbacks para datos previos
+            const metodoGasto = data.metodoPago || 'Yappy';
+            const estadoGasto = data.estado || 'Pendiente';
+            
+            const statusClass = estadoGasto === 'Pagado' ? 'badge-status-paid' : 'badge-status-pending';
+            const statusLabel = estadoGasto === 'Pagado' ? 'Pagado' : 'Pendiente';
+
             const cardHtml = `
                 <div class="theme-card-sub border rounded-xl p-3.5 flex justify-between items-center text-xs hover:border-indigo-500/50 transition shadow-sm">
+                    <!-- Lado Izquierdo: Nombre, Categoría, Prioridad, Tipo -->
                     <div class="space-y-1">
                         <div class="flex items-center gap-2">
                             <span class="font-bold text-sm theme-text-primary">${data.descripcion}</span>
@@ -124,8 +132,23 @@ function loadGastosData() {
                             <span class="capitalize theme-text-muted">${data.tipo}</span>
                         </div>
                     </div>
-                    <div class="flex items-center gap-3">
-                        <span class="font-bold text-sm theme-text-primary">$${data.monto.toFixed(2)}</span>
+
+                    <!-- Lado Derecho: Badges (Método + Estado Glow) + Monto + Botón Editar -->
+                    <div class="flex items-center gap-2 sm:gap-3">
+                        <!-- Badge Método de Pago -->
+                        <span class="badge-payment-method px-2 py-0.5 rounded-md text-[10px] font-bold">
+                            💳 ${metodoGasto}
+                        </span>
+
+                        <!-- Badge Estado con Efecto Glow -->
+                        <span class="${statusClass} px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wide">
+                            ${statusLabel}
+                        </span>
+
+                        <!-- Monto del Gasto -->
+                        <span class="font-bold text-sm theme-text-primary ml-1">$${data.monto.toFixed(2)}</span>
+
+                        <!-- Botón Editar -->
                         <button onclick="openEditModal('${d.id}')" class="p-2 rounded-lg theme-btn-secondary hover:bg-indigo-500/20 text-indigo-400 transition" title="Editar Gasto">
                             ✏️
                         </button>
@@ -166,6 +189,14 @@ window.openEditModal = (id) => {
     document.getElementById('m-categoria').value = item.categoria || 'Otros';
     document.getElementById('m-prioridad').value = item.prioridad || 'Media';
     
+    // Cargar Método de Pago y Estado en el Modal de Edición
+    if (document.getElementById('m-metodo')) {
+        document.getElementById('m-metodo').value = item.metodoPago || 'Yappy';
+    }
+    if (document.getElementById('m-estado')) {
+        document.getElementById('m-estado').value = item.estado || 'Pendiente';
+    }
+    
     document.getElementById('edit-expense-modal')?.classList.remove('hidden');
 };
 
@@ -187,6 +218,8 @@ if (addExpenseForm) {
             tipo: document.getElementById('add-e-tipo').value,
             categoria: document.getElementById('add-e-categoria').value,
             prioridad: document.getElementById('add-e-prioridad').value,
+            metodoPago: document.getElementById('add-e-metodo')?.value || 'Yappy',
+            estado: document.getElementById('add-e-estado')?.value || 'Pendiente',
             mes: currentMes,
             year: currentYear,
             userId: currentUid,
@@ -215,7 +248,9 @@ if (editExpenseForm) {
             quincena: document.getElementById('m-quincena').value,
             tipo: document.getElementById('m-tipo').value,
             categoria: document.getElementById('m-categoria').value,
-            prioridad: document.getElementById('m-prioridad').value
+            prioridad: document.getElementById('m-prioridad').value,
+            metodoPago: document.getElementById('m-metodo').value,
+            estado: document.getElementById('m-estado').value
         });
 
         editModal.classList.add('hidden');

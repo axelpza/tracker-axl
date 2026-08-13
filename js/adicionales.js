@@ -170,6 +170,10 @@ window.openAssignModal = (itemId, mesDestino) => {
     document.getElementById('a-tipo').value = 'extra';
     document.getElementById('a-categoria').value = 'Chucherías/Compras';
     
+    // Valores por defecto para Método de Pago y Estado
+    if (document.getElementById('a-metodo')) document.getElementById('a-metodo').value = 'Yappy';
+    if (document.getElementById('a-estado')) document.getElementById('a-estado').value = 'Pendiente';
+    
     document.getElementById('assign-modal')?.classList.remove('hidden');
 };
 
@@ -191,6 +195,8 @@ if (assignExpenseForm) {
                 tipo: document.getElementById('a-tipo').value,
                 categoria: document.getElementById('a-categoria').value,
                 prioridad: document.getElementById('a-prioridad').value,
+                metodoPago: document.getElementById('a-metodo')?.value || 'Yappy',
+                estado: document.getElementById('a-estado')?.value || 'Pendiente',
                 mes: mesDestino,
                 year: currentYear,
                 userId: currentUid,

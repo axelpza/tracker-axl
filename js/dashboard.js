@@ -678,6 +678,7 @@ const btnCloseAddModal = document.getElementById('btn-close-add-modal');
 if (btnOpenAddModal) btnOpenAddModal.onclick = () => addModal.classList.remove('hidden');
 if (btnCloseAddModal) btnCloseAddModal.onclick = () => addModal.classList.add('hidden');
 
+// ACTUALIZACIÓN DE GUARDADO CON MÉTODOS DE PAGO Y ESTADO
 const addExpenseForm = document.getElementById('add-expense-form');
 if (addExpenseForm) {
     addExpenseForm.onsubmit = async (e) => {
@@ -689,6 +690,8 @@ if (addExpenseForm) {
             tipo: document.getElementById('add-e-tipo').value,
             categoria: document.getElementById('add-e-categoria').value,
             prioridad: document.getElementById('add-e-prioridad').value,
+            metodoPago: document.getElementById('add-e-metodo')?.value || 'Yappy',
+            estado: document.getElementById('add-e-estado')?.value || 'Pendiente',
             mes: currentMes,
             year: currentYear,
             userId: currentUid,
