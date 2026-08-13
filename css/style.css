@@ -322,23 +322,25 @@ html, body {
 }
 .tooltip-container:hover .tooltip-text { visibility: visible; opacity: 1; }
 
-/* BADGES DE ESTADO CON EFECTO GLOW Y MÉTODO DE PAGO */
+/* BADGES DE ESTADO CON EFECTO GLOW INTENSO */
 .badge-status-pending {
-    background-color: rgba(249, 115, 22, 0.15) !important;
-    color: #fb923c !important;
-    border: 1px solid rgba(249, 115, 22, 0.5) !important;
-    box-shadow: 0 0 10px rgba(249, 115, 22, 0.35);
+    background-color: rgba(249, 115, 22, 0.2) !important;
+    color: #ff9a3c !important;
+    border: 1px solid #f97316 !important;
+    box-shadow: 0 0 8px rgba(249, 115, 22, 0.7), 0 0 18px rgba(249, 115, 22, 0.3) !important;
+    text-shadow: 0 0 5px rgba(249, 115, 22, 0.5);
 }
 
 .badge-status-paid {
-    background-color: rgba(16, 185, 129, 0.15) !important;
+    background-color: rgba(16, 185, 129, 0.2) !important;
     color: #34d399 !important;
-    border: 1px solid rgba(16, 185, 129, 0.5) !important;
-    box-shadow: 0 0 10px rgba(16, 185, 129, 0.35);
+    border: 1px solid #10b981 !important;
+    box-shadow: 0 0 8px rgba(16, 185, 129, 0.7), 0 0 18px rgba(16, 185, 129, 0.3) !important;
+    text-shadow: 0 0 5px rgba(16, 185, 129, 0.5);
 }
 
 .badge-payment-method {
-    background-color: var(--card-sub-bg) !important;
-    color: var(--text-secondary) !important;
-    border: 1px solid var(--card-border) !important;
+    background-color: rgba(255, 255, 255, 0.05) !important;
+    color: #94a3b8 !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
 }
