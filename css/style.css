@@ -471,3 +471,24 @@ html[data-theme="light-clean"] .badge-status-paid {
     color: var(--text-secondary) !important;
     border: 1px solid var(--card-border) !important;
 }
+
+/* ==========================================================================
+   DESACTIVACIÓN DE CLASES TAILWIND HARDCODED (SOBREESCRITURA DE SEGURIDAD)
+   ========================================================================== */
+
+/* Asegura que los contenedores con .theme-card o .theme-card-sub ignoren fondos fijos de Tailwind como bg-white o bg-slate-100 */
+.theme-card.bg-white,
+.theme-card.bg-slate-100,
+.theme-card.bg-slate-800,
+.theme-card.bg-slate-900,
+.theme-card-sub.bg-white,
+.theme-card-sub.bg-slate-100,
+.theme-card-sub.bg-slate-800,
+.theme-card-sub.bg-slate-900 {
+    background-color: var(--card-bg) !important;
+}
+
+.theme-card-sub.bg-white,
+.theme-card-sub.bg-slate-100 {
+    background-color: var(--card-sub-bg) !important;
+}

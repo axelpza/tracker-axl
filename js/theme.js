@@ -44,14 +44,16 @@ export function applyTheme(themeId) {
     window.dispatchEvent(new CustomEvent('themeChanged', { detail: { theme: target } }));
 }
 
-// Inyección e inicialización inmediata del tema guardado
-applyTheme(getSavedTheme());
+// Exponer globalmente para eventos onclick en HTML
+window.applyTheme = applyTheme;
+window.selectAppTheme = applyTheme;
 
-// Re-asegurar la aplicación del tema una vez cargado el DOM (en caso de que document.body no estuviera listo)
+// Inicialización controlada una sola vez
+const initialTheme = getSavedTheme();
+applyTheme(initialTheme);
+
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => {
         applyTheme(getSavedTheme());
     });
-} else {
-    applyTheme(getSavedTheme());
 }

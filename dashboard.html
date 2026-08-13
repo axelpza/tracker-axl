@@ -81,10 +81,11 @@
                         </div>
                     </div>
 
-                    <div class="bg-black/30 p-3 sm:p-3.5 rounded-xl flex items-center justify-between border border-white/10">
+                    <!-- Modificado para adaptarse dinámicamente al tema -->
+                    <div class="theme-card-sub p-3 sm:p-3.5 rounded-xl flex items-center justify-between border">
                         <div>
                             <p class="text-[10px] sm:text-[11px] font-bold uppercase theme-banner-subtext">Distribución Gasto</p>
-                            <p class="text-xs text-white/90 font-semibold mt-0.5">Fijo vs Extraordinario</p>
+                            <p class="text-xs theme-banner-text font-semibold mt-0.5">Fijo vs Extraordinario</p>
                         </div>
                         <div class="w-14 h-14 sm:w-16 sm:h-16 relative flex-shrink-0">
                             <canvas id="typeChart"></canvas>
@@ -118,7 +119,7 @@
 
                         <div class="lg:col-span-7">
                             <div id="category-interactive-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-2.5 max-h-72 sm:max-h-80 overflow-y-auto pr-1 no-scrollbar">
-                                <!-- Generado dinámicamente -->
+                                <!-- Generado dinámicamente por dashboard.js -->
                             </div>
                         </div>
                     </div>
@@ -392,7 +393,7 @@
                         <p class="text-xs theme-text-secondary">Comparativa de compromisos pendientes de pago frente a los ya liquidados en montos y porcentajes.</p>
                     </div>
                     <div id="status-percentages-summary" class="flex flex-wrap gap-3 text-xs font-bold">
-                        <!-- Rellenado dinámicamente por JS -->
+                        <!-- Rellenado dinámicamente por dashboard.js -->
                     </div>
                 </div>
 
