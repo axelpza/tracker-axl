@@ -13,11 +13,11 @@
     <nav class="theme-nav backdrop-blur-md shadow-sm px-4 sm:px-6 py-4 flex flex-col sm:flex-row justify-between items-center gap-3 relative z-10">
         <div class="flex items-center gap-3">
             <span id="nav-avatar" class="text-2xl">👨‍💻</span>
-            <h1 class="font-bold text-lg text-indigo-400">Hola, <span id="nav-name">Usuario</span></h1>
+            <h1 class="font-bold text-lg theme-accent-text">Hola, <span id="nav-name">Usuario</span></h1>
         </div>
         <div class="flex flex-wrap justify-center gap-3 sm:gap-4 items-center text-sm font-semibold">
             <a href="dashboard.html" class="theme-text-secondary hover:text-indigo-400">Budget</a>
-            <a href="gastos.html" class="text-indigo-400 border-b-2 border-indigo-400 pb-1">Gastos</a>
+            <a href="gastos.html" class="theme-accent-text border-b-2 border-indigo-400 pb-1">Gastos</a>
             <a href="adicionales.html" class="theme-text-secondary hover:text-indigo-400">Gastos Adicionales</a>
             <a href="perfil.html" class="theme-text-secondary hover:text-indigo-400">Mi Perfil</a>
             <button id="btn-logout" class="bg-red-500/10 text-red-400 px-3 py-1.5 rounded-lg hover:bg-red-500/20 transition">Salir</button>
@@ -30,13 +30,13 @@
         <div class="theme-card p-5 sm:p-6 rounded-2xl shadow-sm border flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div>
                 <h2 class="text-xl font-bold theme-text-primary">Registros y Control de Gastos</h2>
-                <p class="text-xs theme-text-secondary">Visualiza, filtra y administra tus gastos por quincenas.</p>
+                <p class="text-xs theme-text-secondary">Visualiza, filtra y administra tus gastos por quincenas y estado de pago.</p>
             </div>
             
             <div class="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-end">
                 <div class="theme-card-sub px-4 py-2 rounded-xl border text-xs font-bold">
                     <span class="theme-text-secondary">Total Gastado:</span>
-                    <span id="g-total-spent" class="text-indigo-400 text-sm font-extrabold block">$0.00</span>
+                    <span id="g-total-spent" class="theme-accent-text text-sm font-extrabold block">$0.00</span>
                 </div>
                 <button id="btn-open-add-modal" class="bg-emerald-600 text-white font-bold px-4 py-2.5 rounded-xl text-xs hover:bg-emerald-700 transition shadow-sm flex items-center gap-1.5 whitespace-nowrap">
                     <span>+</span> Agregar Gasto
@@ -45,15 +45,24 @@
         </div>
 
         <!-- Selector de Meses -->
-        <div class="flex gap-2 overflow-x-auto pb-2" id="month-tabs"></div>
+        <div class="flex gap-2 overflow-x-auto pb-2 no-scrollbar" id="month-tabs"></div>
 
-        <!-- CONTROLES DE VISTA DE QUINCENA -->
-        <div class="theme-card p-4 rounded-2xl border flex flex-wrap justify-between items-center gap-2">
-            <span class="text-xs font-bold theme-text-muted uppercase tracking-wider">Filtrar Quincena:</span>
-            <div class="flex gap-2 overflow-x-auto">
-                <button id="btn-view-q1" class="px-4 py-2 rounded-xl text-xs font-bold transition bg-indigo-600 text-white shadow-sm">1ra Quincena</button>
-                <button id="btn-view-q2" class="px-4 py-2 rounded-xl text-xs font-bold transition theme-btn-secondary">2da Quincena</button>
-                <button id="btn-view-mes" class="px-4 py-2 rounded-xl text-xs font-bold transition theme-btn-secondary">Mes Completo</button>
+        <!-- CONTROLES DE FILTRADO (QUINCENA Y ESTADO) -->
+        <div class="theme-card p-4 rounded-2xl border flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+            <!-- Filtro por Quincena -->
+            <div class="flex items-center gap-2 overflow-x-auto w-full md:w-auto no-scrollbar">
+                <span class="text-xs font-bold theme-text-muted uppercase tracking-wider whitespace-nowrap">Quincena:</span>
+                <button id="btn-view-q1" class="px-3.5 py-1.5 rounded-xl text-xs font-bold transition bg-indigo-600 text-white shadow-sm">1ra Quincena</button>
+                <button id="btn-view-q2" class="px-3.5 py-1.5 rounded-xl text-xs font-bold transition theme-btn-secondary">2da Quincena</button>
+                <button id="btn-view-mes" class="px-3.5 py-1.5 rounded-xl text-xs font-bold transition theme-btn-secondary">Mes Completo</button>
+            </div>
+
+            <!-- Filtro por Estado (Pendiente / Pagado) -->
+            <div class="flex items-center gap-2 overflow-x-auto w-full md:w-auto border-t md:border-t-0 pt-3 md:pt-0 border-slate-700/40 no-scrollbar">
+                <span class="text-xs font-bold theme-text-muted uppercase tracking-wider whitespace-nowrap">Estado:</span>
+                <button id="btn-filter-status-all" class="px-3.5 py-1.5 rounded-xl text-xs font-bold transition theme-accent-btn">Todos</button>
+                <button id="btn-filter-status-pending" class="px-3.5 py-1.5 rounded-xl text-xs font-bold transition theme-btn-secondary">Pendientes</button>
+                <button id="btn-filter-status-paid" class="px-3.5 py-1.5 rounded-xl text-xs font-bold transition theme-btn-secondary">Pagados</button>
             </div>
         </div>
 

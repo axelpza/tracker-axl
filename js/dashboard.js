@@ -28,6 +28,7 @@ let typeChartInstance = null;
 let chartQ1 = null;
 let chartQ2 = null;
 let categoryWheelChartInstance = null;
+let statusChartInstance = null; // Instancia de gráfica de estado
 
 let categoryMonthData = {};
 let categoryYtdData = {};
@@ -486,6 +487,7 @@ async function loadMonthData() {
 
         renderTypeChart(fixedSpent, extraSpent);
         renderInteractiveCategoryWheel();
+        renderStatusOverviewChart(snapshot); // Renderiza la nueva gráfica de Pagado vs Pendiente
     });
 }
 
@@ -587,7 +589,7 @@ function renderInteractiveCategoryWheel() {
                 legend: { display: false },
                 tooltip: {
                     enabled: true,
-                    position: 'outside', // Posicionador personalizado fuera del anillo
+                    position: 'outside',
                     backgroundColor: 'rgba(15, 23, 42, 0.95)',
                     titleColor: '#f8fafc',
                     bodyColor: '#f8fafc',
@@ -668,6 +670,96 @@ function renderInteractiveCategoryWheel() {
             if (wheelCenterLabel) wheelCenterLabel.textContent = isMonth ? `Total Gastado (${currentMes})` : 'Total Gastado (YTD Anual)';
             document.querySelectorAll('.cat-item-card').forEach(c => c.classList.remove('is-active', 'is-dimmed'));
         });
+    });
+}
+
+// RENDERIZAR GRÁFICA DE BALANCE DE PAGOS (PENDIENTE VS PAGADO)
+function renderStatusOverviewChart(snapshot) {
+    let totalPendiente = 0;
+    let totalPagado = 0;
+
+    snapshot.forEach(d => {
+        const data = d.data();
+        const estado = data.estado || 'Pendiente';
+        if (estado === 'Pagado') {
+            totalPagado += data.monto;
+        } else {
+            totalPendiente += data.monto;
+        }
+    });
+
+    const totalMes = totalPendiente + totalPagado;
+    const pctPendiente = totalMes > 0 ? ((totalPendiente / totalMes) * 100).toFixed(1) : '0.0';
+    const pctPagado = totalMes > 0 ? ((totalPagado / totalMes) * 100).toFixed(1) : '0.0';
+
+    const summaryContainer = document.getElementById('status-percentages-summary');
+    if (summaryContainer) {
+        summaryContainer.innerHTML = `
+            <span class="text-orange-500 font-bold">Pendiente: $${totalPendiente.toFixed(2)} (${pctPendiente}%)</span>
+            <span class="text-emerald-500 font-bold">Pagado: $${totalPagado.toFixed(2)} (${pctPagado}%)</span>
+        `;
+    }
+
+    const canvasEl = document.getElementById('statusOverviewChart');
+    if (!canvasEl) return;
+    const ctx = canvasEl.getContext('2d');
+
+    if (statusChartInstance) statusChartInstance.destroy();
+
+    const textColor = getCssVar('--text-primary', '#f8fafc');
+    const secondaryTextColor = getCssVar('--text-secondary', '#94a3b8');
+
+    statusChartInstance = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['Pagos del Mes'],
+            datasets: [
+                {
+                    label: 'Pendiente por Pagar ($)',
+                    data: [totalPendiente],
+                    backgroundColor: '#f97316',
+                    borderRadius: 8,
+                    barThickness: 28
+                },
+                {
+                    label: 'Pagado ($)',
+                    data: [totalPagado],
+                    backgroundColor: '#10b981',
+                    borderRadius: 8,
+                    barThickness: 28
+                }
+            ]
+        },
+        options: {
+            indexAxis: 'y', // Convertir en gráfica horizontal
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'top',
+                    labels: { color: textColor, font: { size: 11, weight: 'bold' } }
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            const val = context.raw || 0;
+                            const pct = totalMes > 0 ? ((val / totalMes) * 100).toFixed(1) : '0.0';
+                            return ` ${context.dataset.label}: $${val.toFixed(2)} (${pct}%)`;
+                        }
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    ticks: { color: secondaryTextColor },
+                    grid: { color: 'rgba(255,255,255,0.05)' }
+                },
+                y: {
+                    ticks: { color: textColor, font: { weight: 'bold' } },
+                    grid: { display: false }
+                }
+            }
+        }
     });
 }
 

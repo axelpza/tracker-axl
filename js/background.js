@@ -1,5 +1,7 @@
 import { getSavedTheme } from './theme.js';
 
+let animationFrameId = null;
+
 function setupCanvas() {
     let canvas = document.getElementById('bg-canvas');
     if (!canvas) {
@@ -22,13 +24,30 @@ function setupCanvas() {
     window.addEventListener('resize', () => {
         width = canvas.width = window.innerWidth;
         height = canvas.height = window.innerHeight;
-        initParticles(currentTheme);
+        if (isAnimationEnabled()) {
+            initParticles(currentTheme);
+        }
     });
 
     let currentTheme = getSavedTheme();
     let particles = [];
 
-    // 1. CYBERPUNK OSCURO
+    // Comprobar si la animación está permitida por el usuario
+    function isAnimationEnabled() {
+        const isDisabled = localStorage.getItem('app_bg_anim') === 'disabled';
+        if (isDisabled) {
+            if (canvas) canvas.style.display = 'none';
+            if (animationFrameId) {
+                cancelAnimationFrame(animationFrameId);
+                animationFrameId = null;
+            }
+            return false;
+        }
+        if (canvas) canvas.style.display = 'block';
+        return true;
+    }
+
+    // 1. CYBERPUNK OSCURO (Red Ciber)
     class CyberNode {
         constructor() {
             this.x = Math.random() * width;
@@ -51,7 +70,7 @@ function setupCanvas() {
         }
     }
 
-    // 2. CRIMSON MIDNIGHT (Rojo Carmesí / Azul Marino)
+    // 2. CRIMSON MIDNIGHT (Rojo Carmesí / Azul)
     class CrimsonParticle {
         constructor() {
             this.x = Math.random() * width;
@@ -77,7 +96,7 @@ function setupCanvas() {
         }
     }
 
-    // 3. VÓRTICE DE POLVO
+    // 3. VÓRTICE DE POLVO (Partículas Cálidas)
     class DustParticle {
         constructor() { this.reset(); }
         reset() {
@@ -112,7 +131,7 @@ function setupCanvas() {
         }
     }
 
-    // 4. MATRIZ ESMERALDA
+    // 4. MATRIZ ESMERALDA (Lluvia Matrix)
     class MatrixDrop {
         constructor() {
             this.x = Math.random() * width;
@@ -139,14 +158,67 @@ function setupCanvas() {
         }
     }
 
-    // 5. LUMINOSO MINIMALISTA
-    class LightOrb {
+    // 5. APPLE DARK (Orbes Flotantes Azul iOS y Cyan)
+    class AppleDarkOrb {
         constructor() {
-            this.radius = Math.random() * 15 + 8;
             this.x = Math.random() * width;
             this.y = Math.random() * height;
-            this.vx = (Math.random() - 0.5) * 0.5;
-            this.vy = (Math.random() - 0.5) * 0.5;
+            this.radius = Math.random() * 3 + 1;
+            this.vx = (Math.random() - 0.5) * 0.4;
+            this.vy = (Math.random() - 0.5) * 0.4;
+            this.color = Math.random() > 0.5 ? '#0a84ff' : '#64d2ff';
+            this.alpha = Math.random() * 0.5 + 0.2;
+        }
+        update() {
+            this.x += this.vx;
+            this.y += this.vy;
+            if (this.x < 0 || this.x > width) this.vx *= -1;
+            if (this.y < 0 || this.y > height) this.vy *= -1;
+        }
+        draw() {
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+            ctx.fillStyle = this.color;
+            ctx.globalAlpha = this.alpha;
+            ctx.fill();
+            ctx.globalAlpha = 1.0;
+        }
+    }
+
+    // 6. NETFLIX DARK (Brasas y Chispas Ascendentes)
+    class NetflixEmber {
+        constructor() {
+            this.x = Math.random() * width;
+            this.y = Math.random() * height;
+            this.radius = Math.random() * 2.2 + 0.8;
+            this.vy = -(Math.random() * 0.9 + 0.3);
+            this.vx = (Math.random() - 0.5) * 0.4;
+            this.color = Math.random() > 0.3 ? '#e50914' : '#b9090b';
+            this.alpha = Math.random() * 0.7 + 0.2;
+        }
+        update() {
+            this.y += this.vy;
+            this.x += this.vx;
+            if (this.y < 0) { this.y = height; this.x = Math.random() * width; }
+        }
+        draw() {
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+            ctx.fillStyle = this.color;
+            ctx.globalAlpha = this.alpha;
+            ctx.fill();
+            ctx.globalAlpha = 1.0;
+        }
+    }
+
+    // 7. LUMINOSO / APPLE LIGHT (Burbujas Suaves)
+    class LightOrb {
+        constructor() {
+            this.radius = Math.random() * 12 + 6;
+            this.x = Math.random() * width;
+            this.y = Math.random() * height;
+            this.vx = (Math.random() - 0.5) * 0.4;
+            this.vy = (Math.random() - 0.5) * 0.4;
             this.color = ['#cbd5e1', '#93c5fd', '#c4b5fd'][Math.floor(Math.random() * 3)];
         }
         update() {
@@ -159,31 +231,44 @@ function setupCanvas() {
             ctx.beginPath();
             ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
             ctx.fillStyle = this.color;
-            ctx.globalAlpha = 0.25;
+            ctx.globalAlpha = 0.2;
             ctx.fill();
             ctx.globalAlpha = 1.0;
         }
     }
 
+    // Inicializar Partículas según Tema
     function initParticles(theme) {
         currentTheme = theme;
         particles = [];
+
+        if (!isAnimationEnabled()) return;
+
         if (theme === 'dark-cyber') {
             for (let i = 0; i < 60; i++) particles.push(new CyberNode());
         } else if (theme === 'dark-crimson') {
-            for (let i = 0; i < 90; i++) particles.push(new CrimsonParticle());
+            for (let i = 0; i < 80; i++) particles.push(new CrimsonParticle());
         } else if (theme === 'dust-vortex') {
-            for (let i = 0; i < 200; i++) particles.push(new DustParticle());
+            for (let i = 0; i < 180; i++) particles.push(new DustParticle());
         } else if (theme === 'neon-matrix') {
             for (let i = 0; i < 90; i++) particles.push(new MatrixDrop());
+        } else if (theme === 'apple-dark') {
+            for (let i = 0; i < 70; i++) particles.push(new AppleDarkOrb());
+        } else if (theme === 'netflix-dark') {
+            for (let i = 0; i < 100; i++) particles.push(new NetflixEmber());
         } else {
-            for (let i = 0; i < 30; i++) particles.push(new LightOrb());
+            // Apple Light / Light Clean
+            for (let i = 0; i < 25; i++) particles.push(new LightOrb());
         }
     }
 
+    // Bucle de Animación principal
     function animate() {
+        if (!isAnimationEnabled()) return;
+
         ctx.clearRect(0, 0, width, height);
 
+        // Conexión de líneas exclusiva de Cyberpunk
         if (currentTheme === 'dark-cyber') {
             for (let i = 0; i < particles.length; i++) {
                 for (let j = i + 1; j < particles.length; j++) {
@@ -202,12 +287,31 @@ function setupCanvas() {
         }
 
         particles.forEach(p => { p.update(); p.draw(); });
-        requestAnimationFrame(animate);
+        animationFrameId = requestAnimationFrame(animate);
     }
 
-    window.addEventListener('themeChanged', (e) => initParticles(e.detail.theme));
-    initParticles(currentTheme);
-    animate();
+    // Manejadores de Eventos Globales
+    window.addEventListener('themeChanged', (e) => {
+        const selectedTheme = e.detail?.theme || getSavedTheme();
+        initParticles(selectedTheme);
+        if (isAnimationEnabled() && !animationFrameId) {
+            animate();
+        }
+    });
+
+    window.addEventListener('bgAnimChanged', () => {
+        if (isAnimationEnabled()) {
+            initParticles(getSavedTheme());
+            if (!animationFrameId) animate();
+        } else {
+            ctx.clearRect(0, 0, width, height);
+        }
+    });
+
+    if (isAnimationEnabled()) {
+        initParticles(currentTheme);
+        animate();
+    }
 }
 
 if (document.readyState === 'loading') {

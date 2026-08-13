@@ -7,6 +7,8 @@ const meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', '
 let currentMes = meses[new Date().getMonth()];
 const currentYear = new Date().getFullYear();
 
+// Estado Global de Filtro
+let currentStatusFilter = 'all'; // 'all' | 'Pendiente' | 'Pagado'
 const gastosCache = new Map();
 
 async function initGastosPage() {
@@ -29,14 +31,17 @@ async function initGastosPage() {
     }
 
     initMonthTabs();
+    initStatusFilterControls();
     loadGastosData();
 }
 
 initGastosPage();
 
+// Cierre de Sesión
 const btnLogout = document.getElementById('btn-logout');
 if (btnLogout) btnLogout.onclick = () => signOut(auth).then(() => window.location.href = "index.html");
 
+// Generador de Pestañas de Meses
 function initMonthTabs() {
     const container = document.getElementById('month-tabs');
     if (!container) return;
@@ -45,7 +50,7 @@ function initMonthTabs() {
     meses.forEach(m => {
         const btn = document.createElement('button');
         btn.textContent = m;
-        btn.className = `px-4 py-2 rounded-xl font-semibold whitespace-nowrap transition ${m === currentMes ? 'bg-indigo-600 text-white shadow-md' : 'theme-btn-secondary'}`;
+        btn.className = `px-4 py-2 rounded-xl font-semibold whitespace-nowrap transition text-xs sm:text-sm ${m === currentMes ? 'bg-indigo-600 text-white shadow-md' : 'theme-btn-secondary'}`;
         btn.onclick = () => { 
             currentMes = m; 
             initMonthTabs(); 
@@ -55,6 +60,7 @@ function initMonthTabs() {
     });
 }
 
+// Controles de Vista por Quincena
 const btnQ1 = document.getElementById('btn-view-q1');
 const btnQ2 = document.getElementById('btn-view-q2');
 const btnMes = document.getElementById('btn-view-mes');
@@ -62,9 +68,9 @@ const wrapQ1 = document.getElementById('wrapper-q1');
 const wrapQ2 = document.getElementById('wrapper-q2');
 
 function setQuincenaView(viewMode) {
-    if (btnQ1) btnQ1.className = `px-4 py-2 rounded-xl text-xs font-bold transition ${viewMode === 'q1' ? 'bg-indigo-600 text-white shadow-sm' : 'theme-btn-secondary'}`;
-    if (btnQ2) btnQ2.className = `px-4 py-2 rounded-xl text-xs font-bold transition ${viewMode === 'q2' ? 'bg-indigo-600 text-white shadow-sm' : 'theme-btn-secondary'}`;
-    if (btnMes) btnMes.className = `px-4 py-2 rounded-xl text-xs font-bold transition ${viewMode === 'mes' ? 'bg-indigo-600 text-white shadow-sm' : 'theme-btn-secondary'}`;
+    if (btnQ1) btnQ1.className = `px-3.5 py-1.5 rounded-xl text-xs font-bold transition ${viewMode === 'q1' ? 'bg-indigo-600 text-white shadow-sm' : 'theme-btn-secondary'}`;
+    if (btnQ2) btnQ2.className = `px-3.5 py-1.5 rounded-xl text-xs font-bold transition ${viewMode === 'q2' ? 'bg-indigo-600 text-white shadow-sm' : 'theme-btn-secondary'}`;
+    if (btnMes) btnMes.className = `px-3.5 py-1.5 rounded-xl text-xs font-bold transition ${viewMode === 'mes' ? 'bg-indigo-600 text-white shadow-sm' : 'theme-btn-secondary'}`;
 
     if (viewMode === 'q1') {
         if (wrapQ1) wrapQ1.classList.remove('hidden');
@@ -82,6 +88,26 @@ if (btnQ1) btnQ1.onclick = () => setQuincenaView('q1');
 if (btnQ2) btnQ2.onclick = () => setQuincenaView('q2');
 if (btnMes) btnMes.onclick = () => setQuincenaView('mes');
 
+// Controles de Filtro por Estado (Todos / Pendientes / Pagados)
+function initStatusFilterControls() {
+    const btnAll = document.getElementById('btn-filter-status-all');
+    const btnPending = document.getElementById('btn-filter-status-pending');
+    const btnPaid = document.getElementById('btn-filter-status-paid');
+
+    const updateFilterUI = (filter) => {
+        currentStatusFilter = filter;
+        if (btnAll) btnAll.className = `px-3.5 py-1.5 rounded-xl text-xs font-bold transition ${filter === 'all' ? 'theme-accent-btn' : 'theme-btn-secondary'}`;
+        if (btnPending) btnPending.className = `px-3.5 py-1.5 rounded-xl text-xs font-bold transition ${filter === 'Pendiente' ? 'theme-accent-btn' : 'theme-btn-secondary'}`;
+        if (btnPaid) btnPaid.className = `px-3.5 py-1.5 rounded-xl text-xs font-bold transition ${filter === 'Pagado' ? 'theme-accent-btn' : 'theme-btn-secondary'}`;
+        loadGastosData();
+    };
+
+    if (btnAll) btnAll.onclick = () => updateFilterUI('all');
+    if (btnPending) btnPending.onclick = () => updateFilterUI('Pendiente');
+    if (btnPaid) btnPaid.onclick = () => updateFilterUI('Pagado');
+}
+
+// Carga de Datos desde Firestore con Filtro Realtime
 function loadGastosData() {
     const q = query(
         collection(db, "gastos"), 
@@ -105,6 +131,14 @@ function loadGastosData() {
             const data = d.data();
             const itemData = { id: d.id, ...data };
             gastosCache.set(d.id, itemData);
+
+            const estadoGasto = data.estado || 'Pendiente';
+
+            // APLICAR FILTRO DE ESTADO
+            if (currentStatusFilter !== 'all' && estadoGasto !== currentStatusFilter) {
+                return;
+            }
+
             totalSpent += data.monto;
 
             const prioColor = data.prioridad === 'Alta' 
@@ -112,15 +146,13 @@ function loadGastosData() {
                 : (data.prioridad === 'Baja' ? 'bg-slate-500/20 theme-text-muted border border-slate-500/30' : 'bg-amber-500/20 text-amber-500 border border-amber-500/30');
 
             const metodoGasto = data.metodoPago || 'Yappy';
-            const estadoGasto = data.estado || 'Pendiente';
-            
             const statusClass = estadoGasto === 'Pagado' ? 'badge-status-paid' : 'badge-status-pending';
             const statusLabel = estadoGasto === 'Pagado' ? 'Pagado' : 'Pendiente';
 
-            // TARJETA REESTRUCTURADA: Flex Col en Móvil y Flex Row en Pantallas Grandes
+            // Estructura Responsiva de la Tarjeta
             const cardHtml = `
                 <div class="theme-card-sub border rounded-2xl p-3.5 flex flex-col sm:flex-row justify-between sm:items-center gap-2.5 sm:gap-3 hover:border-indigo-500/50 transition shadow-sm overflow-hidden">
-                    <!-- Fila Superior / Lado Izquierdo: Descripción, Categoría y Prioridad -->
+                    <!-- Detalle Principal -->
                     <div class="space-y-1 flex-1 min-w-0">
                         <div class="flex items-center gap-2 flex-wrap">
                             <span class="font-bold text-sm theme-text-primary truncate max-w-[200px] sm:max-w-none">${data.descripcion}</span>
@@ -133,25 +165,19 @@ function loadGastosData() {
                         </div>
                     </div>
 
-                    <!-- Fila Inferior Móvil / Lado Derecho Escritorio: Badges, Monto y Editar -->
-                    <div class="flex items-center justify-between sm:justify-end gap-2 sm:gap-3 border-t sm:border-t-0 pt-2 sm:pt-0 border-slate-200 dark:border-slate-700/50">
+                    <!-- Badges, Monto y Acciones -->
+                    <div class="flex items-center justify-between sm:justify-end gap-2 sm:gap-3 border-t sm:border-t-0 pt-2 sm:pt-0 border-slate-700/30">
                         <div class="flex items-center gap-1.5 flex-wrap">
-                            <!-- Badge Método de Pago -->
                             <span class="badge-payment-method px-2 py-0.5 rounded-md text-[10px] font-bold whitespace-nowrap">
                                 💳 ${metodoGasto}
                             </span>
-
-                            <!-- Badge Estado con Efecto Glow -->
                             <span class="${statusClass} px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wide whitespace-nowrap">
                                 ${statusLabel}
                             </span>
                         </div>
 
                         <div class="flex items-center gap-2 ml-auto sm:ml-0">
-                            <!-- Monto del Gasto -->
                             <span class="font-black text-sm sm:text-base theme-text-primary whitespace-nowrap">$${data.monto.toFixed(2)}</span>
-
-                            <!-- Botón Editar -->
                             <button onclick="openEditModal('${d.id}')" class="p-1.5 rounded-lg theme-btn-secondary hover:bg-indigo-500/20 text-indigo-400 transition text-xs" title="Editar Gasto">
                                 ✏️
                             </button>
@@ -168,9 +194,15 @@ function loadGastosData() {
             }
         });
 
-        if (listQ1.innerHTML === '') listQ1.innerHTML = `<p class="py-6 text-center theme-text-muted text-xs">Sin registros en 1ra Quincena</p>`;
-        if (listQ2.innerHTML === '') listQ2.innerHTML = `<p class="py-6 text-center theme-text-muted text-xs">Sin registros en 2da Quincena</p>`;
+        // Estados vacíos
+        const emptyMsg = currentStatusFilter === 'all' 
+            ? 'Sin registros' 
+            : `Sin registros (${currentStatusFilter}s)`;
 
+        if (listQ1.innerHTML === '') listQ1.innerHTML = `<p class="py-6 text-center theme-text-muted text-xs">${emptyMsg} en 1ra Quincena</p>`;
+        if (listQ2.innerHTML === '') listQ2.innerHTML = `<p class="py-6 text-center theme-text-muted text-xs">${emptyMsg} en 2da Quincena</p>`;
+
+        // Actualización de Totales
         const q1Total = document.getElementById('q1-expense-total');
         const q2Total = document.getElementById('q2-expense-total');
         const gTotal = document.getElementById('g-total-spent');
@@ -181,6 +213,7 @@ function loadGastosData() {
     });
 }
 
+// Abrir Modal de Edición
 window.openEditModal = (id) => {
     const item = gastosCache.get(id);
     if (!item) return;
@@ -203,6 +236,7 @@ window.openEditModal = (id) => {
     document.getElementById('edit-expense-modal')?.classList.remove('hidden');
 };
 
+// Control de Modal Crear Gasto
 const addModal = document.getElementById('add-expense-modal');
 const btnOpenAdd = document.getElementById('btn-open-add-modal');
 const btnCloseAdd = document.getElementById('btn-close-add-modal');
@@ -210,6 +244,7 @@ const btnCloseAdd = document.getElementById('btn-close-add-modal');
 if (btnOpenAdd) btnOpenAdd.onclick = () => addModal.classList.remove('hidden');
 if (btnCloseAdd) btnCloseAdd.onclick = () => addModal.classList.add('hidden');
 
+// Submit Formulario Crear Gasto
 const addExpenseForm = document.getElementById('add-expense-form');
 if (addExpenseForm) {
     addExpenseForm.onsubmit = async (e) => {
@@ -235,10 +270,12 @@ if (addExpenseForm) {
     };
 }
 
+// Control de Modal Editar
 const editModal = document.getElementById('edit-expense-modal');
 const btnCloseModal = document.getElementById('btn-close-modal');
 if (btnCloseModal) btnCloseModal.onclick = () => editModal.classList.add('hidden');
 
+// Submit Formulario Editar
 const editExpenseForm = document.getElementById('edit-expense-form');
 if (editExpenseForm) {
     editExpenseForm.onsubmit = async (e) => {
@@ -261,6 +298,7 @@ if (editExpenseForm) {
     };
 }
 
+// Eliminar Gasto
 const btnDelete = document.getElementById('btn-delete-modal');
 if (btnDelete) {
     btnDelete.onclick = async () => {

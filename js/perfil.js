@@ -50,15 +50,18 @@ async function initPerfilPage() {
         console.error("Error al cargar perfil:", err);
     }
 
+    // Inicializar tarjeta de tema activa y botón de animación de fondo
     highlightActiveThemeCard();
+    updateBgBtnState();
 }
 
 initPerfilPage();
 
+// Cierre de sesión
 const btnLogout = document.getElementById('btn-logout');
 if (btnLogout) btnLogout.onclick = () => signOut(auth).then(() => window.location.href = "index.html");
 
-// ACTUALIZACIÓN DE DATOS PERSONALES Y AVATAR
+// 1. ACTUALIZACIÓN DE DATOS PERSONALES Y AVATAR
 const profileForm = document.getElementById('profile-form');
 if (profileForm) {
     profileForm.onsubmit = async (e) => {
@@ -75,10 +78,15 @@ if (profileForm) {
             await updateDoc(doc(db, "users", currentUser.uid), { name, user, avatar });
 
             // Actualizar vista inmediatamente
-            document.getElementById('nav-name').textContent = name;
-            document.getElementById('nav-avatar').textContent = avatar;
-            document.getElementById('profile-header-name').textContent = name;
-            document.getElementById('profile-avatar-display').textContent = avatar;
+            const navName = document.getElementById('nav-name');
+            const navAvatar = document.getElementById('nav-avatar');
+            const headerName = document.getElementById('profile-header-name');
+            const headerAvatar = document.getElementById('profile-avatar-display');
+
+            if (navName) navName.textContent = name;
+            if (navAvatar) navAvatar.textContent = avatar;
+            if (headerName) headerName.textContent = name;
+            if (headerAvatar) headerAvatar.textContent = avatar;
 
             if (msg) {
                 msg.textContent = "¡Perfil actualizado con éxito!";
@@ -94,7 +102,7 @@ if (profileForm) {
     };
 }
 
-// CAMBIO DE CONTRASEÑA
+// 2. CAMBIO DE CONTRASEÑA
 const passwordForm = document.getElementById('password-form');
 if (passwordForm) {
     passwordForm.onsubmit = async (e) => {
@@ -134,7 +142,7 @@ if (passwordForm) {
     };
 }
 
-// CORREO DE RESTABLECIMIENTO
+// 3. CORREO DE RESTABLECIMIENTO DE CONTRASEÑA
 const btnSendReset = document.getElementById('btn-send-reset-email');
 if (btnSendReset) {
     btnSendReset.onclick = async () => {
@@ -148,10 +156,30 @@ if (btnSendReset) {
     };
 }
 
-// SELECCIÓN DE TEMA
+// 4. CONTROL DE ANIMACIÓN DEL FONDO (PARTÍCULAS)
+const btnToggleBg = document.getElementById('btn-toggle-bg-anim');
+
+function updateBgBtnState() {
+    const isDisabled = localStorage.getItem('app_bg_anim') === 'disabled';
+    if (btnToggleBg) {
+        btnToggleBg.textContent = isDisabled ? "Activar Fondo Animado" : "Desactivar Animación (Fondo Fijo)";
+    }
+}
+
+if (btnToggleBg) {
+    btnToggleBg.onclick = () => {
+        const isDisabled = localStorage.getItem('app_bg_anim') === 'disabled';
+        localStorage.setItem('app_bg_anim', isDisabled ? 'enabled' : 'disabled');
+        updateBgBtnState();
+        window.dispatchEvent(new Event('bgAnimChanged'));
+    };
+}
+
+// 5. SELECCIÓN DE TEMA VISUAL
 window.selectAppTheme = (themeId) => {
     applyTheme(themeId);
     highlightActiveThemeCard();
+    window.dispatchEvent(new Event('themeChanged'));
 };
 
 function highlightActiveThemeCard() {
