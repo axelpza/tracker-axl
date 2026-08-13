@@ -9,7 +9,7 @@
     --card-sub-bg: #1f2937;
     --card-border: #374151;
     
-    --banner-bg: linear-gradient(135deg, #991b1b 0%, #7f1d1d 100%);
+    --banner-bg: linear-gradient(135deg, #200a0d 0%, #0f1522 100%);
     --banner-text: #ffffff;
     --banner-subtext: #fca5a5;
     
@@ -34,14 +34,14 @@
     --btn-secondary-text: #f3f4f6;
 }
 
-/* 2. CRIMSON MIDNIGHT (Oscuro Rojizo) */
+/* 2. CRIMSON MIDNIGHT */
 html[data-theme="dark-crimson"], body[data-theme="dark-crimson"], html[data-theme="crimson"], body[data-theme="crimson"] {
     --bg-body: #080c14;
     --card-bg: #111827;
     --card-sub-bg: #1f2937;
     --card-border: #374151;
     
-    --banner-bg: linear-gradient(135deg, #991b1b 0%, #7f1d1d 100%);
+    --banner-bg: linear-gradient(135deg, #200a0d 0%, #0f1522 100%);
     --banner-text: #ffffff;
     --banner-subtext: #fca5a5;
     
@@ -66,14 +66,14 @@ html[data-theme="dark-crimson"], body[data-theme="dark-crimson"], html[data-them
     --btn-secondary-text: #f3f4f6;
 }
 
-/* 3. APPLE DARK (Gris Espacial, Cristal Frost y Azul iOS) */
+/* 3. APPLE DARK */
 html[data-theme="apple-dark"], body[data-theme="apple-dark"] {
     --bg-body: #000000;
     --card-bg: #1c1c1e;
     --card-sub-bg: #2c2c2e;
     --card-border: #3a3a3c;
     
-    --banner-bg: linear-gradient(135deg, #1c2834 0%, #0f172a 100%);
+    --banner-bg: linear-gradient(135deg, #182232 0%, #0f172a 100%);
     --banner-text: #ffffff;
     --banner-subtext: #93c5fd;
     
@@ -98,14 +98,14 @@ html[data-theme="apple-dark"], body[data-theme="apple-dark"] {
     --btn-secondary-text: #f5f5f7;
 }
 
-/* 4. NETFLIX DARK (Negro Absoluto y Rojo Carmesí) */
+/* 4. NETFLIX DARK */
 html[data-theme="netflix-dark"], body[data-theme="netflix-dark"] {
     --bg-body: #141414;
     --card-bg: #181818;
     --card-sub-bg: #232323;
     --card-border: #333333;
     
-    --banner-bg: linear-gradient(135deg, #b9090b 0%, #e50914 100%);
+    --banner-bg: linear-gradient(135deg, #2b080a 0%, #141414 100%);
     --banner-text: #ffffff;
     --banner-subtext: #fca5a5;
     
@@ -130,14 +130,14 @@ html[data-theme="netflix-dark"], body[data-theme="netflix-dark"] {
     --btn-secondary-text: #ffffff;
 }
 
-/* 5. APPLE LIGHT (Blanco Puro y Gris Muro Minimalista) */
+/* 5. APPLE LIGHT */
 html[data-theme="apple-light"], body[data-theme="apple-light"] {
     --bg-body: #f5f5f7;
     --card-bg: #ffffff;
     --card-sub-bg: #f2f2f7;
     --card-border: #e5e5ea;
     
-    --banner-bg: linear-gradient(135deg, #1d1d1f 0%, #3a3a3c 100%);
+    --banner-bg: linear-gradient(135deg, #1d1d1f 0%, #2c2c2e 100%);
     --banner-text: #ffffff;
     --banner-subtext: #d1d1d6;
     
@@ -162,14 +162,14 @@ html[data-theme="apple-light"], body[data-theme="apple-light"] {
     --btn-secondary-text: #1d1d1f;
 }
 
-/* 6. CYBERPUNK OSCURO (Índigo Nocturno) */
+/* 6. CYBERPUNK OSCURO */
 html[data-theme="dark-cyber"], body[data-theme="dark-cyber"] {
     --bg-body: #070a12;
     --card-bg: #0f172a;
     --card-sub-bg: #1e293b;
     --card-border: #334155;
     
-    --banner-bg: linear-gradient(135deg, #4338ca 0%, #6d28d9 100%);
+    --banner-bg: linear-gradient(135deg, #17153b 0%, #0f172a 100%);
     --banner-text: #ffffff;
     --banner-subtext: #c7d2fe;
     
@@ -194,14 +194,14 @@ html[data-theme="dark-cyber"], body[data-theme="dark-cyber"] {
     --btn-secondary-text: #e2e8f0;
 }
 
-/* 7. VÓRTICE DE POLVO (Naranja Estelar Oscuro) */
+/* 7. VÓRTICE DE POLVO */
 html[data-theme="dust-vortex"], body[data-theme="dust-vortex"] {
     --bg-body: #020408;
     --card-bg: #0a101a;
     --card-sub-bg: #152033;
     --card-border: #233248;
     
-    --banner-bg: linear-gradient(135deg, #9a3412 0%, #c2410c 100%);
+    --banner-bg: linear-gradient(135deg, #220d04 0%, #0a101a 100%);
     --banner-text: #ffffff;
     --banner-subtext: #ffedd5;
     
@@ -226,14 +226,14 @@ html[data-theme="dust-vortex"], body[data-theme="dust-vortex"] {
     --btn-secondary-text: #e2e8f0;
 }
 
-/* 8. MATRIZ ESMERALDA (Verde Cíber Oscuro) */
+/* 8. MATRIZ ESMERALDA */
 html[data-theme="neon-matrix"], body[data-theme="neon-matrix"] {
     --bg-body: #030f0c;
     --card-bg: #062017;
     --card-sub-bg: #0c3326;
     --card-border: #14532d;
     
-    --banner-bg: linear-gradient(135deg, #065f46 0%, #047857 100%);
+    --banner-bg: linear-gradient(135deg, #02241b 0%, #062017 100%);
     --banner-text: #ffffff;
     --banner-subtext: #a7f3d0;
     
@@ -265,7 +265,7 @@ html[data-theme="light-clean"], body[data-theme="light-clean"] {
     --card-sub-bg: #f8fafc;
     --card-border: #cbd5e1;
     
-    --banner-bg: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+    --banner-bg: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
     --banner-text: #ffffff;
     --banner-subtext: #e2e8f0;
     
@@ -302,13 +302,27 @@ html, body {
     font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Segoe UI", Roboto, sans-serif;
 }
 
-/* BANNER SUPERIOR */
+/* BANNER SUPERIOR CON INTEGRACIÓN SUAVE */
 .theme-banner {
     background: var(--banner-bg) !important;
     color: var(--banner-text) !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 .theme-banner-subtext {
     color: var(--banner-subtext) !important;
+}
+
+/* INTEGRA LAS SUB-TARJETAS DEL BANNER SIN CONTRASTES AGRESIVOS */
+.theme-banner .theme-card-sub {
+    background-color: rgba(0, 0, 0, 0.35) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    backdrop-filter: blur(8px);
+}
+
+html[data-theme="apple-light"] .theme-banner .theme-card-sub,
+html[data-theme="light-clean"] .theme-banner .theme-card-sub {
+    background-color: rgba(255, 255, 255, 0.1) !important;
+    border: 1px solid rgba(255, 255, 255, 0.18) !important;
 }
 
 /* TARJETAS Y CONTENEDORES */
@@ -424,11 +438,7 @@ html, body {
 }
 .tooltip-container:hover .tooltip-text { visibility: visible; opacity: 1; }
 
-/* ==========================================================================
-   BADGES DE ESTADO CON EFECTO NEÓN GLOW UNIVERSAL (FONDOS OSCUROS Y CLAROS)
-   ========================================================================== */
-
-/* 1. ESTADO PENDIENTES POR PAGAR (NARANJA NEÓN) - POR DEFECTO PARA TEMAS OSCUROS */
+/* BADGES DE ESTADO NEÓN GLOW */
 .badge-status-pending {
     background-color: rgba(249, 115, 22, 0.25) !important;
     color: #ff9d42 !important;
@@ -437,7 +447,6 @@ html, body {
     text-shadow: 0 0 6px rgba(249, 115, 22, 0.9) !important;
 }
 
-/* 2. ESTADO PAGADO (VERDE ESMERALDA NEÓN) - POR DEFECTO PARA TEMAS OSCUROS */
 .badge-status-paid {
     background-color: rgba(16, 185, 129, 0.25) !important;
     color: #34d399 !important;
@@ -446,7 +455,6 @@ html, body {
     text-shadow: 0 0 6px rgba(16, 185, 129, 0.9) !important;
 }
 
-/* 3. ADAPTACIÓN ALTO CONTRASTE PARA TEMAS CLAROS (Apple Light / Light Clean) */
 html[data-theme="apple-light"] .badge-status-pending,
 html[data-theme="light-clean"] .badge-status-pending {
     background-color: #fff7ed !important;
@@ -465,30 +473,8 @@ html[data-theme="light-clean"] .badge-status-paid {
     text-shadow: none !important;
 }
 
-/* BADGE MÉTODO DE PAGO */
 .badge-payment-method {
     background-color: var(--card-sub-bg) !important;
     color: var(--text-secondary) !important;
     border: 1px solid var(--card-border) !important;
-}
-
-/* ==========================================================================
-   DESACTIVACIÓN DE CLASES TAILWIND HARDCODED (SOBREESCRITURA DE SEGURIDAD)
-   ========================================================================== */
-
-/* Asegura que los contenedores con .theme-card o .theme-card-sub ignoren fondos fijos de Tailwind como bg-white o bg-slate-100 */
-.theme-card.bg-white,
-.theme-card.bg-slate-100,
-.theme-card.bg-slate-800,
-.theme-card.bg-slate-900,
-.theme-card-sub.bg-white,
-.theme-card-sub.bg-slate-100,
-.theme-card-sub.bg-slate-800,
-.theme-card-sub.bg-slate-900 {
-    background-color: var(--card-bg) !important;
-}
-
-.theme-card-sub.bg-white,
-.theme-card-sub.bg-slate-100 {
-    background-color: var(--card-sub-bg) !important;
 }

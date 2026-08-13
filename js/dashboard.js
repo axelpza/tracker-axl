@@ -35,6 +35,10 @@ let categoryYtdData = {};
 let monthTotalSpentVal = 0;
 let ytdTotalSpentVal = 0;
 
+// Variables de estado para filtro de Balance de Pagos
+let lastGastosSnapshot = null;
+let statusFilterMode = 'all'; // 'all' | 'q1' | 'q2'
+
 const categoryColors = {
     'Restaurante': '#f97316',
     'Supermercado': '#10b981',
@@ -78,6 +82,7 @@ async function initDashboard() {
     initMobileMenu();
     initMonthTabs();
     initCategoryToggle();
+    initStatusFilterControls();
     loadMonthData();
     loadYTDData();
 }
@@ -152,6 +157,49 @@ function initCategoryToggle() {
             renderInteractiveCategoryWheel();
         };
     }
+}
+
+// INICIALIZAR BOTONES DE FILTRO (Q1, Q2, MES COMPLETO)
+function initStatusFilterControls() {
+    const btnAll = document.getElementById('btn-status-all');
+    const btnQ1 = document.getElementById('btn-status-q1');
+    const btnQ2 = document.getElementById('btn-status-q2');
+
+    if (!btnAll || !btnQ1 || !btnQ2) return;
+
+    const updateBtnStyles = () => {
+        btnAll.className = statusFilterMode === 'all' 
+            ? "px-3 py-1 rounded-lg text-xs font-bold theme-accent-btn shadow-sm" 
+            : "px-3 py-1 rounded-lg text-xs font-bold theme-btn-secondary opacity-70 hover:opacity-100";
+            
+        btnQ1.className = statusFilterMode === 'q1' 
+            ? "px-3 py-1 rounded-lg text-xs font-bold theme-accent-btn shadow-sm" 
+            : "px-3 py-1 rounded-lg text-xs font-bold theme-btn-secondary opacity-70 hover:opacity-100";
+            
+        btnQ2.className = statusFilterMode === 'q2' 
+            ? "px-3 py-1 rounded-lg text-xs font-bold theme-accent-btn shadow-sm" 
+            : "px-3 py-1 rounded-lg text-xs font-bold theme-btn-secondary opacity-70 hover:opacity-100";
+    };
+
+    btnAll.onclick = () => {
+        statusFilterMode = 'all';
+        updateBtnStyles();
+        if (lastGastosSnapshot) renderStatusOverviewChart(lastGastosSnapshot);
+    };
+
+    btnQ1.onclick = () => {
+        statusFilterMode = 'q1';
+        updateBtnStyles();
+        if (lastGastosSnapshot) renderStatusOverviewChart(lastGastosSnapshot);
+    };
+
+    btnQ2.onclick = () => {
+        statusFilterMode = 'q2';
+        updateBtnStyles();
+        if (lastGastosSnapshot) renderStatusOverviewChart(lastGastosSnapshot);
+    };
+
+    updateBtnStyles();
 }
 
 const inputSalarioMensual = document.getElementById('in-salario-mensual');
@@ -487,7 +535,7 @@ async function loadMonthData() {
 
         renderTypeChart(fixedSpent, extraSpent);
         renderInteractiveCategoryWheel();
-        renderStatusOverviewChart(snapshot); // Renderiza la nueva gráfica de Pagado vs Pendiente
+        renderStatusOverviewChart(snapshot); // Renderiza la gráfica de Pagado vs Pendiente con soporte de filtrado
     });
 }
 
@@ -673,13 +721,22 @@ function renderInteractiveCategoryWheel() {
     });
 }
 
-// RENDERIZAR GRÁFICA DE BALANCE DE PAGOS (PENDIENTE VS PAGADO)
+// RENDERIZAR GRÁFICA DE BALANCE DE PAGOS (CON FILTRADO POR Q1, Q2 O MES COMPLETO)
 function renderStatusOverviewChart(snapshot) {
+    if (!snapshot) return;
+    lastGastosSnapshot = snapshot;
+
     let totalPendiente = 0;
     let totalPagado = 0;
 
     snapshot.forEach(d => {
         const data = d.data();
+        const quincena = data.quincena || '1ra Quincena';
+
+        // Aplicar filtro de quincena según el modo seleccionado
+        if (statusFilterMode === 'q1' && quincena !== '1ra Quincena') return;
+        if (statusFilterMode === 'q2' && quincena !== '2da Quincena') return;
+
         const estado = data.estado || 'Pendiente';
         if (estado === 'Pagado') {
             totalPagado += data.monto;
@@ -688,9 +745,9 @@ function renderStatusOverviewChart(snapshot) {
         }
     });
 
-    const totalMes = totalPendiente + totalPagado;
-    const pctPendiente = totalMes > 0 ? ((totalPendiente / totalMes) * 100).toFixed(1) : '0.0';
-    const pctPagado = totalMes > 0 ? ((totalPagado / totalMes) * 100).toFixed(1) : '0.0';
+    const totalPeriodo = totalPendiente + totalPagado;
+    const pctPendiente = totalPeriodo > 0 ? ((totalPendiente / totalPeriodo) * 100).toFixed(1) : '0.0';
+    const pctPagado = totalPeriodo > 0 ? ((totalPagado / totalPeriodo) * 100).toFixed(1) : '0.0';
 
     const summaryContainer = document.getElementById('status-percentages-summary');
     if (summaryContainer) {
@@ -709,10 +766,15 @@ function renderStatusOverviewChart(snapshot) {
     const textColor = getCssVar('--text-primary', '#f8fafc');
     const secondaryTextColor = getCssVar('--text-secondary', '#94a3b8');
 
+    // Label según el filtro activo
+    let labelPeriodo = 'Mes Completo';
+    if (statusFilterMode === 'q1') labelPeriodo = '1ra Quincena';
+    if (statusFilterMode === 'q2') labelPeriodo = '2da Quincena';
+
     statusChartInstance = new Chart(ctx, {
         type: 'bar',
         data: {
-            labels: ['Pagos del Mes'],
+            labels: [labelPeriodo],
             datasets: [
                 {
                     label: 'Pendiente por Pagar ($)',
@@ -731,7 +793,7 @@ function renderStatusOverviewChart(snapshot) {
             ]
         },
         options: {
-            indexAxis: 'y', // Convertir en gráfica horizontal
+            indexAxis: 'y',
             responsive: true,
             maintainAspectRatio: false,
             plugins: {
@@ -743,7 +805,7 @@ function renderStatusOverviewChart(snapshot) {
                     callbacks: {
                         label: function(context) {
                             const val = context.raw || 0;
-                            const pct = totalMes > 0 ? ((val / totalMes) * 100).toFixed(1) : '0.0';
+                            const pct = totalPeriodo > 0 ? ((val / totalPeriodo) * 100).toFixed(1) : '0.0';
                             return ` ${context.dataset.label}: $${val.toFixed(2)} (${pct}%)`;
                         }
                     }

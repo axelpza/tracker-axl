@@ -63,7 +63,7 @@
             <div class="theme-card rounded-2xl shadow-lg border overflow-hidden">
                 <!-- Header del Banner -->
                 <div class="theme-banner p-4 sm:p-6 grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 items-center">
-                    <div class="theme-card-sub md:bg-transparent p-3 sm:p-0 rounded-xl md:border-0 border">
+                    <div class="theme-card-sub p-3 sm:p-3.5 rounded-xl border">
                         <p class="theme-banner-subtext text-[10px] sm:text-xs font-bold uppercase tracking-wider">Resumen Anual (YTD Enero - Actual)</p>
                         <h2 class="text-xl sm:text-2xl font-black mt-0.5" id="ytd-total-spent">$0.00 Gastados</h2>
                         <div class="flex gap-4 mt-1.5 text-xs theme-banner-subtext">
@@ -72,7 +72,7 @@
                         </div>
                     </div>
 
-                    <div class="theme-card-sub md:bg-transparent p-3 sm:p-0 rounded-xl md:border-0 border">
+                    <div class="theme-card-sub p-3 sm:p-3.5 rounded-xl border">
                         <p class="theme-banner-subtext text-[10px] sm:text-xs font-bold uppercase tracking-wider">Total Mes (<span id="lbl-current-mes">Mes</span>)</p>
                         <h3 class="text-xl sm:text-2xl font-black mt-0.5" id="current-month-total">$0.00</h3>
                         <div class="flex gap-4 mt-1.5 text-xs theme-banner-subtext">
@@ -81,7 +81,6 @@
                         </div>
                     </div>
 
-                    <!-- Modificado para adaptarse dinámicamente al tema -->
                     <div class="theme-card-sub p-3 sm:p-3.5 rounded-xl flex items-center justify-between border">
                         <div>
                             <p class="text-[10px] sm:text-[11px] font-bold uppercase theme-banner-subtext">Distribución Gasto</p>
@@ -119,7 +118,7 @@
 
                         <div class="lg:col-span-7">
                             <div id="category-interactive-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-2.5 max-h-72 sm:max-h-80 overflow-y-auto pr-1 no-scrollbar">
-                                <!-- Generado dinámicamente por dashboard.js -->
+                                <!-- Generado dinámicamente -->
                             </div>
                         </div>
                     </div>
@@ -385,15 +384,25 @@
 
             <!-- SECCIÓN INFERIOR: GRÁFICA DE BALANCE DE ESTADOS (PENDIENTE VS PAGADO) -->
             <div class="theme-card p-4 sm:p-6 rounded-2xl border space-y-4 shadow-md">
-                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-slate-700/50 pb-3 gap-2">
+                <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center border-b border-slate-700/50 pb-3 gap-3">
                     <div>
                         <h3 class="font-bold text-xs sm:text-sm uppercase tracking-wider theme-text-primary flex items-center gap-2">
                             <span>📊</span> Balance de Pagos del Mes (Pagado vs Pendiente)
                         </h3>
                         <p class="text-xs theme-text-secondary">Comparativa de compromisos pendientes de pago frente a los ya liquidados en montos y porcentajes.</p>
                     </div>
-                    <div id="status-percentages-summary" class="flex flex-wrap gap-3 text-xs font-bold">
-                        <!-- Rellenado dinámicamente por dashboard.js -->
+                    
+                    <div class="flex flex-wrap items-center gap-3 w-full lg:w-auto justify-between lg:justify-end">
+                        <!-- Filtro Interactivo Q1 / Q2 / Mes Completo -->
+                        <div class="flex gap-1 theme-card-sub p-1 rounded-xl border w-full sm:w-auto justify-center">
+                            <button id="btn-status-all" class="px-3 py-1 rounded-lg text-xs font-bold theme-accent-btn">Mes Completo</button>
+                            <button id="btn-status-q1" class="px-3 py-1 rounded-lg text-xs font-bold theme-btn-secondary opacity-70 hover:opacity-100">1ra Quincena</button>
+                            <button id="btn-status-q2" class="px-3 py-1 rounded-lg text-xs font-bold theme-btn-secondary opacity-70 hover:opacity-100">2da Quincena</button>
+                        </div>
+                        
+                        <div id="status-percentages-summary" class="flex flex-wrap gap-3 text-xs font-bold">
+                            <!-- Rellenado dinámicamente por JS -->
+                        </div>
                     </div>
                 </div>
 
